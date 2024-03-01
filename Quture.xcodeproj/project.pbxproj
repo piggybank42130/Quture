@@ -1,0 +1,614 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EE6614342B919CF900662D44 /* QutureApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614332B919CF900662D44 /* QutureApp.swift */; };
+		EE6614362B919CF900662D44 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614352B919CF900662D44 /* ContentView.swift */; };
+		EE6614382B919CFC00662D44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE6614372B919CFC00662D44 /* Assets.xcassets */; };
+		EE66143C2B919CFC00662D44 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE66143B2B919CFC00662D44 /* Preview Assets.xcassets */; };
+		EE6614462B919CFD00662D44 /* QutureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614452B919CFD00662D44 /* QutureTests.swift */; };
+		EE6614502B919CFD00662D44 /* QutureUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE66144F2B919CFD00662D44 /* QutureUITests.swift */; };
+		EE6614522B919CFD00662D44 /* QutureUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614512B919CFD00662D44 /* QutureUITestsLaunchTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EE6614422B919CFD00662D44 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE6614282B919CF900662D44 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EE66142F2B919CF900662D44;
+			remoteInfo = Quture;
+		};
+		EE66144C2B919CFD00662D44 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE6614282B919CF900662D44 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EE66142F2B919CF900662D44;
+			remoteInfo = Quture;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		EE6614302B919CF900662D44 /* Quture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quture.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE6614332B919CF900662D44 /* QutureApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QutureApp.swift; sourceTree = "<group>"; };
+		EE6614352B919CF900662D44 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		EE6614372B919CFC00662D44 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EE6614392B919CFC00662D44 /* Quture.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Quture.entitlements; sourceTree = "<group>"; };
+		EE66143B2B919CFC00662D44 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		EE6614412B919CFD00662D44 /* QutureTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QutureTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE6614452B919CFD00662D44 /* QutureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QutureTests.swift; sourceTree = "<group>"; };
+		EE66144B2B919CFD00662D44 /* QutureUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QutureUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE66144F2B919CFD00662D44 /* QutureUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QutureUITests.swift; sourceTree = "<group>"; };
+		EE6614512B919CFD00662D44 /* QutureUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QutureUITestsLaunchTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EE66142D2B919CF900662D44 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE66143E2B919CFD00662D44 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE6614482B919CFD00662D44 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EE6614272B919CF900662D44 = {
+			isa = PBXGroup;
+			children = (
+				EE6614322B919CF900662D44 /* Quture */,
+				EE6614442B919CFD00662D44 /* QutureTests */,
+				EE66144E2B919CFD00662D44 /* QutureUITests */,
+				EE6614312B919CF900662D44 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EE6614312B919CF900662D44 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EE6614302B919CF900662D44 /* Quture.app */,
+				EE6614412B919CFD00662D44 /* QutureTests.xctest */,
+				EE66144B2B919CFD00662D44 /* QutureUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EE6614322B919CF900662D44 /* Quture */ = {
+			isa = PBXGroup;
+			children = (
+				EE6614332B919CF900662D44 /* QutureApp.swift */,
+				EE6614352B919CF900662D44 /* ContentView.swift */,
+				EE6614372B919CFC00662D44 /* Assets.xcassets */,
+				EE6614392B919CFC00662D44 /* Quture.entitlements */,
+				EE66143A2B919CFC00662D44 /* Preview Content */,
+			);
+			path = Quture;
+			sourceTree = "<group>";
+		};
+		EE66143A2B919CFC00662D44 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				EE66143B2B919CFC00662D44 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		EE6614442B919CFD00662D44 /* QutureTests */ = {
+			isa = PBXGroup;
+			children = (
+				EE6614452B919CFD00662D44 /* QutureTests.swift */,
+			);
+			path = QutureTests;
+			sourceTree = "<group>";
+		};
+		EE66144E2B919CFD00662D44 /* QutureUITests */ = {
+			isa = PBXGroup;
+			children = (
+				EE66144F2B919CFD00662D44 /* QutureUITests.swift */,
+				EE6614512B919CFD00662D44 /* QutureUITestsLaunchTests.swift */,
+			);
+			path = QutureUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EE66142F2B919CF900662D44 /* Quture */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EE6614552B919CFD00662D44 /* Build configuration list for PBXNativeTarget "Quture" */;
+			buildPhases = (
+				EE66142C2B919CF900662D44 /* Sources */,
+				EE66142D2B919CF900662D44 /* Frameworks */,
+				EE66142E2B919CF900662D44 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Quture;
+			productName = Quture;
+			productReference = EE6614302B919CF900662D44 /* Quture.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EE6614402B919CFD00662D44 /* QutureTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EE6614582B919CFD00662D44 /* Build configuration list for PBXNativeTarget "QutureTests" */;
+			buildPhases = (
+				EE66143D2B919CFD00662D44 /* Sources */,
+				EE66143E2B919CFD00662D44 /* Frameworks */,
+				EE66143F2B919CFD00662D44 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EE6614432B919CFD00662D44 /* PBXTargetDependency */,
+			);
+			name = QutureTests;
+			productName = QutureTests;
+			productReference = EE6614412B919CFD00662D44 /* QutureTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		EE66144A2B919CFD00662D44 /* QutureUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EE66145B2B919CFD00662D44 /* Build configuration list for PBXNativeTarget "QutureUITests" */;
+			buildPhases = (
+				EE6614472B919CFD00662D44 /* Sources */,
+				EE6614482B919CFD00662D44 /* Frameworks */,
+				EE6614492B919CFD00662D44 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EE66144D2B919CFD00662D44 /* PBXTargetDependency */,
+			);
+			name = QutureUITests;
+			productName = QutureUITests;
+			productReference = EE66144B2B919CFD00662D44 /* QutureUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EE6614282B919CF900662D44 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1520;
+				LastUpgradeCheck = 1520;
+				TargetAttributes = {
+					EE66142F2B919CF900662D44 = {
+						CreatedOnToolsVersion = 15.2;
+					};
+					EE6614402B919CFD00662D44 = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = EE66142F2B919CF900662D44;
+					};
+					EE66144A2B919CFD00662D44 = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = EE66142F2B919CF900662D44;
+					};
+				};
+			};
+			buildConfigurationList = EE66142B2B919CF900662D44 /* Build configuration list for PBXProject "Quture" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EE6614272B919CF900662D44;
+			productRefGroup = EE6614312B919CF900662D44 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EE66142F2B919CF900662D44 /* Quture */,
+				EE6614402B919CFD00662D44 /* QutureTests */,
+				EE66144A2B919CFD00662D44 /* QutureUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EE66142E2B919CF900662D44 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE66143C2B919CFC00662D44 /* Preview Assets.xcassets in Resources */,
+				EE6614382B919CFC00662D44 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE66143F2B919CFD00662D44 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE6614492B919CFD00662D44 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EE66142C2B919CF900662D44 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE6614362B919CF900662D44 /* ContentView.swift in Sources */,
+				EE6614342B919CF900662D44 /* QutureApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE66143D2B919CFD00662D44 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE6614462B919CFD00662D44 /* QutureTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE6614472B919CFD00662D44 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE6614522B919CFD00662D44 /* QutureUITestsLaunchTests.swift in Sources */,
+				EE6614502B919CFD00662D44 /* QutureUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EE6614432B919CFD00662D44 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EE66142F2B919CF900662D44 /* Quture */;
+			targetProxy = EE6614422B919CFD00662D44 /* PBXContainerItemProxy */;
+		};
+		EE66144D2B919CFD00662D44 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EE66142F2B919CF900662D44 /* Quture */;
+			targetProxy = EE66144C2B919CFD00662D44 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		EE6614532B919CFD00662D44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		EE6614542B919CFD00662D44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		EE6614562B919CFD00662D44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Quture/Quture.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Quture/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Quture.Quture;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EE6614572B919CFD00662D44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Quture/Quture.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Quture/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Quture.Quture;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		EE6614592B919CFD00662D44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Quture.QutureTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Quture.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Quture";
+			};
+			name = Debug;
+		};
+		EE66145A2B919CFD00662D44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Quture.QutureTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Quture.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Quture";
+			};
+			name = Release;
+		};
+		EE66145C2B919CFD00662D44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Quture.QutureUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Quture;
+			};
+			name = Debug;
+		};
+		EE66145D2B919CFD00662D44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Quture.QutureUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Quture;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EE66142B2B919CF900662D44 /* Build configuration list for PBXProject "Quture" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE6614532B919CFD00662D44 /* Debug */,
+				EE6614542B919CFD00662D44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EE6614552B919CFD00662D44 /* Build configuration list for PBXNativeTarget "Quture" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE6614562B919CFD00662D44 /* Debug */,
+				EE6614572B919CFD00662D44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EE6614582B919CFD00662D44 /* Build configuration list for PBXNativeTarget "QutureTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE6614592B919CFD00662D44 /* Debug */,
+				EE66145A2B919CFD00662D44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EE66145B2B919CFD00662D44 /* Build configuration list for PBXNativeTarget "QutureUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE66145C2B919CFD00662D44 /* Debug */,
+				EE66145D2B919CFD00662D44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EE6614282B919CF900662D44 /* Project object */;
+}
