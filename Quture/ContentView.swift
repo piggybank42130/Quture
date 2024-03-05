@@ -39,8 +39,32 @@ struct ContentView: View {
             rectangleContents[index] = RectangleContent(image: image, caption: caption)
             // No automatic navigation to ImageDisplayView
             self.showingDetailScreen = false // Assuming this is your detail screen/modal presentation
+            postImage(image: image);
         }
     }
+    
+    func postImage(image: UIImage) {
+        guard let imageData = image.jpegData(compressionQuality: 0.5) else { return }
+        let base64ImageString = imageData.base64EncodedString()
+        
+        // Assuming 'sendMethod' properly sets up a POST request including setting
+        // the 'Content-Type' header to 'application/json'.
+        let parameters: [String: String] = ["method_name": "post_image", "image": base64ImageString]
+        
+        ServerCommunicator().sendMethod(parameters: parameters) { result in
+            switch result {
+            case .success(let responseData):
+                // Assuming responseData is of type Data and can be converted to a String or JSON
+                print("Image posted successfully: \(String(describing: responseData))")
+                // Further processing of responseData if necessary
+                
+            case .failure(let error):
+                print("Failed to post image: \(error.localizedDescription)")
+                // Consider user-friendly error handling here
+            }
+        }
+    }
+
     
     // Computed property to adjust rectangle size when layout is modified
     var adjustedSize: CGFloat {
