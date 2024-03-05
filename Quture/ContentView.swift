@@ -50,7 +50,7 @@ struct ContentView: View {
         
         // Assuming 'sendMethod' properly sets up a POST request including setting
         // the 'Content-Type' header to 'application/json'.
-        let parameters: [String: String] = ["method_name": "post_image", "image": base64ImageString]
+        let parameters: [String: Any] = ["method_name": "post_image", "image": base64ImageString, "user_id": 3]
         
         ServerCommunicator().sendMethod(parameters: parameters) { result in
             switch result {
