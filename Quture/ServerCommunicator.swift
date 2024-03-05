@@ -5,24 +5,41 @@ class ServerCommunicator: ObservableObject {
     
     // Function to request a method execution on the server with arbitrary parameters
     func sendMethod(parameters: [String: String], completion: @escaping (Result<Data, Error>) -> Void) {
-        var components = URLComponents(string: "\(serverURL)/execute-method")
-        components?.queryItems = parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
-        
-        guard let url = components?.url else { return }
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        print(parameters);
+        guard let url = URL(string: "\(serverURL)/execute-method") else { return }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
+        } catch let error {
+            completion(.failure(error))
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                completion(.failure(error))
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
                 return
             }
-            
-            guard let data = data else { return }
-            
+
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Data was nil."])))
+                }
+                return
+            }
+
             DispatchQueue.main.async {
                 completion(.success(data))
             }
         }.resume()
     }
+
     
     // Function to execute a command on the server with arbitrary parameters
     func executeCommand(parameters: [String: Any], completion: @escaping (Result<Bool, Error>) -> Void) {
