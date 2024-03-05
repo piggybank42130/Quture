@@ -1,11 +1,11 @@
 import Foundation
 
 class ServerCommunicator: ObservableObject {
-    let serverURL = "http://yourserveraddress:port" // Change this to your Flask server URL
+    let serverURL = "http://137.184.116.12:5000"
     
     // Function to request a method execution on the server with arbitrary parameters
-    func sendMethod(endpoint: String, parameters: [String: String], completion: @escaping (Result<Data, Error>) -> Void) {
-        var components = URLComponents(string: "\(serverURL)/\(endpoint)")
+    func sendMethod(parameters: [String: String], completion: @escaping (Result<Data, Error>) -> Void) {
+        var components = URLComponents(string: "\(serverURL)/execute-method")
         components?.queryItems = parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
         
         guard let url = components?.url else { return }
@@ -25,8 +25,8 @@ class ServerCommunicator: ObservableObject {
     }
     
     // Function to execute a command on the server with arbitrary parameters
-    func executeCommand(endpoint: String, parameters: [String: Any], completion: @escaping (Result<Bool, Error>) -> Void) {
-        guard let url = URL(string: "\(serverURL)/\(endpoint)") else { return }
+    func executeCommand(parameters: [String: Any], completion: @escaping (Result<Bool, Error>) -> Void) {
+        guard let url = URL(string: "\(serverURL)/send-command") else { return }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
