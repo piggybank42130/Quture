@@ -43,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		71D2ADD32B97B8A00031E2DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE477CE32B95233C00A5EF43 /* Color_Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color_Extension.swift; sourceTree = "<group>"; };
 		EE477CE52B95236400A5EF43 /* Rectangle_Content.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rectangle_Content.swift; sourceTree = "<group>"; };
 		EE477CE72B95248100A5EF43 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -113,6 +114,7 @@
 		EE6614322B919CF900662D44 /* Quture */ = {
 			isa = PBXGroup;
 			children = (
+				71D2ADD32B97B8A00031E2DA /* Info.plist */,
 				EE6614332B919CF900662D44 /* QutureApp.swift */,
 				EE6614352B919CF900662D44 /* ContentView.swift */,
 				EE477CE52B95236400A5EF43 /* Rectangle_Content.swift */,
@@ -456,9 +458,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Quture/Preview Content\"";
-				DEVELOPMENT_TEAM = XVM439PFHW;
+				DEVELOPMENT_TEAM = TLDDUT2RCH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Quture/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -494,9 +497,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Quture/Preview Content\"";
-				DEVELOPMENT_TEAM = XVM439PFHW;
+				DEVELOPMENT_TEAM = TLDDUT2RCH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Quture/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
