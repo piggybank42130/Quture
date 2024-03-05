@@ -21,6 +21,8 @@
 		EE6614462B919CFD00662D44 /* QutureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614452B919CFD00662D44 /* QutureTests.swift */; };
 		EE6614502B919CFD00662D44 /* QutureUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE66144F2B919CFD00662D44 /* QutureUITests.swift */; };
 		EE6614522B919CFD00662D44 /* QutureUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614512B919CFD00662D44 /* QutureUITestsLaunchTests.swift */; };
+		EEFEEBB72B96EF4B009F1375 /* ServerCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFEEBB62B96EF4B009F1375 /* ServerCommunicator.swift */; };
+		EEFEEBB92B973357009F1375 /* BidWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFEEBB82B973357009F1375 /* BidWindowView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +61,8 @@
 		EE66144B2B919CFD00662D44 /* QutureUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QutureUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE66144F2B919CFD00662D44 /* QutureUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QutureUITests.swift; sourceTree = "<group>"; };
 		EE6614512B919CFD00662D44 /* QutureUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QutureUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		EEFEEBB62B96EF4B009F1375 /* ServerCommunicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerCommunicator.swift; sourceTree = "<group>"; };
+		EEFEEBB82B973357009F1375 /* BidWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BidWindowView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +125,8 @@
 				EE477CEB2B9526DA00A5EF43 /* LoginSettingView.swift */,
 				EE477CED2B953B5800A5EF43 /* PostPageView.swift */,
 				EE4D340C2B96E2F300D02F67 /* ImageDisplayView.swift */,
+				EEFEEBB62B96EF4B009F1375 /* ServerCommunicator.swift */,
+				EEFEEBB82B973357009F1375 /* BidWindowView.swift */,
 			);
 			path = Quture;
 			sourceTree = "<group>";
@@ -284,7 +290,9 @@
 				EE6614362B919CF900662D44 /* ContentView.swift in Sources */,
 				EE477CE62B95236400A5EF43 /* Rectangle_Content.swift in Sources */,
 				EE477CEE2B953B5800A5EF43 /* PostPageView.swift in Sources */,
+				EEFEEBB92B973357009F1375 /* BidWindowView.swift in Sources */,
 				EE477CEA2B9524A800A5EF43 /* DetailScreen.swift in Sources */,
+				EEFEEBB72B96EF4B009F1375 /* ServerCommunicator.swift in Sources */,
 				EE477CE82B95248100A5EF43 /* ImagePicker.swift in Sources */,
 				EE4D340D2B96E2F300D02F67 /* ImageDisplayView.swift in Sources */,
 				EE6614342B919CF900662D44 /* QutureApp.swift in Sources */,

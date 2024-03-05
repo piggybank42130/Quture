@@ -25,7 +25,8 @@ struct ContentView: View {
     @State private var imageToDisplay: UIImage?
     @State private var navigateToPostView = false
     @State private var selectedRectangleIndex: Int? = nil
-
+    
+    
     
     
     let topTabs = ["Explore", "Curate", "Nearby"]
@@ -64,7 +65,7 @@ struct ContentView: View {
             }
         }
     }
-
+    
     
     // Computed property to adjust rectangle size when layout is modified
     var adjustedSize: CGFloat {
@@ -110,15 +111,13 @@ struct ContentView: View {
                 Spacer()
                 
                 bottomBarSection
+                NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", onConfirm: handleImageConfirmation), isActive: $showingDetailScreen) {
+                    EmptyView()
+                }
             }
             .edgesIgnoringSafeArea(.bottom)
             .sheet(isPresented: $showingImagePicker, onDismiss: loadImage) {
                 ImagePicker(image: $inputImage)
-            }
-            .sheet(isPresented: $showingDetailScreen) {
-                if let image = inputImage {
-                    DetailScreen(image: image, caption: "", onConfirm: handleImageConfirmation)
-                }
             }
             .fullScreenCover(isPresented: $showingPostPage) {
                 if let selectedImage = selectedImageForPostPage {
@@ -133,9 +132,10 @@ struct ContentView: View {
     
     
     func loadImage() {
-        guard let inputImage = inputImage else { return }
+        guard let _ = inputImage else { return }
         showingDetailScreen = true
     }
+    
     
     
     // MARK: - Top Bar Section
@@ -232,7 +232,7 @@ struct ContentView: View {
                                 .fill(Color.gray.opacity(0.3))
                                 .frame(width: rectangleWidth, height: rectangleHeight)
                         }
-
+                        
                         if isLayoutModified {
                             Text(rectangleContents[index].caption)
                                 .foregroundColor(.white)
@@ -247,7 +247,7 @@ struct ContentView: View {
                                 set: { _ in self.selectedRectangleIndex = nil }
                             )
                         ) { EmptyView() }
-                        .hidden()
+                            .hidden()
                     )
                 }            }
             .padding(.horizontal, 16)
@@ -328,19 +328,4 @@ struct ImageDetailView: View {
             }
     }
 }
-//
-//struct ImageDisplayView: View {
-//    var image: UIImage
-//    
-//    var body: some View {
-//        VStack {
-//            Spacer()
-//            Image(uiImage: image)
-//                .resizable()
-//                .scaledToFit()
-//                .padding()
-//            Spacer()
-//        }
-//        .navigationBarTitle("Image", displayMode: .inline)
-//    }
-//}
+
