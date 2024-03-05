@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EE477CE42B95233C00A5EF43 /* Color_Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CE32B95233C00A5EF43 /* Color_Extension.swift */; };
+		EE477CE62B95236400A5EF43 /* Rectangle_Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CE52B95236400A5EF43 /* Rectangle_Content.swift */; };
+		EE477CE82B95248100A5EF43 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CE72B95248100A5EF43 /* ImagePicker.swift */; };
+		EE477CEA2B9524A800A5EF43 /* DetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CE92B9524A800A5EF43 /* DetailScreen.swift */; };
+		EE477CEC2B9526DA00A5EF43 /* LoginSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CEB2B9526DA00A5EF43 /* LoginSettingView.swift */; };
+		EE477CEE2B953B5800A5EF43 /* PostPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CED2B953B5800A5EF43 /* PostPageView.swift */; };
 		EE6614342B919CF900662D44 /* QutureApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614332B919CF900662D44 /* QutureApp.swift */; };
 		EE6614362B919CF900662D44 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614352B919CF900662D44 /* ContentView.swift */; };
 		EE6614382B919CFC00662D44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE6614372B919CFC00662D44 /* Assets.xcassets */; };
@@ -34,6 +40,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EE477CE32B95233C00A5EF43 /* Color_Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color_Extension.swift; sourceTree = "<group>"; };
+		EE477CE52B95236400A5EF43 /* Rectangle_Content.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rectangle_Content.swift; sourceTree = "<group>"; };
+		EE477CE72B95248100A5EF43 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		EE477CE92B9524A800A5EF43 /* DetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailScreen.swift; sourceTree = "<group>"; };
+		EE477CEB2B9526DA00A5EF43 /* LoginSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSettingView.swift; sourceTree = "<group>"; };
+		EE477CED2B953B5800A5EF43 /* PostPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostPageView.swift; sourceTree = "<group>"; };
 		EE6614302B919CF900662D44 /* Quture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE6614332B919CF900662D44 /* QutureApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QutureApp.swift; sourceTree = "<group>"; };
 		EE6614352B919CF900662D44 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -97,9 +109,15 @@
 			children = (
 				EE6614332B919CF900662D44 /* QutureApp.swift */,
 				EE6614352B919CF900662D44 /* ContentView.swift */,
+				EE477CE52B95236400A5EF43 /* Rectangle_Content.swift */,
+				EE477CE32B95233C00A5EF43 /* Color_Extension.swift */,
 				EE6614372B919CFC00662D44 /* Assets.xcassets */,
 				EE6614392B919CFC00662D44 /* Quture.entitlements */,
 				EE66143A2B919CFC00662D44 /* Preview Content */,
+				EE477CE72B95248100A5EF43 /* ImagePicker.swift */,
+				EE477CE92B9524A800A5EF43 /* DetailScreen.swift */,
+				EE477CEB2B9526DA00A5EF43 /* LoginSettingView.swift */,
+				EE477CED2B953B5800A5EF43 /* PostPageView.swift */,
 			);
 			path = Quture;
 			sourceTree = "<group>";
@@ -259,8 +277,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EE477CEC2B9526DA00A5EF43 /* LoginSettingView.swift in Sources */,
 				EE6614362B919CF900662D44 /* ContentView.swift in Sources */,
+				EE477CE62B95236400A5EF43 /* Rectangle_Content.swift in Sources */,
+				EE477CEE2B953B5800A5EF43 /* PostPageView.swift in Sources */,
+				EE477CEA2B9524A800A5EF43 /* DetailScreen.swift in Sources */,
+				EE477CE82B95248100A5EF43 /* ImagePicker.swift in Sources */,
 				EE6614342B919CF900662D44 /* QutureApp.swift in Sources */,
+				EE477CE42B95233C00A5EF43 /* Color_Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,8 +444,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Quture/Preview Content\"";
+				DEVELOPMENT_TEAM = XVM439PFHW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -456,8 +482,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Quture/Preview Content\"";
+				DEVELOPMENT_TEAM = XVM439PFHW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
