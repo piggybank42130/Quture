@@ -40,17 +40,17 @@ struct ContentView: View {
             rectangleContents[index] = RectangleContent(image: image, caption: caption)
             // No automatic navigation to ImageDisplayView
             self.showingDetailScreen = false // Assuming this is your detail screen/modal presentation
-            postImage(image: image);
+            postImage(image: image, caption: caption);
         }
     }
     
-    func postImage(image: UIImage) {
+    func postImage(image: UIImage, caption: String) {
         guard let imageData = image.jpegData(compressionQuality: 0.5) else { return }
         let base64ImageString = imageData.base64EncodedString()
         
         // Assuming 'sendMethod' properly sets up a POST request including setting
         // the 'Content-Type' header to 'application/json'.
-        let parameters: [String: Any] = ["method_name": "post_image", "image": base64ImageString, "user_id": 3]
+        let parameters: [String: Any] = ["method_name": "post_image", "image": base64ImageString, "user_id": 3, "caption": caption]
         
         ServerCommunicator().sendMethod(parameters: parameters) { result in
             switch result {
