@@ -15,7 +15,6 @@ struct ContentView: View {
     @State private var inputImage: UIImage?
     @State private var showingDetailScreen = false
     @State private var rectangleContents = Array(repeating: RectangleContent(image: nil, caption: "input"), count: 20) // Example for 20 rectangles
-    // Add to your ContentView's state variables
     @State private var showingLoginSettings = false
     @State private var activeScreen = ActiveScreen.home
     @State private var selectedImage: UIImage? // Track the selected image
@@ -24,9 +23,9 @@ struct ContentView: View {
     @State private var selectedImageForPostPage: UIImage? // Add this line
     @State private var showingImageDetailView = false
     @State private var imageToDisplay: UIImage?
+    @State private var navigateToPostView = false
+    @State private var selectedRectangleIndex: Int? = nil
 
-
-    
     
     
     let topTabs = ["Explore", "Curate", "Nearby"]
@@ -36,12 +35,12 @@ struct ContentView: View {
     
     
     func handleImageConfirmation(image: UIImage, caption: String) {
-        // Find the first rectangle that doesn't have an image and update it
         if let index = rectangleContents.firstIndex(where: { $0.image == nil }) {
             rectangleContents[index] = RectangleContent(image: image, caption: caption)
+            // No automatic navigation to ImageDisplayView
+            self.showingDetailScreen = false // Assuming this is your detail screen/modal presentation
         }
     }
-    
     
     // Computed property to adjust rectangle size when layout is modified
     var adjustedSize: CGFloat {
@@ -53,18 +52,6 @@ struct ContentView: View {
         rectangleBaseHeight * rectangleMultiplier
     }
     
-    //    //horizontal image width
-    //    var rectangleWidth: CGFloat {
-    //        // Assuming the screen width is divided into two columns with some padding
-    //        let totalPadding: CGFloat = 32 // Adjust based on your design's padding
-    //        return (UIScreen.main.bounds.width - totalPadding) / 2
-    //    }
-    //    //horizonal image height
-    //    var rectangleHeight: CGFloat {
-    //        // Maintaining a 4:3 aspect ratio
-    //        return rectangleWidth * (3 / 4)
-    //    }
-    
     var rectangleWidth: CGFloat {
         // Assuming a specific padding between the grid items and the screen edges
         let totalHorizontalPadding: CGFloat = 32 // Example padding - adjust as needed
@@ -75,7 +62,7 @@ struct ContentView: View {
     var rectangleHeight: CGFloat {
         return rectangleWidth * (4 / 3)
     }
-
+    
     //MARK: Body: some view
     var body: some View {
         NavigationView {
@@ -85,26 +72,12 @@ struct ContentView: View {
                     VStack(spacing: 0) {
                         topBarSection
                         contentSection
-                            .overlay {
-                                if let imageToDisplay = imageToDisplay {
-                                    Color.black.opacity(0.4)
-                                        .edgesIgnoringSafeArea(.all)
-                                        .onTapGesture {
-                                            self.imageToDisplay = nil // Dismiss the overlay by setting the image to nil
-                                        }
-
-                                    Image(uiImage: imageToDisplay)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 300, height: 400)
-                                        .cornerRadius(15)
-                                        .shadow(radius: 10)
-                                        .padding()
-                                        .onTapGesture {
-                                            self.imageToDisplay = nil // Allow tapping the image itself to also dismiss
-                                        }
-                                }
-                            }
+                        NavigationLink(destination: ImageDisplayView(image: imageToDisplay ?? UIImage()), isActive: Binding<Bool>(
+                            get: { self.imageToDisplay != nil },
+                            set: { if !$0 { self.imageToDisplay = nil } }
+                        )) {
+                            EmptyView()
+                        }
                     }
                 case .loginSettings:
                     LoginSettingsView()
@@ -127,15 +100,16 @@ struct ContentView: View {
                 if let selectedImage = selectedImageForPostPage {
                     PostPageView(image: selectedImage)
                 } else {
-                    // Consider a fallback view or error handling if no image is selected
                     Text("No image selected")
                 }
             }
         }
     }
-
+    
+    
+    
     func loadImage() {
-        guard let _ = inputImage else { return }
+        guard let inputImage = inputImage else { return }
         showingDetailScreen = true
     }
     
@@ -216,45 +190,46 @@ struct ContentView: View {
     
     // MARK: - Content Section
     var contentSection: some View {
-           ScrollView {
-               LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible())], spacing: 10) {
-                   ForEach(rectangleContents.indices, id: \.self) { index in
-                       VStack {
-                           if let image = rectangleContents[index].image {
-                               Image(uiImage: image)
-                                   .resizable()
-                                   .aspectRatio(contentMode: .fill)
-                                   .frame(width: rectangleWidth, height: rectangleHeight)
-                                   .clipped()
-                                   .onTapGesture {
-                                       self.imageToDisplay = image
-                                       self.showingImageDetailView = true
-                                   }
-                           } else {
-                               Rectangle()
-                                   .fill(Color.gray.opacity(0.3))
-                                   .frame(width: rectangleWidth, height: rectangleHeight)
-                           }
+        ScrollView {
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible())], spacing: 10) {
+                ForEach(rectangleContents.indices, id: \.self) { index in
+                    VStack {
+                        if let image = rectangleContents[index].image {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: rectangleWidth, height: rectangleHeight)
+                                .clipped()
+                                .onTapGesture {
+                                    self.selectedRectangleIndex = index // Mark the selected image
+                                }
+                        } else {
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: rectangleWidth, height: rectangleHeight)
+                        }
 
-                           if isLayoutModified {
-                               Text(rectangleContents[index].caption)
-                                   .foregroundColor(.white)
-                                   .frame(maxWidth: .infinity, alignment: .leading)
-                           }
-                       }
-                       .frame(height: rectangleHeight + (isLayoutModified ? 20 : 0))
-                       .sheet(isPresented: $showingImageDetailView) {
-                           if let imageToDisplay = imageToDisplay {
-                               ImageDetailView(image: imageToDisplay)
-                           }
-                       }
-                       .frame(height: rectangleHeight + (isLayoutModified ? 20 : 0))
-                   }
-               }
-               .padding(.horizontal, 16)
-           }
-           .frame(maxHeight: .infinity)
-       }
+                        if isLayoutModified {
+                            Text(rectangleContents[index].caption)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                    .background(
+                        NavigationLink(
+                            destination: ImageDisplayView(image: rectangleContents[index].image ?? UIImage()),
+                            isActive: .init(
+                                get: { self.selectedRectangleIndex == index },
+                                set: { _ in self.selectedRectangleIndex = nil }
+                            )
+                        ) { EmptyView() }
+                        .hidden()
+                    )
+                }            }
+            .padding(.horizontal, 16)
+        }
+        .frame(maxHeight: .infinity)
+    }
     
     
     
@@ -312,7 +287,7 @@ struct ContentView_Previews: PreviewProvider {
 
 struct ImageDetailView: View {
     var image: UIImage
-
+    
     var body: some View {
         Image(uiImage: image)
             .resizable()
@@ -329,3 +304,19 @@ struct ImageDetailView: View {
             }
     }
 }
+//
+//struct ImageDisplayView: View {
+//    var image: UIImage
+//    
+//    var body: some View {
+//        VStack {
+//            Spacer()
+//            Image(uiImage: image)
+//                .resizable()
+//                .scaledToFit()
+//                .padding()
+//            Spacer()
+//        }
+//        .navigationBarTitle("Image", displayMode: .inline)
+//    }
+//}

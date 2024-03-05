@@ -13,6 +13,7 @@
 		EE477CEA2B9524A800A5EF43 /* DetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CE92B9524A800A5EF43 /* DetailScreen.swift */; };
 		EE477CEC2B9526DA00A5EF43 /* LoginSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CEB2B9526DA00A5EF43 /* LoginSettingView.swift */; };
 		EE477CEE2B953B5800A5EF43 /* PostPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CED2B953B5800A5EF43 /* PostPageView.swift */; };
+		EE4D340D2B96E2F300D02F67 /* ImageDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4D340C2B96E2F300D02F67 /* ImageDisplayView.swift */; };
 		EE6614342B919CF900662D44 /* QutureApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614332B919CF900662D44 /* QutureApp.swift */; };
 		EE6614362B919CF900662D44 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614352B919CF900662D44 /* ContentView.swift */; };
 		EE6614382B919CFC00662D44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE6614372B919CFC00662D44 /* Assets.xcassets */; };
@@ -46,6 +47,7 @@
 		EE477CE92B9524A800A5EF43 /* DetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailScreen.swift; sourceTree = "<group>"; };
 		EE477CEB2B9526DA00A5EF43 /* LoginSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSettingView.swift; sourceTree = "<group>"; };
 		EE477CED2B953B5800A5EF43 /* PostPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostPageView.swift; sourceTree = "<group>"; };
+		EE4D340C2B96E2F300D02F67 /* ImageDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDisplayView.swift; sourceTree = "<group>"; };
 		EE6614302B919CF900662D44 /* Quture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE6614332B919CF900662D44 /* QutureApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QutureApp.swift; sourceTree = "<group>"; };
 		EE6614352B919CF900662D44 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 				EE477CE92B9524A800A5EF43 /* DetailScreen.swift */,
 				EE477CEB2B9526DA00A5EF43 /* LoginSettingView.swift */,
 				EE477CED2B953B5800A5EF43 /* PostPageView.swift */,
+				EE4D340C2B96E2F300D02F67 /* ImageDisplayView.swift */,
 			);
 			path = Quture;
 			sourceTree = "<group>";
@@ -283,6 +286,7 @@
 				EE477CEE2B953B5800A5EF43 /* PostPageView.swift in Sources */,
 				EE477CEA2B9524A800A5EF43 /* DetailScreen.swift in Sources */,
 				EE477CE82B95248100A5EF43 /* ImagePicker.swift in Sources */,
+				EE4D340D2B96E2F300D02F67 /* ImageDisplayView.swift in Sources */,
 				EE6614342B919CF900662D44 /* QutureApp.swift in Sources */,
 				EE477CE42B95233C00A5EF43 /* Color_Extension.swift in Sources */,
 			);
