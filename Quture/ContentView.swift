@@ -25,6 +25,8 @@ struct ContentView: View {
     @State private var imageToDisplay: UIImage?
     @State private var navigateToPostView = false
     @State private var selectedRectangleIndex: Int? = nil
+    @State private var showingVisualStudioView = false
+
     
     
     
@@ -226,7 +228,7 @@ struct ContentView: View {
                             Image(uiImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
-                                .frame(width: rectangleWidth, height: rectangleHeight)
+                                .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
                                 .clipped()
                                 .onTapGesture {
                                     self.selectedRectangleIndex = index // Mark the selected image
@@ -234,7 +236,7 @@ struct ContentView: View {
                         } else {
                             Rectangle()
                                 .fill(Color.gray.opacity(0.3))
-                                .frame(width: rectangleWidth, height: rectangleHeight)
+                                .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
                         }
                         
                         if isLayoutModified {
@@ -282,7 +284,10 @@ struct ContentView: View {
                 }
             
             Image(systemName: "heart.fill").iconModifier()
-                .frame(maxWidth: .infinity)
+                      .frame(maxWidth: .infinity)
+                      .onTapGesture {
+                          showingVisualStudioView = true // Trigger navigation
+                      }
             
             // User login/settings icon
             Image(systemName: "person.fill").iconModifier()
@@ -295,6 +300,12 @@ struct ContentView: View {
         .frame(height: 50)
         .background(Color.black)
         .padding(.bottom)
+        .background(
+                NavigationLink(destination: VisualStudioView(), isActive: $showingVisualStudioView) {
+                    EmptyView()
+                }
+                .hidden() // Hide the NavigationLink since it's used programmatically
+            )
     }
 }
 

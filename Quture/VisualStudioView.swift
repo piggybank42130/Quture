@@ -3,21 +3,32 @@ import SwiftUI
 struct VisualStudioView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
+    
+    let rectangles: [RectangleContent] = Array(repeating: RectangleContent(image: UIImage(systemName: "photo"), caption: "Sample"), count: 20)
+ 
     var body: some View {
-        VStack(spacing: 0) {
-            topBar // Custom top bar
-            Spacer() // The rest of your view content will go here
-        }
-        .navigationBarHidden(true) // Ensure SwiftUI doesn't show its default Navigation Bar
-        .gesture(
-            DragGesture().onEnded { value in
-                // Check for a horizontal drag that is more to the right than down/up
-                if value.translation.width > 100 && abs(value.translation.height) < abs(value.translation.width) {
-                    self.presentationMode.wrappedValue.dismiss()
+            VStack(spacing: 0) {
+                topBar // Custom top bar
+                // Horizontal ScrollView for sheets
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: LayoutConfig.spacing) {
+                        ForEach(0..<rectangles.count, id: \.self) { index in
+                            RectangleView(content: rectangles[index])
+                                .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight) // Adjust size as needed
+                        }
+                    }
                 }
+                Spacer()
             }
-        )
-    }
+            .navigationBarHidden(true)
+            .gesture(
+                DragGesture().onEnded { value in
+                    if value.translation.width > 100 && abs(value.translation.height) < abs(value.translation.width) {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            )
+        }
     
     var topBar: some View {
         HStack {
@@ -51,6 +62,24 @@ struct VisualStudioView: View {
         .background(Color.blue) // Set your desired background color here
     }
 }
+
+struct RectangleView: View {
+    let content: RectangleContent
+
+        var body: some View {
+               VStack {
+                   Rectangle()
+                       .fill(Color.gray) // Display a gray rectangle
+                       .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight) // Use predefined sizes
+                   Text(content.caption)
+                       .foregroundColor(.white) // Set text color to ensure it's visible on gray background
+               }
+        .background(Color.gray) // Sets the background of each rectangle to gray
+        .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
+    }
+}
+
+
 
 // This part should be outside any struct or class declaration
 extension CGFloat {
