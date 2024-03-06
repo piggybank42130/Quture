@@ -3,6 +3,11 @@ import SwiftUI
 struct ImageDisplayView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @State private var showBidWindow = false // State variable for navigation
+    @State private var isNewBidWindowVisible = false // New state for NewBidWindow visibility
+    
+    let sellerPrice: Double = 1000.00 // Dummy seller price
+        let customerPrice: Double = 950.00 // Dummy customer price
+
     
     
     var image: UIImage
@@ -20,25 +25,17 @@ struct ImageDisplayView: View {
                             .onEnded { gesture in
                                 if gesture.translation.height < 0 {
                                     // Swipe up detected
-                                    showBidWindow = true
+                                    isNewBidWindowVisible = true
                                 }
                             }
                     )
                 Spacer()
             }
             
-            if showBidWindow {
-                // Overlay window in the middle of the screen
-                BidWindow()
-                    .frame(width: 300, height: 150) // Customize the size as needed
-                    .background(Color.white) // Customize the background color
-                    .cornerRadius(20) // Rounded corners
-                    .shadow(radius: 10) // Shadow for better visibility
-                    .transition(.scale) // Transition animation for showing the overlay
-                    .onTapGesture {
-                        showBidWindow = false // Hide the overlay when tapped
-                    }
-            }
+            if isNewBidWindowVisible {
+                NewBidWindow(isVisible: $isNewBidWindowVisible)
+                                .transition(.scale) // Transition animation for showing the overlay
+                        }
             
             VStack {
                 topBar
@@ -115,47 +112,29 @@ struct ImageDisplayView: View {
     
     var bottomBar: some View {
         HStack {
-            Button("Nearby") {
-                print("Nearby tapped")
-            }
-            .font(.title) // Slightly smaller font size compared to .title
-            .foregroundColor(.white) // Customize text color
-            .padding(.vertical, 10) // Customize padding around the text for a tighter fit
-            .bold()
+            Spacer() // Push content to center
+
+            Image(systemName: "bookmark") // Replace with your saved image icon
+                .resizable()
+                .frame(width: 20, height: 20) // Adjust size as needed
+                .foregroundColor(.white) // Customize icon color
             
-            Spacer()
-            
-            Button(action: {
-                print("Plus tapped")
-            }) {
-                Image(systemName: "plus.square") // Square plus icon
-                    .resizable()
-                    .frame(width: 40, height: 40) // Make the icon smaller
-                    .foregroundColor(.white) // Customize icon color
-                    .bold()
-                
-            }
-            
-            Spacer()
-            
-            Button("Profile") {
-                print("Profile tapped")
-            }
-            .font(.title) // Slightly smaller font size compared to .title
-            .bold()
-            .foregroundColor(.white) // Customize text color
-            .padding(.vertical, 10) // Customize padding around the text for a tighter fit
+            Text("Save")
+                .font(.title) // Adjust the font size as needed
+                .bold()
+                .foregroundColor(.white) // Customize text color
+
+            Spacer() // Push content to center
         }
-        .padding(.horizontal) // Custom horizontal padding for the whole bar
-        .padding(.vertical, 12) // Custom vertical padding for the whole bar
+        .padding() // Add padding around the HStack
         .background(Color.gray.opacity(0.2)) // Customized background color with some opacity
         .cornerRadius(10) // Rounded corners for the bottom bar
         .overlay(
             RoundedRectangle(cornerRadius: 10) // Optional: Add a border with a rounded rectangle
                 .stroke(Color.black, lineWidth: 2)
         )
-        .padding(.bottom, 10) // Ensure there's some space between the bottom bar and the screen's bottom edge
     }
+
     
     
     var sidebar: some View {
