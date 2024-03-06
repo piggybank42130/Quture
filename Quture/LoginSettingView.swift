@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LoginSettingsView: View {
-    let rectangles = Array(repeating: RectangleContent(image: nil, caption: "More Info"), count: 20)
+    let rectangles = Array(repeating: RectangleContent(image: nil, caption: "input", tags: []), count: 20)
 
     // Use the exact dimensions and spacing as in ContentView
     private let rectangleWidth: CGFloat = (UIScreen.main.bounds.width - 32) / 2

@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 struct ImageDisplayView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>

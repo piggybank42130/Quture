@@ -4,7 +4,7 @@ class ServerCommunicator: ObservableObject {
     let serverURL = "http://137.184.116.12:5000"
     
     // Function to request a method execution on the server with arbitrary parameters
-    func sendMethod(parameters: [String: String], completion: @escaping (Result<Data, Error>) -> Void) {
+    func sendMethod(parameters: [String: Any], completion: @escaping (Result<Data, Error>) -> Void) {
         print(parameters);
         guard let url = URL(string: "\(serverURL)/execute-method") else { return }
 

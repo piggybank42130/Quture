@@ -35,14 +35,15 @@ struct ContentView: View {
     let shrinkRatio: CGFloat = 0.8
     
     
-    func handleImageConfirmation(image: UIImage, caption: String) {
+    func handleImageConfirmation(image: UIImage, caption: String, tags: Set<Tag>) {
+        // Your updated implementation that handles tags as well
         if let index = rectangleContents.firstIndex(where: { $0.image == nil }) {
-            rectangleContents[index] = RectangleContent(image: image, caption: caption)
-            // No automatic navigation to ImageDisplayView
-            self.showingDetailScreen = false // Assuming this is your detail screen/modal presentation
-            postImage(image: image, caption: caption);
+            rectangleContents[index] = RectangleContent(image: image, caption: caption, tags: Array(tags))
+            self.showingDetailScreen = false
+            postImage(image: image, caption: caption)
         }
     }
+
     
     func postImage(image: UIImage, caption: String) {
         guard let imageData = image.jpegData(compressionQuality: 0.5) else { return }
@@ -111,9 +112,12 @@ struct ContentView: View {
                 Spacer()
                 
                 bottomBarSection
-                NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", onConfirm: handleImageConfirmation), isActive: $showingDetailScreen) {
+                NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", onConfirm: { image, caption, tags in
+                    self.handleImageConfirmation(image: image, caption: caption, tags: tags)
+                }), isActive: $showingDetailScreen) {
                     EmptyView()
                 }
+
             }
             .edgesIgnoringSafeArea(.bottom)
             .sheet(isPresented: $showingImagePicker, onDismiss: loadImage) {
@@ -328,4 +332,3 @@ struct ImageDetailView: View {
             }
     }
 }
-

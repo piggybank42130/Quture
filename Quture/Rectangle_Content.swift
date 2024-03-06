@@ -12,4 +12,6 @@ import SwiftUI
 struct RectangleContent {
     var image: UIImage?
     var caption: String
+ //   var tags: [String] // Add this
+    var tags: [Tag] = []
 }
