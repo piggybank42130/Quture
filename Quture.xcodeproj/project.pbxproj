@@ -21,6 +21,12 @@
 		EE6614462B919CFD00662D44 /* QutureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614452B919CFD00662D44 /* QutureTests.swift */; };
 		EE6614502B919CFD00662D44 /* QutureUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE66144F2B919CFD00662D44 /* QutureUITests.swift */; };
 		EE6614522B919CFD00662D44 /* QutureUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614512B919CFD00662D44 /* QutureUITestsLaunchTests.swift */; };
+		EE7F0BE22B97F98100BD31B3 /* NewBidWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7F0BE12B97F98100BD31B3 /* NewBidWindow.swift */; };
+		EE7F0BE42B98552800BD31B3 /* VisualStudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7F0BE32B98552800BD31B3 /* VisualStudioView.swift */; };
+		EE7F0BED2B98667400BD31B3 /* TagManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7F0BEB2B98667300BD31B3 /* TagManager.swift */; };
+		EE7F0BEE2B98667400BD31B3 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7F0BEC2B98667400BD31B3 /* Tag.swift */; };
+		EE7F0BF02B98693500BD31B3 /* CategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7F0BEF2B98693500BD31B3 /* CategoriesView.swift */; };
+		EE7F0BF22B9877FB00BD31B3 /* CoreGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7F0BF12B9877FB00BD31B3 /* CoreGraphics.swift */; };
 		EEFEEBB72B96EF4B009F1375 /* ServerCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFEEBB62B96EF4B009F1375 /* ServerCommunicator.swift */; };
 		EEFEEBB92B973357009F1375 /* BidWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFEEBB82B973357009F1375 /* BidWindowView.swift */; };
 /* End PBXBuildFile section */
@@ -62,6 +68,12 @@
 		EE66144B2B919CFD00662D44 /* QutureUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QutureUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE66144F2B919CFD00662D44 /* QutureUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QutureUITests.swift; sourceTree = "<group>"; };
 		EE6614512B919CFD00662D44 /* QutureUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QutureUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		EE7F0BE12B97F98100BD31B3 /* NewBidWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBidWindow.swift; sourceTree = "<group>"; };
+		EE7F0BE32B98552800BD31B3 /* VisualStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualStudioView.swift; sourceTree = "<group>"; };
+		EE7F0BEB2B98667300BD31B3 /* TagManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TagManager.swift; path = ../../../.Trash/TagManager.swift; sourceTree = "<group>"; };
+		EE7F0BEC2B98667400BD31B3 /* Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Tag.swift; path = ../../../.Trash/Tag.swift; sourceTree = "<group>"; };
+		EE7F0BEF2B98693500BD31B3 /* CategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesView.swift; sourceTree = "<group>"; };
+		EE7F0BF12B9877FB00BD31B3 /* CoreGraphics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreGraphics.swift; sourceTree = "<group>"; };
 		EEFEEBB62B96EF4B009F1375 /* ServerCommunicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerCommunicator.swift; sourceTree = "<group>"; };
 		EEFEEBB82B973357009F1375 /* BidWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BidWindowView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -123,12 +135,18 @@
 				EE6614392B919CFC00662D44 /* Quture.entitlements */,
 				EE66143A2B919CFC00662D44 /* Preview Content */,
 				EE477CE72B95248100A5EF43 /* ImagePicker.swift */,
+				EEFEEBB62B96EF4B009F1375 /* ServerCommunicator.swift */,
 				EE477CE92B9524A800A5EF43 /* DetailScreen.swift */,
 				EE477CEB2B9526DA00A5EF43 /* LoginSettingView.swift */,
+				EE7F0BEC2B98667400BD31B3 /* Tag.swift */,
+				EE7F0BEB2B98667300BD31B3 /* TagManager.swift */,
 				EE477CED2B953B5800A5EF43 /* PostPageView.swift */,
 				EE4D340C2B96E2F300D02F67 /* ImageDisplayView.swift */,
-				EEFEEBB62B96EF4B009F1375 /* ServerCommunicator.swift */,
 				EEFEEBB82B973357009F1375 /* BidWindowView.swift */,
+				EE7F0BE12B97F98100BD31B3 /* NewBidWindow.swift */,
+				EE7F0BE32B98552800BD31B3 /* VisualStudioView.swift */,
+				EE7F0BEF2B98693500BD31B3 /* CategoriesView.swift */,
+				EE7F0BF12B9877FB00BD31B3 /* CoreGraphics.swift */,
 			);
 			path = Quture;
 			sourceTree = "<group>";
@@ -288,8 +306,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EE7F0BF02B98693500BD31B3 /* CategoriesView.swift in Sources */,
 				EE477CEC2B9526DA00A5EF43 /* LoginSettingView.swift in Sources */,
 				EE6614362B919CF900662D44 /* ContentView.swift in Sources */,
+				EE7F0BED2B98667400BD31B3 /* TagManager.swift in Sources */,
 				EE477CE62B95236400A5EF43 /* Rectangle_Content.swift in Sources */,
 				EE477CEE2B953B5800A5EF43 /* PostPageView.swift in Sources */,
 				EEFEEBB92B973357009F1375 /* BidWindowView.swift in Sources */,
@@ -297,7 +317,11 @@
 				EEFEEBB72B96EF4B009F1375 /* ServerCommunicator.swift in Sources */,
 				EE477CE82B95248100A5EF43 /* ImagePicker.swift in Sources */,
 				EE4D340D2B96E2F300D02F67 /* ImageDisplayView.swift in Sources */,
+				EE7F0BE42B98552800BD31B3 /* VisualStudioView.swift in Sources */,
 				EE6614342B919CF900662D44 /* QutureApp.swift in Sources */,
+				EE7F0BEE2B98667400BD31B3 /* Tag.swift in Sources */,
+				EE7F0BF22B9877FB00BD31B3 /* CoreGraphics.swift in Sources */,
+				EE7F0BE22B97F98100BD31B3 /* NewBidWindow.swift in Sources */,
 				EE477CE42B95233C00A5EF43 /* Color_Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -458,7 +482,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Quture/Preview Content\"";
-				DEVELOPMENT_TEAM = TLDDUT2RCH;
+				DEVELOPMENT_TEAM = XVM439PFHW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Quture/Info.plist;
@@ -497,7 +521,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Quture/Preview Content\"";
-				DEVELOPMENT_TEAM = TLDDUT2RCH;
+				DEVELOPMENT_TEAM = XVM439PFHW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Quture/Info.plist;

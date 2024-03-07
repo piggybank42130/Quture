@@ -114,11 +114,20 @@ struct ContentView: View {
                 Spacer()
                 
                 bottomBarSection
-                NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", onConfirm: { image, caption, tags in
-                    self.handleImageConfirmation(image: image, caption: caption, tags: tags)
+                NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", price: "", onConfirm: { image, caption, price, topTags, fashionTags in
+                    // Adjust this part according to your app's logic to handle image, caption, price, and tags
+                    self.handleImageConfirmation(image: image, caption: caption, tags: topTags.union(fashionTags))
                 }), isActive: $showingDetailScreen) {
                     EmptyView()
                 }
+                
+//                NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", price: "", onConfirm: { image, caption, price, topTags, fashionTags in
+//                    // Adjust this part according to your app's logic to handle image, caption, price, and tags
+//                    self.handleImageConfirmation(image: image, caption: caption, price: price, tags: topTags.union(fashionTags))
+//                }), isActive: $showingDetailScreen) {
+//                    EmptyView()
+//                }
+
 
             }
             .edgesIgnoringSafeArea(.bottom)
