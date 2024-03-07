@@ -38,13 +38,14 @@ struct ContentView: View {
     
     
     func handleImageConfirmation(image: UIImage, caption: String, tags: Set<Tag>) {
-        // Your updated implementation that handles tags as well
         if let index = rectangleContents.firstIndex(where: { $0.image == nil }) {
             rectangleContents[index] = RectangleContent(image: image, caption: caption, tags: Array(tags))
             self.showingDetailScreen = false
+            self.inputImage = nil // Reset the inputImage to ensure it's ready for a new selection
             postImage(image: image, caption: caption)
         }
     }
+
 
     
     func postImage(image: UIImage, caption: String) {
@@ -150,7 +151,8 @@ struct ContentView: View {
         guard let _ = inputImage else { return }
         showingDetailScreen = true
     }
-    
+
+
     
     
     // MARK: - Top Bar Section
