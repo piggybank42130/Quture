@@ -12,7 +12,6 @@
 		EE477CE82B95248100A5EF43 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CE72B95248100A5EF43 /* ImagePicker.swift */; };
 		EE477CEA2B9524A800A5EF43 /* DetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CE92B9524A800A5EF43 /* DetailScreen.swift */; };
 		EE477CEC2B9526DA00A5EF43 /* LoginSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CEB2B9526DA00A5EF43 /* LoginSettingView.swift */; };
-		EE477CEE2B953B5800A5EF43 /* PostPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE477CED2B953B5800A5EF43 /* PostPageView.swift */; };
 		EE4D340D2B96E2F300D02F67 /* ImageDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4D340C2B96E2F300D02F67 /* ImageDisplayView.swift */; };
 		EE6614342B919CF900662D44 /* QutureApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614332B919CF900662D44 /* QutureApp.swift */; };
 		EE6614362B919CF900662D44 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6614352B919CF900662D44 /* ContentView.swift */; };
@@ -27,6 +26,8 @@
 		EE7F0BE42B98552800BD31B3 /* VisualStudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7F0BE32B98552800BD31B3 /* VisualStudioView.swift */; };
 		EE7F0BF02B98693500BD31B3 /* CategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7F0BEF2B98693500BD31B3 /* CategoriesView.swift */; };
 		EE7F0BF22B9877FB00BD31B3 /* CoreGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7F0BF12B9877FB00BD31B3 /* CoreGraphics.swift */; };
+		EED48B802B9AF26E005B5BD8 /* PostPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED48B7F2B9AF26E005B5BD8 /* PostPageView.swift */; };
+		EED48B822B9AF48F005B5BD8 /* Getter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED48B812B9AF48F005B5BD8 /* Getter.swift */; };
 		EEFEEBB72B96EF4B009F1375 /* ServerCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFEEBB62B96EF4B009F1375 /* ServerCommunicator.swift */; };
 		EEFEEBB92B973357009F1375 /* BidWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFEEBB82B973357009F1375 /* BidWindowView.swift */; };
 /* End PBXBuildFile section */
@@ -55,7 +56,6 @@
 		EE477CE72B95248100A5EF43 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		EE477CE92B9524A800A5EF43 /* DetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailScreen.swift; sourceTree = "<group>"; };
 		EE477CEB2B9526DA00A5EF43 /* LoginSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSettingView.swift; sourceTree = "<group>"; };
-		EE477CED2B953B5800A5EF43 /* PostPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostPageView.swift; sourceTree = "<group>"; };
 		EE4D340C2B96E2F300D02F67 /* ImageDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDisplayView.swift; sourceTree = "<group>"; };
 		EE6614302B919CF900662D44 /* Quture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE6614332B919CF900662D44 /* QutureApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QutureApp.swift; sourceTree = "<group>"; };
@@ -74,6 +74,8 @@
 		EE7F0BE32B98552800BD31B3 /* VisualStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualStudioView.swift; sourceTree = "<group>"; };
 		EE7F0BEF2B98693500BD31B3 /* CategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesView.swift; sourceTree = "<group>"; };
 		EE7F0BF12B9877FB00BD31B3 /* CoreGraphics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreGraphics.swift; sourceTree = "<group>"; };
+		EED48B7F2B9AF26E005B5BD8 /* PostPageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostPageView.swift; sourceTree = "<group>"; };
+		EED48B812B9AF48F005B5BD8 /* Getter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Getter.swift; sourceTree = "<group>"; };
 		EEFEEBB62B96EF4B009F1375 /* ServerCommunicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerCommunicator.swift; sourceTree = "<group>"; };
 		EEFEEBB82B973357009F1375 /* BidWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BidWindowView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -140,11 +142,12 @@
 				EE69AD982B9AA03500A502DC /* Tag.swift */,
 				EE69AD972B9AA03500A502DC /* TagManager.swift */,
 				EE477CEB2B9526DA00A5EF43 /* LoginSettingView.swift */,
-				EE477CED2B953B5800A5EF43 /* PostPageView.swift */,
 				EE4D340C2B96E2F300D02F67 /* ImageDisplayView.swift */,
 				EEFEEBB82B973357009F1375 /* BidWindowView.swift */,
 				EE7F0BE12B97F98100BD31B3 /* NewBidWindow.swift */,
 				EE7F0BE32B98552800BD31B3 /* VisualStudioView.swift */,
+				EED48B7F2B9AF26E005B5BD8 /* PostPageView.swift */,
+				EED48B812B9AF48F005B5BD8 /* Getter.swift */,
 				EE7F0BEF2B98693500BD31B3 /* CategoriesView.swift */,
 				EE7F0BF12B9877FB00BD31B3 /* CoreGraphics.swift */,
 			);
@@ -312,10 +315,11 @@
 				EE69AD992B9AA03500A502DC /* TagManager.swift in Sources */,
 				EE6614362B919CF900662D44 /* ContentView.swift in Sources */,
 				EE477CE62B95236400A5EF43 /* Rectangle_Content.swift in Sources */,
-				EE477CEE2B953B5800A5EF43 /* PostPageView.swift in Sources */,
 				EEFEEBB92B973357009F1375 /* BidWindowView.swift in Sources */,
 				EE477CEA2B9524A800A5EF43 /* DetailScreen.swift in Sources */,
 				EEFEEBB72B96EF4B009F1375 /* ServerCommunicator.swift in Sources */,
+				EED48B802B9AF26E005B5BD8 /* PostPageView.swift in Sources */,
+				EED48B822B9AF48F005B5BD8 /* Getter.swift in Sources */,
 				EE477CE82B95248100A5EF43 /* ImagePicker.swift in Sources */,
 				EE4D340D2B96E2F300D02F67 /* ImageDisplayView.swift in Sources */,
 				EE7F0BE42B98552800BD31B3 /* VisualStudioView.swift in Sources */,

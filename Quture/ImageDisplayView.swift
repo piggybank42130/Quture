@@ -5,7 +5,10 @@ struct ImageDisplayView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @State private var showBidWindow = false // State variable for navigation
     @State private var isNewBidWindowVisible = false // New state for NewBidWindow visibility
-    
+  
+    @State private var heartCount = 0
+    @State private var isHeartTapped = false
+
     let sellerPrice: Double = 1000.00 // Dummy seller price
         let customerPrice: Double = 950.00 // Dummy customer price
 
@@ -16,7 +19,7 @@ struct ImageDisplayView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                Spacer()
+                Spacer().frame(height: 50) // Adjust this value to move the image up
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
@@ -30,6 +33,23 @@ struct ImageDisplayView: View {
                                 }
                             }
                     )
+                // Caption Text Box
+ 
+                ScrollView(.vertical, showsIndicators: true) {
+                    HStack {
+                        Spacer().frame(width: 20) // Add spacer to the left edge, adjust width as needed
+                        Text("Caption goes here.") // Replace with your dynamic caption variable
+                            .font(.body) // Adjust the font size as needed
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading) // Align the text to the left
+                        Spacer().frame(width: 20) // Add spacer to the right edge, adjust width as needed
+                    }
+                    .padding(.vertical, 10) // Add vertical padding
+                }
+                .frame(height: 100) // Set a fixed height for the scroll view
+
+
+                
                 Spacer()
             }
             
@@ -47,7 +67,7 @@ struct ImageDisplayView: View {
             
             GeometryReader { geometry in
                 VStack {
-                    Spacer().frame(height: geometry.size.height / 2) // Move sidebar 2/3 down the screen
+                    Spacer().frame(height: geometry.size.height / 2.1) // Move sidebar 2/3 down the screen
                     sidebar.padding(.horizontal, 20) // Customize sidebar size and spacing
                 }
             }
@@ -136,39 +156,47 @@ struct ImageDisplayView: View {
         )
     }
 
-    
-    
+
+
+
     var sidebar: some View {
-        VStack(spacing: 32) { // Slightly increased spacing between icons
-            Button(action: { print("Heart tapped") }) {
-                Image(systemName: "heart.fill")
-                    .font(.system(size: 35)) // Keep the bigger icon size
-                    .opacity(0.5) // Make icons more transparent
+        VStack(spacing: 32) {
+            Button(action: {
+                heartCount += 1
+                isHeartTapped = true
+            }) {
+                VStack {
+                    Image(systemName: "heart.fill")
+                        .font(.system(size: 35))
+                        .opacity(0.5)
+                        .foregroundColor(isHeartTapped ? Color.pink : Color.primary)
+                    Text("\(heartCount)")
+                        .font(.system(size: 20))
+                }
             }
-            
-            Button(action: { print("Comment tapped") }) {
+            Button(action: {}) {
                 Image(systemName: "bubble.right.fill")
-                    .font(.system(size: 35)) // Keep the bigger icon size
-                    .opacity(0.5) // Make icons more transparent
+                    .font(.system(size: 35))
+                    .opacity(0.5)
             }
-            
-            Button(action: { print("Forward tapped") }) {
+            Button(action: {}) {
                 Image(systemName: "arrowshape.turn.up.right.fill")
-                    .font(.system(size: 35)) // Keep the bigger icon size
-                    .opacity(0.5) // Make icons more transparent
+                    .font(.system(size: 35))
+                    .opacity(0.5)
             }
-            
-            Button(action: { print("More tapped") }) {
+            Button(action: {}) {
                 Image(systemName: "ellipsis")
-                    .font(.system(size: 35)) // Keep the bigger icon size
-                    .opacity(0.5) // Make icons more transparent
+                    .font(.system(size: 35))
+                    .opacity(0.5)
             }
         }
-        .padding(.trailing, 5) // Reduce padding to bring it closer to the edge
-        .padding(.top, 90) // Adjust this value to position the sidebar higher
-        .frame(maxWidth: .infinity, alignment: .trailing) // Ensure alignment to the right
-        .foregroundColor(.primary) // Use the primary color for the icons
+        .padding(.trailing, 5)
+        .padding(.top, 90)
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .foregroundColor(.primary)
     }
+
+
     
     
     
