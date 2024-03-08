@@ -88,7 +88,7 @@ struct ContentView: View {
                             VStack(spacing: 0) {
                                 topBarSection
                                 contentSection
-                                NavigationLink(destination: ImageDisplayView(image: imageToDisplay ?? UIImage()), isActive: Binding<Bool>(
+                                NavigationLink(destination: ImageDisplayView(image: imageToDisplay ?? UIImage(), caption: "string"), isActive: Binding<Bool>(
                                     get: { self.imageToDisplay != nil },
                                     set: { if !$0 { self.imageToDisplay = nil } }
                                 )) {
@@ -251,14 +251,14 @@ struct ContentView: View {
                         }
                         
                         if isLayoutModified {
-                            Text(rectangleContents[index].caption)
+                            Text("ad")//rectangleContents[index].caption)
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
                     .background(
                         NavigationLink(
-                            destination: ImageDisplayView(image: rectangleContents[index].image ?? UIImage()),
+                            destination: ImageDisplayView(image: rectangleContents[index].image ?? UIImage(), caption: rectangleContents[index].caption),
                             isActive: .init(
                                 get: { self.selectedRectangleIndex == index },
                                 set: { _ in self.selectedRectangleIndex = nil }
