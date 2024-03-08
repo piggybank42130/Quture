@@ -29,6 +29,8 @@ struct ContentView: View {
     @State private var fetchedImages: [UIImage] = []
     @State private var isLoadingImages = true
     @State private var isActive = false // For the splash screen
+    @State private var showingSearchView = false
+    
     
     
     
@@ -151,10 +153,7 @@ struct ContentView: View {
         VStack(spacing: 10) {
             HStack {
                 Image(systemName: "circle.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 30, height: 30)
-                    .padding(.leading)
+                    .iconModifier()
                     .foregroundColor(.coralGreen)
                     .onTapGesture {
                         withAnimation {
@@ -175,6 +174,7 @@ struct ContentView: View {
                                 .frame(minWidth: 0, maxWidth: .infinity)
                         }
                         .padding(.vertical, 2)
+                        .padding(.horizontal, 8)
                     }
                 }
                 .background(Color(.systemBackground))
@@ -186,12 +186,13 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                Image(systemName: "magnifyingglass")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 30, height: 30)
-                    .padding(.trailing)
-                    .foregroundColor(.white)
+                Button(action: {
+                    showingSearchView = true
+                }) {
+                    Image(systemName: "magnifyingglass")
+                        .iconModifier()
+                        .foregroundColor(.white)
+                }
             }
             
             // Scrolling Tab Section
@@ -218,7 +219,14 @@ struct ContentView: View {
             .frame(height: 40)
         }
         .background(Color.gray.opacity(0.2))
+        .background(
+            NavigationLink(destination: SearchView(), isActive: $showingSearchView) {
+                EmptyView()
+            }
+                .hidden()
+        )
     }
+    
     
     
     // MARK: - Content Section
@@ -265,7 +273,7 @@ struct ContentView: View {
         .frame(maxHeight: .infinity)
         .onAppear {
             isLoadingImages = true
-            Getter().getImagesForUser(userId: 3) { images, error in
+            Getter().getImagesForUser(userId: 3) { images, captions, error in
                 if let images = images {
                     for (index, image) in images.enumerated() where index < self.rectangleContents.count {
                         self.rectangleContents[index].image = image
