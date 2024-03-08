@@ -24,7 +24,7 @@ struct FloatingTextbox: View {
                 .foregroundColor(.black) // Ensure the text color within the TextEditor is black
                 .padding() // Apply padding for the TextEditor content
                 .frame(minHeight: 100, maxHeight: 200) // Adjust based on your needs
-                .background(Color.white) // Set the background color for the TextEditor to white
+                .background(Color.white) // Set the background color for the  TextEditor to white
                 .cornerRadius(5) // Apply rounded corners to the TextEditor
         }
         .background(Color.white) // Set the background color for the entire FloatingTextbox to white
