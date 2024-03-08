@@ -34,9 +34,9 @@ class Getter: ObservableObject {
     
     //###GETTERS###//
     
-    func retrieveImage(imageId: Int, completion: @escaping (UIImage?, Error?) -> Void) {
+    func retrieveImage(imageId: Int, completion: @escaping (UIImage?, String?, Error?) -> Void) {
         let parameters: [String: Any] = [
-            "method_name": "retrieve_image", // Ensure this matches a valid method in your Flask app
+            "method_name": "retrieve_image",
             "params": ["image_id": imageId]
         ]
         
@@ -44,69 +44,72 @@ class Getter: ObservableObject {
             switch result {
             case .success(let data):
                 do {
-                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any], let result = jsonResponse["result"] as? [String: Any],
-                       let imageDataList = result["image_data"] as? [String: Any], let imageDataString = imageDataList["image_data"] as? String { // Assuming 'image_data' is the correct key
+                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                       let result = jsonResponse["result"] as? [String: Any],
+                       let imageDataList = result["image_data"] as? [String: Any],
+                       let imageDataString = imageDataList["image_data"] as? String,
+                       let imageCaption = imageDataList["caption"] as? String { // Assuming 'caption' is the correct key for the image caption
                         // Convert Base64 string to UIImage
                         if let imageData = Data(base64Encoded: imageDataString),
                            let image = UIImage(data: imageData) {
-                            completion(image, nil) // Successfully converted and returning the image
+                            completion(image, imageCaption, nil) // Successfully converted and returning the image with caption
                         } else {
                             // Failed to convert Base64 string to UIImage
-                            completion(nil, NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."]))
+                            completion(nil, nil, NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."]))
                         }
                     } else {
                         // The JSON is not in the expected format
-                        print("Error: Unexpected JSON format.")
-                        completion(nil, NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."]))
+                        completion(nil, nil, NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."]))
                     }
                 } catch {
                     // An error occurred during JSON deserialization
-                    print("Failed to load: \(error.localizedDescription)")
-                    completion(nil, error)
+                    completion(nil, nil, error)
                 }
             case .failure(let error):
-                print("Error: \(error)")
-                completion(nil, error)
+                completion(nil, nil, error)
             }
         }
     }
+
     
-    func getImagesForUser(userId: Int, completion: @escaping ([UIImage]?, Error?) -> Void) {
-        getUserImages(userId: userId) { (imageIds, error) in
+    func getImagesForUser(userId: Int, completion: @escaping ([UIImage]?, [String]?, Error?) -> Void) {
+        getUserImageIds(userId: userId) { (imageIds, error) in
             if let error = error {
-                completion(nil, error)
+                completion(nil, nil, error)
                 return
             }
             
             guard let imageIds = imageIds else {
-                completion(nil, NSError(domain: "ImageFetcherError", code: 300, userInfo: [NSLocalizedDescriptionKey: "No image IDs found."]))
+                completion(nil, nil, NSError(domain: "ImageFetcherError", code: 300, userInfo: [NSLocalizedDescriptionKey: "No image IDs found."]))
                 return
             }
             
             var images = [UIImage]()
+            var captions = [String]()
             let group = DispatchGroup()
             
             for imageId in imageIds {
                 group.enter()
-                self.retrieveImage(imageId: imageId) { image, error in
+                self.retrieveImage(imageId: imageId) { image, caption, error in
                     defer { group.leave() }
                     print(image)
-                    if let image = image {
+                    if let image = image, let caption = caption {
                         images.append(image)
+                        captions.append(caption)
                     } else {
                         print("Error or no image for ID \(imageId). Error: \(error?.localizedDescription ?? "Unknown error")")
-                        // Adjusted error handling: No longer using `continue`
                     }
                 }
             }
             
             group.notify(queue: .main) {
-                completion(images, nil)
+                completion(images, captions, nil)
             }
         }
     }
+
     
-    func getUserImages(userId: Int, completion: @escaping ([Int]?, Error?) -> Void) {
+    func getUserImageIds(userId: Int, completion: @escaping ([Int]?, Error?) -> Void) {
         let parameters: [String: Any] = [
             "method_name": "get_user_images", // Ensure this matches a valid method in your Flask app
             "params": ["user_id": userId]

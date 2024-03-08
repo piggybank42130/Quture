@@ -48,11 +48,14 @@ struct LoginSettingsView: View {
                 .frame(height: geometry.size.height * 0.55)
                 .onAppear {
                     isLoadingImages = true
-                    Getter().getImagesForUser(userId: 3) { images, error in
+                    Getter().getImagesForUser(userId: 3) { images, captions, error in
                         DispatchQueue.main.async { // Ensure UI operations are on the main thread
-                            if let images = images {
+                            if let images = images, let captions = captions { // Safely unwrap captions here
                                 for (index, image) in images.enumerated() where index < self.rectangleContents.count {
                                     self.rectangleContents[index].image = image
+                                }
+                                for (index, caption) in captions.enumerated() where index < self.rectangleContents.count {
+                                    self.rectangleContents[index].caption = caption
                                 }
                             } else {
                                 // Handle errors or set a default image
