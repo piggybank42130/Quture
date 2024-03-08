@@ -38,7 +38,7 @@ struct ImageDisplayView: View {
                 ScrollView(.vertical, showsIndicators: true) {
                     HStack {
                         Spacer().frame(width: 20) // Add spacer to the left edge, adjust width as needed
-                        Text("Caption goes here.") // Replace with your dynamic caption variable
+                        Text("Caption goes here. Add more text to test scrolling. xxxxxxxx Caption goes here. Add more text to test scrolling. xxxxxxxxCaption goes here. Add more text to test scrolling. xxxxxxxxCaption goes here. Add more text to test scrolling. xxxxxxxx") // Replace with your dynamic caption variable
                             .font(.body) // Adjust the font size as needed
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity, alignment: .leading) // Align the text to the left

@@ -42,12 +42,15 @@ struct SearchView: View {
                 VStack(spacing: 10) {
                     ForEach(0..<12, id: \.self) { index in
                         NavigationLink(destination: SearchedView(searchText: "Input \(index + 1)")) {
-                            Text("Input \(index + 1)")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding()
-                                .background(Color.gray.opacity(0.2))
-                                .cornerRadius(5)
+                            VStack {
+                                Text("Input \(index + 1)")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding()
+                                    .background(Color.gray.opacity(0.2))
+                                    .cornerRadius(5)
+                            }
                         }
+                        .buttonStyle(PlainButtonStyle()) // Remove the default button style
                     }
                 }
                 .padding(.horizontal)
