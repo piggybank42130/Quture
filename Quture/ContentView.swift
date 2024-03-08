@@ -28,6 +28,8 @@ struct ContentView: View {
     @State private var showingVisualStudioView = false
     @State private var fetchedImages: [UIImage] = []
     @State private var isLoadingImages = true
+    @State private var isActive = false // For the splash screen
+    
     
     
     
@@ -114,15 +116,15 @@ struct ContentView: View {
                 completion(nil, error)
                 return
             }
-
+            
             guard let imageIds = imageIds else {
                 completion(nil, NSError(domain: "ImageFetcherError", code: 300, userInfo: [NSLocalizedDescriptionKey: "No image IDs found."]))
                 return
             }
-
+            
             var images = [UIImage]()
             let group = DispatchGroup()
-
+            
             for imageId in imageIds {
                 group.enter()
                 self.retrieveImage(imageId: imageId) { image, error in
@@ -136,13 +138,13 @@ struct ContentView: View {
                     }
                 }
             }
-
+            
             group.notify(queue: .main) {
                 completion(images, nil)
             }
         }
     }
-
+    
     
     func getUserImages(userId: Int, completion: @escaping ([Int]?, Error?) -> Void) {
         let parameters: [String: Any] = [
@@ -176,15 +178,15 @@ struct ContentView: View {
             }
         }
     }
-
-
-
-
+    
+    
+    
+    
     
     //#################################
     //#################################
     //#################################
-
+    
     
     // Computed property to adjust rectangle size when layout is modified
     var adjustedSize: CGFloat {
@@ -209,52 +211,59 @@ struct ContentView: View {
     
     //MARK: Body: some view
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                switch activeScreen {
-                case .home:
+        Group {
+            if isActive {
+                NavigationView {
                     VStack(spacing: 0) {
-                        topBarSection
-                        contentSection
-                        NavigationLink(destination: ImageDisplayView(image: imageToDisplay ?? UIImage()), isActive: Binding<Bool>(
-                            get: { self.imageToDisplay != nil },
-                            set: { if !$0 { self.imageToDisplay = nil } }
-                        )) {
+                        switch activeScreen {
+                        case .home:
+                            VStack(spacing: 0) {
+                                topBarSection
+                                contentSection
+                                NavigationLink(destination: ImageDisplayView(image: imageToDisplay ?? UIImage()), isActive: Binding<Bool>(
+                                    get: { self.imageToDisplay != nil },
+                                    set: { if !$0 { self.imageToDisplay = nil } }
+                                )) {
+                                    EmptyView()
+                                }
+                            }
+                        case .loginSettings:
+                            LoginSettingsView()
+                        }
+                        
+                        Spacer()
+                        
+                        bottomBarSection
+                        NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", price: "", onConfirm: { image, caption, price, topTags, fashionTags in
+                            // Adjust this part according to your app's logic to handle image, caption, price, and tags
+                            self.handleImageConfirmation(image: image, caption: caption, tags: topTags.union(fashionTags))
+                        }), isActive: $showingDetailScreen) {
                             EmptyView()
                         }
+                        
+                        // Additional navigation links if needed
+                        // ...
                     }
-                case .loginSettings:
-                    LoginSettingsView()
+                    .edgesIgnoringSafeArea(.bottom)
+                    .sheet(isPresented: $showingImagePicker, onDismiss: loadImage) {
+                        ImagePicker(image: $inputImage)
+                    }
+                    .fullScreenCover(isPresented: $showingPostPage) {
+                        if let selectedImage = selectedImageForPostPage {
+                            PostPageView(image: selectedImage)
+                        } else {
+                            Text("No image selected")
+                        }
+                    }
                 }
-                
-                Spacer()
-                
-                bottomBarSection
-                NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", price: "", onConfirm: { image, caption, price, topTags, fashionTags in
-                    // Adjust this part according to your app's logic to handle image, caption, price, and tags
-                    self.handleImageConfirmation(image: image, caption: caption, tags: topTags.union(fashionTags))
-                }), isActive: $showingDetailScreen) {
-                    EmptyView()
-                }
-                
-//                NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", price: "", onConfirm: { image, caption, price, topTags, fashionTags in
-//                    // Adjust this part according to your app's logic to handle image, caption, price, and tags
-//                    self.handleImageConfirmation(image: image, caption: caption, price: price, tags: topTags.union(fashionTags))
-//                }), isActive: $showingDetailScreen) {
-//                    EmptyView()
-//                }
-
-
+            } else {
+                SplashScreen()
             }
-            .edgesIgnoringSafeArea(.bottom)
-            .sheet(isPresented: $showingImagePicker, onDismiss: loadImage) {
-                ImagePicker(image: $inputImage)
-            }
-            .fullScreenCover(isPresented: $showingPostPage) {
-                if let selectedImage = selectedImageForPostPage {
-                    PostPageView(image: selectedImage)
-                } else {
-                    Text("No image selected")
+        }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                withAnimation {
+                    self.isActive = true
                 }
             }
         }
@@ -262,12 +271,13 @@ struct ContentView: View {
     
     
     
+    
     func loadImage() {
         guard let _ = inputImage else { return }
         showingDetailScreen = true
     }
-
-
+    
+    
     
     
     // MARK: - Top Bar Section
@@ -325,7 +335,7 @@ struct ContentView: View {
                         Button(action: {
                             // Perform an action when a category is tapped
                             print("\(category) tapped")
-
+                            
                         }) {
                             Text(category)
                                 .font(.system(size: 16))
@@ -365,7 +375,7 @@ struct ContentView: View {
                                 .fill(Color.gray.opacity(0.3))
                                 .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
                         }
-
+                        
                         if isLayoutModified {
                             Text(rectangleContents[index].caption)
                                 .foregroundColor(.white)
@@ -402,7 +412,7 @@ struct ContentView: View {
             }
         }
     }
-
+    
     
     
     
@@ -427,10 +437,10 @@ struct ContentView: View {
                 }
             
             Image(systemName: "heart.fill").iconModifier()
-                      .frame(maxWidth: .infinity)
-                      .onTapGesture {
-                          showingVisualStudioView = true // Trigger navigation
-                      }
+                .frame(maxWidth: .infinity)
+                .onTapGesture {
+                    showingVisualStudioView = true // Trigger navigation
+                }
             
             // User login/settings icon
             Image(systemName: "person.fill").iconModifier()
@@ -444,11 +454,11 @@ struct ContentView: View {
         .background(Color.black)
         .padding(.bottom)
         .background(
-                NavigationLink(destination: VisualStudioView(), isActive: $showingVisualStudioView) {
-                    EmptyView()
-                }
+            NavigationLink(destination: VisualStudioView(), isActive: $showingVisualStudioView) {
+                EmptyView()
+            }
                 .hidden() // Hide the NavigationLink since it's used programmatically
-            )
+        )
     }
 }
 
@@ -466,6 +476,23 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
+struct SplashScreen: View {
+    var body: some View {
+        GeometryReader { geometry in
+            Image("QUTURE") // Replace "QUTURE" with your image name
+                .resizable()
+                .scaledToFill()
+                .frame(width: geometry.size.width, height: geometry.size.height * 0.8) // Make the logo smaller
+                .clipped()
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center) // Center the cropped image
+                .background(Color.white) // Set the background color to white
+                .edgesIgnoringSafeArea(.all)
+        }
+    }
+}
+
+
 
 struct ImageDetailView: View {
     var image: UIImage

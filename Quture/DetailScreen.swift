@@ -21,7 +21,7 @@ struct FloatingTextbox: View {
                 .padding([.top, .leading, .trailing])
             
             TextEditor(text: $text)
-                .foregroundColor(.black) // Ensure the text color within the TextEditor is black
+                .foregroundColor(.white) // Ensure the text color within the TextEditor is black
                 .padding() // Apply padding for the TextEditor content
                 .frame(minHeight: 100, maxHeight: 200) // Adjust based on your needs
                 .background(Color.white) // Set the background color for the  TextEditor to white
