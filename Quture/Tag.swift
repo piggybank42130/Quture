@@ -1,16 +1,15 @@
 import Foundation
 
-struct Tag: Hashable {
+struct Tag: Hashable, Decodable {
+    var tagId: Int
     var name: String
     var category: Category
     
-    enum Category: String, CaseIterable, Hashable {
+    enum Category: String, CaseIterable, Hashable, Decodable {
         case top = "Top"
         case bottom = "Bottom"
         case shoe = "Shoe"
         case accessories = "Accessories"
-        case fashion = "fashion" // This is the new case you're adding
+        case fashion = "Fashion"
     }
-} //m
-
- 
+}

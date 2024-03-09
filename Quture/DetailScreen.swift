@@ -68,19 +68,17 @@ struct DetailScreen: View {
     var image: UIImage
     @State var caption: String = ""
     @State var price: String = ""
-    @State private var selectedCategory: Tag.Category? = nil // Exclude "Fashion" from this picker
-    @State private var selectedTags: Set<Tag> = [] // For selected tags in general categories
-    @State private var selectedFashionTags: Set<Tag> = [] // Specifically for "Fashion" tags
+    @State private var selectedCategory: Tag.Category? = nil
+    @State private var selectedTags: Set<Tag> = []
+    @State private var selectedFashionTags: Set<Tag> = []
     @State private var showingCaptionInputOverlay = false
     @State private var showingPriceInputOverlay = false
-    var onConfirm: ((UIImage, String, String, Set<Tag>, Set<Tag>) -> Void)? // Callback includes both sets of tags and the price
+    var onConfirm: ((UIImage, String, String, Set<Tag>, Set<Tag>) -> Void)?
     @Environment(\.presentationMode) var presentationMode
     @FocusState private var isFieldFocused: Bool
     @FocusState private var isCaptionFocused: Bool
     @FocusState private var isPriceFocused: Bool
     
-    
-    // Use TagManager to get categories, excluding Fashion for the picker
     var categories: [Tag.Category] {
         Tag.Category.allCases.filter { $0 != .fashion }
     }
@@ -92,7 +90,6 @@ struct DetailScreen: View {
                     .resizable()
                     .scaledToFit()
                 
-                // Split caption input and price input
                 HStack {
                     TextField("Enter a caption...", text: $caption)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -101,7 +98,6 @@ struct DetailScreen: View {
                             showingCaptionInputOverlay = isFocused
                         }
                     Spacer()
-                    // Price TextField
                     TextField("Enter a price...", text: $price)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.decimalPad)
@@ -112,12 +108,10 @@ struct DetailScreen: View {
                 }
                 .padding()
                 
-                // Fit Tags Caption
                 Text("Fit Tags")
                     .font(.headline)
                     .padding(.bottom, 10)
                 
-                // Category Selection Picker, excluding Fashion
                 Picker("Select Category", selection: $selectedCategory) {
                     ForEach(categories, id: \.self) { category in
                         Text(category.rawValue).tag(category as Tag.Category?)
@@ -126,12 +120,10 @@ struct DetailScreen: View {
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
                 
-                // Tags ScrollView for the selected category, excluding Fashion
                 if let category = selectedCategory, category != .fashion {
                     tagsScrollView(tags: TagManager.shared.tags(forCategory: category), selectedTags: $selectedTags)
                 }
                 
-                // Separate Scrollable View for "Fashion" Tags
                 Text("Fashion Tags")
                     .font(.headline)
                     .padding(.top, 10)
@@ -151,27 +143,8 @@ struct DetailScreen: View {
                 .padding(.horizontal)
                 .padding(.bottom)
             }
-            .overlay(
-                Group {
-                    if showingCaptionInputOverlay {
-                        FloatingTextboxOverlay(isVisible: $showingCaptionInputOverlay, text: $caption, title: "Caption", onCommit: {
-                            showingCaptionInputOverlay = false
-                            isCaptionFocused = false // Resign focus when done
-                        })
-                        .transition(.move(edge: .bottom)) // Optional: Add a transition for the overlay
-                    }
-                    if showingPriceInputOverlay {
-                        FloatingTextboxOverlay(isVisible: $showingPriceInputOverlay, text: $price, title: "Price", onCommit: {
-                            showingPriceInputOverlay = false
-                            isPriceFocused = false // Resign focus when done
-                        })
-                        .transition(.move(edge: .bottom)) // Optional: Add a transition for the overlay
-                    }
-                },
-                alignment: .center // Center the overlay in the viewport
-            )
-            .padding(.top, -150) // Adjust this value to move the overlay up or down
         }
+        .padding(.top, 15) // Added padding at the top of the ScrollView
         .edgesIgnoringSafeArea(.bottom)
     }
     

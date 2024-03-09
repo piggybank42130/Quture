@@ -16,7 +16,8 @@ struct ImageDisplayView: View {
     var imageId: Int
     var image: UIImage
     var caption: String
-
+    var tags: [Tag]
+    
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -82,14 +83,35 @@ struct ImageDisplayView: View {
         .edgesIgnoringSafeArea(.all)
         .navigationBarHidden(true)
         .onAppear {
+            
+            ServerCommands().hasUserLikedImage(userId: 3, imageId: self.imageId) { has_liked, error in
+                DispatchQueue.main.async {
+                    if let has_liked = has_liked {
+                        isHeartTapped = has_liked;
+                    }  else {
+                        // Handle the unexpected case where like_count is nil and there's no error
+                        print(error?.localizedDescription ?? "Failed to retrieved if liked.")
+                    }
+                }
+            }
+
             ServerCommands().getLikesOnImage(imageId: self.imageId) { like_count, error in
                 DispatchQueue.main.async { // Ensure UI operations are on the main thread
-                    if let like_count = like_count { // Safely unwrap captions here
+                    if let error = error {
+                        // Handle the error, e.g., log it or show an alert
+                        print("Error fetching like count: \(error.localizedDescription)")
+                    } else if let like_count = like_count {
+                        // Safely unwrap like_count here
                         self.heartCount = like_count
+                        print("Like count: \(self.heartCount)")
+                    } else {
+                        // Handle the unexpected case where like_count is nil and there's no error
+                        print("Unexpected response: No like count and no error")
                     }
                 }
             }
         }
+
     }
     
     
@@ -172,7 +194,7 @@ struct ImageDisplayView: View {
     var sidebar: some View {
         VStack(spacing: 32) {
             Button(action: {
-                ServerCommands().toggleLikeOnImage(userId: 2, imageId: 3)
+                ServerCommands().toggleLikeOnImage(userId: 3, imageId: imageId)
                 isHeartTapped = !isHeartTapped
                 heartCount += (isHeartTapped ? 1 : -1)
             }) {
@@ -231,7 +253,7 @@ struct BidWindow: View {
 struct ImageDisplayView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            ImageDisplayView(imageId: 0, image: UIImage(named: "yourImageNameHere") ?? UIImage(), caption:"Loading...")
+            ImageDisplayView(imageId: 0, image: UIImage(named: "yourImageNameHere") ?? UIImage(), caption:"Loading...", tags: [])
         }
     }
 }

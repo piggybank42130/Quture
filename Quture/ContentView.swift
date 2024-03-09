@@ -48,6 +48,12 @@ struct ContentView: View {
             ServerCommands().postImage(image: image, caption: caption) { newImageId, error in
                 if let newImageId = newImageId {
                     rectangleContents[index] = RectangleContent(imageId: newImageId, image: image, caption: caption, tags: Array(tags))
+                    ServerCommands().setTagsToImage(imageId: newImageId, tags: tags){ completed, error in
+                        DispatchQueue.main.async{
+                            print(error)
+                            print(":(")
+                        }
+                    }
                 } else {
                     // Handle errors or set a default image
                     print(error?.localizedDescription ?? "Failed to fetch newImageId.")
@@ -97,7 +103,7 @@ struct ContentView: View {
                                 VStack(spacing: 0) {
                                     topBarSection
                                     contentSection
-                                    NavigationLink(destination: ImageDisplayView(imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string"), isActive: Binding<Bool>(
+                                    NavigationLink(destination: ImageDisplayView(imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string", tags: []), isActive: Binding<Bool>(
                                         get: { self.imageToDisplay != nil },
                                         set: { if !$0 { self.imageToDisplay = nil } }
                                     )) {
@@ -112,11 +118,14 @@ struct ContentView: View {
                             
                             bottomBarSection
                             NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", price: "", onConfirm: { image, caption, price, topTags, fashionTags in
-                                // Adjust this part according to your app's logic to handle image, caption, price, and tags
-                                self.handleImageConfirmation(image: image, caption: caption, tags: topTags.union(fashionTags))
+                                // Here, combine topTags and fashionTags into a single Set<Tag> as they're both sets of Tag objects.
+                                let combinedTags = topTags.union(fashionTags)
+                                // Call handleImageConfirmation with all the parameters including the combined tags
+                                self.handleImageConfirmation(image: image, caption: caption, tags: combinedTags)
                             }), isActive: $showingDetailScreen) {
                                 EmptyView()
                             }
+
                             
                             // Additional navigation links if needed
                             // ...
@@ -270,7 +279,7 @@ struct ContentView: View {
                     }
                     .background(
                         NavigationLink(
-                            destination: ImageDisplayView(imageId: rectangleContents[index].imageId, image: rectangleContents[index].image ?? UIImage(), caption: rectangleContents[index].caption),
+                            destination: ImageDisplayView(imageId: rectangleContents[index].imageId, image: rectangleContents[index].image ?? UIImage(), caption: rectangleContents[index].caption, tags: []),
                             isActive: .init(
                                 get: { self.selectedRectangleIndex == index },
                                 set: { _ in self.selectedRectangleIndex = nil }
@@ -285,7 +294,24 @@ struct ContentView: View {
         .frame(maxHeight: .infinity)
         .onAppear {
             isLoadingImages = true
-            ServerCommands().getImagesForUser(userId: 3) { images, captions, error in
+            ServerCommands().getImagesForUser(userId: 3) { imageIds, images, captions, error in
+                if let imageIds = imageIds {
+                    for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
+                        self.rectangleContents[index].imageId = imageId
+                        ServerCommands().getTagsFromImage(imageId: imageId) { result in
+                            switch result {
+                                case .success(let tags):
+                                    self.rectangleContents[index].tags = tags
+                                    print("Tags: \(tags)")
+                                case .failure(let error):
+                                    print("Error fetching tags: \(error)")
+                            }
+                        }
+                    }
+                } else {
+                    // Handle errors or set a default image
+                    print(error?.localizedDescription ?? "Failed to fetch images.")
+                }
                 if let images = images {
                     for (index, image) in images.enumerated() where index < self.rectangleContents.count {
                         self.rectangleContents[index].image = image

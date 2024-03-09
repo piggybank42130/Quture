@@ -16,7 +16,7 @@ class ServerCommands: ObservableObject {
         
         // Assuming 'sendMethod' properly sets up a POST request including setting
         // the 'Content-Type' header to 'application/json'.
-        let parameters: [String: Any] = ["method_name": "post_image", "params": ["image_data": base64ImageString, "user_id": 31353, "caption": caption]]
+        let parameters: [String: Any] = ["method_name": "post_image", "params": ["image_data": base64ImageString, "user_id": 3, "caption": caption]]
         
         ServerCommunicator().sendMethod(parameters: parameters) { result in
             switch result {
@@ -49,6 +49,47 @@ class ServerCommands: ObservableObject {
         }
     }
     
+    func setTagsToImage(imageId: Int, tags: Set<Tag>, completion: @escaping (Bool, Error?) -> Void) {
+        // Convert Set of tagIds to an array of dictionaries for JSON serialization, setting interest level to 1.0 for each
+        let tagsWithInterestArray = tags.map { tag -> [String: Any] in
+            let tagId = tag.tagId // This function needs to return the unique identifier for the tag.
+            return ["tag_id": tagId, "interest_level": 1.0]
+        }
+        
+        let parameters: [String: Any] = [
+            "method_name": "set_tags_to_image",
+            "params": [
+                "image_id": imageId,
+                "tags_with_interest": tagsWithInterestArray
+            ]
+        ]
+        
+        ServerCommunicator().sendMethod(parameters: parameters) { result in
+            switch result {
+            case .success(let data):
+                do {
+                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                       let result = jsonResponse["result"] as? [String: Any],
+                       let success = result["success"] as? String, !success.isEmpty {
+                        // Assuming the server returns a "success" flag when tags are successfully associated
+                        completion(true, nil)
+                    } else {
+                        // Handle cases where the operation was not successful or the expected data was not returned
+                        completion(false, NSError(domain: "CustomError", code: 101, userInfo: [NSLocalizedDescriptionKey: "Failed to set tags to image."]))
+                    }
+                } catch {
+                    // Handle JSON deserialization error
+                    completion(false, error)
+                }
+            case .failure(let error):
+                // Handle communication error
+                completion(false, error)
+            }
+        }
+    }
+
+
+    
     func toggleLikeOnImage(userId: Int, imageId: Int) {
         // Assuming 'sendMethod' properly sets up a POST request including setting
         // the 'Content-Type' header to 'application/json'.
@@ -70,18 +111,83 @@ class ServerCommands: ObservableObject {
     
     //###GETTERS###//
     
-    func getLikesOnImage(imageId: Int, completion: @escaping (Int?, Error?) -> Void) {
+    func getTagsFromImage(imageId: Int, completion: @escaping (Result<[Tag], Error>) -> Void) {
+        // Define the parameters, including the method name expected by the server and the image ID
+        let parameters: [String: Any] = [
+            "method_name": "get_image_tags", // Adjust this to match the actual method name expected by the server
+            "params": ["image_id": imageId]
+        ]
+        
+        // Use sendMethod to make the request
+        ServerCommunicator().sendMethod(parameters: parameters) { result in
+            switch result {
+                case .success(let data):
+                    do {
+                        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
+                            print(jsonResponse)
+                           if let resultString = jsonResponse["result"] as? [String: Any] ,let tagsString = resultString["tags"] as? String,
+                            let tagsData = tagsString.data(using: .utf8){
+                                // Decode the JSON data to an array of Tag objects
+                                let tags = try JSONDecoder().decode([Tag].self, from: tagsData)
+                                print(tags)
+                                completion(.success(tags))
+                            }
+                        } else {
+                            // The JSON is not in the expected format or 'result' is not a string
+                            completion(.failure(NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])))
+                        }
+                    } catch {
+                        // An error occurred during JSON deserialization or decoding
+                        completion(.failure(error))
+                    }
+                case .failure(let error):
+                    completion(.failure(error))
+            }
+        }
+    }
+
+    
+    
+    func hasUserLikedImage(userId: Int, imageId: Int, completion: @escaping (Bool?, Error?) -> Void) {
         // Assuming 'sendMethod' properly sets up a POST request including setting
         // the 'Content-Type' header to 'application/json'.
-        let parameters: [String: Any] = ["method_name": "toggle_like_on_image", "params": ["image_id": imageId]]
+        let parameters: [String: Any] = ["method_name": "has_user_liked_image", "params": ["user_id": userId, "image_id": imageId]]
         
         ServerCommunicator().sendMethod(parameters: parameters) { result in
             switch result {
             case .success(let data):
                 // Assuming responseData is of type Data and can be converted to a String or JSON
-                print("Image posted successfully: \(String(describing: data))")
-                // Further processing of responseData if necessary
+                do {
+                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                       let result = jsonResponse["result"] as? [String: Any],
+                       let hasLiked = result["has_liked"] as? String {
+                        completion(hasLiked == "True", nil)
+                    } else {
+                        // The JSON is not in the expected format
+                        completion(nil, NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."]))
+                    }
+                } catch {
+                    // An error occurred during JSON deserialization
+                    completion(nil, error)
+                }
                 
+            case .failure(let error):
+                print("Failed to query like status: \(error.localizedDescription)")
+                completion(nil, error) // Pass the error through to the completion handler
+            }
+        }
+    }
+
+    
+    func getLikesOnImage(imageId: Int, completion: @escaping (Int?, Error?) -> Void) {
+        // Assuming 'sendMethod' properly sets up a POST request including setting
+        // the 'Content-Type' header to 'application/json'.
+        let parameters: [String: Any] = ["method_name": "get_image_like_count", "params": ["image_id": imageId]]
+        
+        ServerCommunicator().sendMethod(parameters: parameters) { result in
+            switch result {
+            case .success(let data):
+                // Assuming responseData is of type Data and can be converted to a String or JSON                
                 do {
                     if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                        let result = jsonResponse["result"] as? [String: Any],
@@ -144,15 +250,15 @@ class ServerCommands: ObservableObject {
     }
 
     
-    func getImagesForUser(userId: Int, completion: @escaping ([UIImage]?, [String]?, Error?) -> Void) {
+    func getImagesForUser(userId: Int, completion: @escaping ([Int]?, [UIImage]?, [String]?, Error?) -> Void) {
         getUserImageIds(userId: userId) { (imageIds, error) in
             if let error = error {
-                completion(nil, nil, error)
+                completion(nil, nil, nil, error)
                 return
             }
             
             guard let imageIds = imageIds else {
-                completion(nil, nil, NSError(domain: "ImageFetcherError", code: 300, userInfo: [NSLocalizedDescriptionKey: "No image IDs found."]))
+                completion(nil, nil, nil, NSError(domain: "ImageFetcherError", code: 300, userInfo: [NSLocalizedDescriptionKey: "No image IDs found."]))
                 return
             }
             
@@ -164,7 +270,6 @@ class ServerCommands: ObservableObject {
                 group.enter()
                 self.retrieveImage(imageId: imageId) { image, caption, error in
                     defer { group.leave() }
-                    print(image)
                     if let image = image, let caption = caption {
                         images.append(image)
                         captions.append(caption)
@@ -175,7 +280,7 @@ class ServerCommands: ObservableObject {
             }
             
             group.notify(queue: .main) {
-                completion(images, captions, nil)
+                completion(imageIds, images, captions, nil)
             }
         }
     }

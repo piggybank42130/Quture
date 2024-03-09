@@ -6,46 +6,46 @@ class TagManager {
     private(set) var tags: [Tag] = [
         // Initialize with your default tags
 
-        //Top tag
-        Tag(name: "Suit", category: .top),
-        Tag(name: "Buttonup", category: .top),
-        Tag(name: "Sweater", category: .top),
-        Tag(name: "T-shirt", category: .top),
-        Tag(name: "Athletic", category: .top),
-        Tag(name: "Crewneck", category: .top),
-        Tag(name: "Jacket", category: .top),
-        Tag(name: "Workwear", category: .top),
-        Tag(name: "Casual", category: .top),
-        Tag(name: "Vintage", category: .top),
-        //Tottom tag
-        Tag(name: "Dress pants", category: .bottom),
-        Tag(name: "Jeans", category: .bottom),
-        Tag(name: "Parachute", category: .bottom),
-        Tag(name: "Athletic", category: .bottom),
-        Tag(name: "Cargo", category: .bottom),
-        Tag(name: "Fitted", category: .bottom),
-        Tag(name: "Vintage", category: .bottom),
-        //Shoe tag
-        Tag(name: "Boots", category: .shoe),
-        Tag(name: "Loafers", category: .shoe),
-        Tag(name: "Sneakers", category: .shoe),
-        Tag(name: "Dress shoes", category: .shoe),
-        Tag(name: "Sandals", category: .shoe),
-        Tag(name: "Customs", category: .shoe),
-        //Accessories tag
-        Tag(name: "Necklace", category: .accessories),
-        Tag(name: "Ear ring", category: .accessories),
-        Tag(name: "Ring", category: .accessories),
-        Tag(name: "Glasses", category: .accessories),
-        //Fasion tag
-        Tag(name: "Minimalism", category: .fashion),
-        Tag(name: "Techwear", category: .fashion),
-        Tag(name: "Avant-Garde", category: .fashion),
-        Tag(name: "Preppy", category: .fashion),
-        Tag(name: "Customs", category: .fashion),
-        Tag(name: "Denim", category: .fashion),
-        Tag(name: "Athleisure", category: .fashion),
-        Tag(name: "Archive", category: .fashion),      
+        // Top tag
+        Tag(tagId: 1, name: "Suit", category: .top),
+        Tag(tagId: 2, name: "Buttonup", category: .top),
+        Tag(tagId: 3, name: "Sweater", category: .top),
+        Tag(tagId: 4, name: "T-shirt", category: .top),
+        Tag(tagId: 5, name: "Athletic", category: .top),
+        Tag(tagId: 6, name: "Crewneck", category: .top),
+        Tag(tagId: 7, name: "Jacket", category: .top),
+        Tag(tagId: 8, name: "Workwear", category: .top),
+        Tag(tagId: 9, name: "Casual", category: .top),
+        Tag(tagId: 10, name: "Vintage", category: .top),
+        // Bottom tag
+        Tag(tagId: 11, name: "Dress pants", category: .bottom),
+        Tag(tagId: 12, name: "Jeans", category: .bottom),
+        Tag(tagId: 13, name: "Parachute", category: .bottom),
+        Tag(tagId: 14, name: "Athletic", category: .bottom),
+        Tag(tagId: 15, name: "Cargo", category: .bottom),
+        Tag(tagId: 16, name: "Fitted", category: .bottom),
+        Tag(tagId: 17, name: "Vintage", category: .bottom),
+        // Shoe tag
+        Tag(tagId: 18, name: "Boots", category: .shoe),
+        Tag(tagId: 19, name: "Loafers", category: .shoe),
+        Tag(tagId: 20, name: "Sneakers", category: .shoe),
+        Tag(tagId: 21, name: "Dress shoes", category: .shoe),
+        Tag(tagId: 22, name: "Sandals", category: .shoe),
+        Tag(tagId: 23, name: "Customs", category: .shoe),
+        // Accessories tag
+        Tag(tagId: 24, name: "Necklace", category: .accessories),
+        Tag(tagId: 25, name: "Ear ring", category: .accessories),
+        Tag(tagId: 26, name: "Ring", category: .accessories),
+        Tag(tagId: 27, name: "Glasses", category: .accessories),
+        // Fashion tag
+        Tag(tagId: 28, name: "Minimalism", category: .fashion),
+        Tag(tagId: 29, name: "Techwear", category: .fashion),
+        Tag(tagId: 30, name: "Avant-Garde", category: .fashion),
+        Tag(tagId: 31, name: "Preppy", category: .fashion),
+        Tag(tagId: 32, name: "Customs", category: .fashion),
+        Tag(tagId: 33, name: "Denim", category: .fashion),
+        Tag(tagId: 34, name: "Athleisure", category: .fashion),
+        Tag(tagId: 35, name: "Archive", category: .fashion)
     ]
      
     func addTag(_ tag: Tag) {
