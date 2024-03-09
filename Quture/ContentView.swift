@@ -30,6 +30,7 @@ struct ContentView: View {
     @State private var isLoadingImages = true
     @State private var isActive = false // For the splash screen
     @State private var showingSearchView = false
+    @State private var isUserLoggedIn = false // For the login flow
     
     
     
@@ -88,48 +89,52 @@ struct ContentView: View {
     var body: some View {
         Group {
             if isActive {
-                NavigationView {
-                    VStack(spacing: 0) {
-                        switch activeScreen {
-                        case .home:
-                            VStack(spacing: 0) {
-                                topBarSection
-                                contentSection
-                                NavigationLink(destination: ImageDisplayView(imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string"), isActive: Binding<Bool>(
-                                    get: { self.imageToDisplay != nil },
-                                    set: { if !$0 { self.imageToDisplay = nil } }
-                                )) {
-                                    EmptyView()
+                if isUserLoggedIn {
+                    NavigationView {
+                        VStack(spacing: 0) {
+                            switch activeScreen {
+                            case .home:
+                                VStack(spacing: 0) {
+                                    topBarSection
+                                    contentSection
+                                    NavigationLink(destination: ImageDisplayView(imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string"), isActive: Binding<Bool>(
+                                        get: { self.imageToDisplay != nil },
+                                        set: { if !$0 { self.imageToDisplay = nil } }
+                                    )) {
+                                        EmptyView()
+                                    }
                                 }
+                            case .loginSettings:
+                                LoginSettingsView()
                             }
-                        case .loginSettings:
-                            LoginSettingsView()
+                            
+                            Spacer()
+                            
+                            bottomBarSection
+                            NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", price: "", onConfirm: { image, caption, price, topTags, fashionTags in
+                                // Adjust this part according to your app's logic to handle image, caption, price, and tags
+                                self.handleImageConfirmation(image: image, caption: caption, tags: topTags.union(fashionTags))
+                            }), isActive: $showingDetailScreen) {
+                                EmptyView()
+                            }
+                            
+                            // Additional navigation links if needed
+                            // ...
                         }
-                        
-                        Spacer()
-                        
-                        bottomBarSection
-                        NavigationLink(destination: DetailScreen(image: inputImage ?? UIImage(), caption: "", price: "", onConfirm: { image, caption, price, topTags, fashionTags in
-                            // Adjust this part according to your app's logic to handle image, caption, price, and tags
-                            self.handleImageConfirmation(image: image, caption: caption, tags: topTags.union(fashionTags))
-                        }), isActive: $showingDetailScreen) {
-                            EmptyView()
+                        .edgesIgnoringSafeArea(.bottom)
+                        .sheet(isPresented: $showingImagePicker, onDismiss: loadImage) {
+                            ImagePicker(image: $inputImage)
                         }
-                        
-                        // Additional navigation links if needed
-                        // ...
-                    }
-                    .edgesIgnoringSafeArea(.bottom)
-                    .sheet(isPresented: $showingImagePicker, onDismiss: loadImage) {
-                        ImagePicker(image: $inputImage)
-                    }
-                    .fullScreenCover(isPresented: $showingPostPage) {
-                        if let selectedImage = selectedImageForPostPage {
-                            PostPageView(image: selectedImage)
-                        } else {
-                            Text("No image selected")
+                        .fullScreenCover(isPresented: $showingPostPage) {
+                            if let selectedImage = selectedImageForPostPage {
+                                PostPageView(image: selectedImage)
+                            } else {
+                                Text("No image selected")
+                            }
                         }
-                    }
+                    } //end of navigation view
+                } else {
+                    LoginView(isUserLoggedIn: $isUserLoggedIn)
                 }
             } else {
                 SplashScreen()
