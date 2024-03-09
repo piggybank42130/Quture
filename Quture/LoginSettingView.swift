@@ -2,10 +2,12 @@ import SwiftUI
 
 struct LoginSettingsView: View {
     @State private var rectangleContents = Array(repeating: RectangleContent(imageId: -1, image: nil, caption: "Loading..."), count: 20)
-
+    
     private let rectangleWidth: CGFloat = (UIScreen.main.bounds.width - 32) / 2
     private let rectangleHeight: CGFloat = ((UIScreen.main.bounds.width - 32) / 2) * (4 / 3)
     @State private var isLoadingImages = true
+    @State private var showingLogoutAlert = false // State to control the logout alert
+    
     
     var body: some View {
         GeometryReader { geometry in
@@ -20,7 +22,13 @@ struct LoginSettingsView: View {
                     )
                     .padding()
                     .frame(height: geometry.size.height * 0.45)
-
+                
+                
+                Text("User Profile")
+                    .font(.title)
+                    .padding()
+                
+                
                 ScrollView {
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible())], spacing: 20) {
                         ForEach(0..<rectangleContents.count, id: \.self) { index in
@@ -46,6 +54,18 @@ struct LoginSettingsView: View {
                     .padding(.horizontal, 16)
                 }
                 .frame(height: geometry.size.height * 0.55)
+                
+                .alert(isPresented: $showingLogoutAlert) {
+                    Alert(
+                        title: Text("Log Out"),
+                        message: Text("Are you sure you want to log out?"),
+                        primaryButton: .default(Text("Yes"), action: {
+                            // Handle logout action
+                            print("Logged out")
+                        }),
+                        secondaryButton: .cancel()
+                    )
+                }
                 .onAppear {
                     isLoadingImages = true
                     ServerCommands().getImagesForUser(userId: 3) { imageIds, images, captions, error in
@@ -68,6 +88,17 @@ struct LoginSettingsView: View {
                         }
                     }
                 }
+                .navigationBarItems(trailing: Button(action: {
+                    // Handle gear icon action
+                    print("Gear icon tapped")
+                }) {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 24))
+                        .foregroundColor(.white)
+                        .onTapGesture {
+                            showingLogoutAlert = true
+                        }
+                })
             }
         }
     }
