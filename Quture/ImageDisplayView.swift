@@ -36,7 +36,21 @@ struct ImageDisplayView: View {
                             }
                     )
                 // Caption Text Box
- 
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(tags, id: \.tagId) { tag in
+                            Text(tag.name.capitalized)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(Color.blue) // Customize the tag background color
+                                .foregroundColor(.white) // Customize the tag text color
+                                .cornerRadius(15) // Rounded corners
+                        }
+                    }
+                    .padding(.leading, 15) // This will shift all items to the right inside the scroll view
+                    .padding(.vertical, 10) // Adjust padding as necessary
+                }
+                .frame(height: 40)
                 ScrollView(.vertical, showsIndicators: true) {
                     HStack {
                         Spacer().frame(width: 20) // Add spacer to the left edge, adjust width as needed
@@ -85,6 +99,7 @@ struct ImageDisplayView: View {
         .onAppear {
             
             ServerCommands().hasUserLikedImage(userId: 3, imageId: self.imageId) { has_liked, error in
+                print(tags)
                 DispatchQueue.main.async {
                     if let has_liked = has_liked {
                         isHeartTapped = has_liked;

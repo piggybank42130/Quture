@@ -68,11 +68,13 @@ class ServerCommands: ObservableObject {
             switch result {
             case .success(let data):
                 do {
-                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
+                        if
                        let result = jsonResponse["result"] as? [String: Any],
                        let success = result["success"] as? String, !success.isEmpty {
-                        // Assuming the server returns a "success" flag when tags are successfully associated
-                        completion(true, nil)
+                            // Assuming the server returns a "success" flag when tags are successfully associated
+                            completion(true, nil)
+                        }
                     } else {
                         // Handle cases where the operation was not successful or the expected data was not returned
                         completion(false, NSError(domain: "CustomError", code: 101, userInfo: [NSLocalizedDescriptionKey: "Failed to set tags to image."]))
@@ -124,17 +126,34 @@ class ServerCommands: ObservableObject {
                 case .success(let data):
                     do {
                         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
-                            print(jsonResponse)
-                           if let resultString = jsonResponse["result"] as? [String: Any] ,let tagsString = resultString["tags"] as? String,
-                            let tagsData = tagsString.data(using: .utf8){
-                                // Decode the JSON data to an array of Tag objects
-                                let tags = try JSONDecoder().decode([Tag].self, from: tagsData)
-                                print(tags)
-                                completion(.success(tags))
+                            //print(jsonResponse["result"])
+                            if let tagsArray = jsonResponse["result"] as? [String: Any]{
+                                print(tagsArray)
+                                if let tagDicts = tagsArray["tags"] as? [[String: Any]]{
+                                    var tags: [Tag] = [] // Prepare an empty array to hold Tag objects
+
+                                    // Iterate over each dictionary in the array
+                                    for tagDict in tagDicts {
+                                        // Attempt to parse each dictionary into a Tag object
+                                        if let tagId = tagDict["tag_id"] as? Int,
+                                           let tagName = tagDict["tag_name"] as? String,
+                                           let categoryString = tagDict["category"] as? String { // Convert string to enum
+                                            let tag = Tag(tagId: tagId, name: tagName, category: .top)
+                                            tags.append(tag)
+                                            print(tag)
+                                            
+                                        } else {
+                                            // Handle error if the dictionary does not contain the expected types or values
+                                            print("Error parsing tag dictionary: \(tagDict)")
+                                        }
+                                    }
+                                    // If successfully parsed, return the array of Tag objects
+                                    completion(.success(tags))
+                                }
+                            } else {
+                                // The JSON is not in the expected format
+                                completion(.failure(NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])))
                             }
-                        } else {
-                            // The JSON is not in the expected format or 'result' is not a string
-                            completion(.failure(NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])))
                         }
                     } catch {
                         // An error occurred during JSON deserialization or decoding

@@ -52,8 +52,6 @@ struct ContentView: View {
                     rectangleContents[index] = RectangleContent(imageId: newImageId, image: image, caption: caption, tags: Array(tags))
                     ServerCommands().setTagsToImage(imageId: newImageId, tags: tags){ completed, error in
                         DispatchQueue.main.async{
-                            print(error)
-                            print(":(")
                         }
                     }
                 } else {
@@ -281,7 +279,7 @@ struct ContentView: View {
                     }
                     .background(
                         NavigationLink(
-                            destination: ImageDisplayView(imageId: rectangleContents[index].imageId, image: rectangleContents[index].image ?? UIImage(), caption: rectangleContents[index].caption, tags: []),
+                            destination: ImageDisplayView(imageId: rectangleContents[index].imageId, image: rectangleContents[index].image ?? UIImage(), caption: rectangleContents[index].caption, tags: rectangleContents[index].tags),
                             isActive: .init(
                                 get: { self.selectedRectangleIndex == index },
                                 set: { _ in self.selectedRectangleIndex = nil }
@@ -303,6 +301,7 @@ struct ContentView: View {
                         ServerCommands().getTagsFromImage(imageId: imageId) { result in
                             switch result {
                                 case .success(let tags):
+                                    
                                     self.rectangleContents[index].tags = tags
                                     print("Tags: \(tags)")
                                 case .failure(let error):
