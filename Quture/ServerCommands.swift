@@ -30,7 +30,7 @@ class ServerCommands: ObservableObject {
                        let result = jsonResponse["result"] as? [String: Any],
                        let newImageId = result["new_image_id"] as? Int { // Assuming 'caption' is the correct key for the image caption
                         // Convert Base64 string to UIImage
-
+                        print(newImageId)
                         completion(newImageId, nil) // Successfully converted and returning the image with caption
 
                     } else {
@@ -58,7 +58,7 @@ class ServerCommands: ObservableObject {
             switch result {
             case .success(let responseData):
                 // Assuming responseData is of type Data and can be converted to a String or JSON
-                print("Image posted successfully: \(String(describing: responseData))")
+                print("Image liked successfully: \(String(describing: responseData))")
                 // Further processing of responseData if necessary
                 
             case .failure(let error):
@@ -69,6 +69,42 @@ class ServerCommands: ObservableObject {
     }
     
     //###GETTERS###//
+    
+    func getLikesOnImage(imageId: Int, completion: @escaping (Int?, Error?) -> Void) {
+        // Assuming 'sendMethod' properly sets up a POST request including setting
+        // the 'Content-Type' header to 'application/json'.
+        let parameters: [String: Any] = ["method_name": "toggle_like_on_image", "params": ["image_id": imageId]]
+        
+        ServerCommunicator().sendMethod(parameters: parameters) { result in
+            switch result {
+            case .success(let data):
+                // Assuming responseData is of type Data and can be converted to a String or JSON
+                print("Image posted successfully: \(String(describing: data))")
+                // Further processing of responseData if necessary
+                
+                do {
+                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                       let result = jsonResponse["result"] as? [String: Any],
+                       let like_count = result["like_count"] as? Int { // Assuming 'caption' is the correct key for the image caption
+                        // Convert Base64 string to UIImage
+                        print(like_count)
+                        completion(like_count, nil) // Successfully converted and returning the image with caption
+
+                    } else {
+                        // The JSON is not in the expected format
+                        completion(nil, NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."]))
+                    }
+                } catch {
+                    // An error occurred during JSON deserialization
+                    completion(nil, error)
+                }
+                
+            case .failure(let error):
+                print("Failed to get like count: \(error.localizedDescription)")
+                // Consider user-friendly error handling here
+            }
+        }
+    }
     
     func retrieveImage(imageId: Int, completion: @escaping (UIImage?, String?, Error?) -> Void) {
         let parameters: [String: Any] = [

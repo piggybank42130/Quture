@@ -81,6 +81,15 @@ struct ImageDisplayView: View {
         
         .edgesIgnoringSafeArea(.all)
         .navigationBarHidden(true)
+        .onAppear {
+            ServerCommands().getLikesOnImage(imageId: self.imageId) { like_count, error in
+                DispatchQueue.main.async { // Ensure UI operations are on the main thread
+                    if let like_count = like_count { // Safely unwrap captions here
+                        self.heartCount = like_count
+                    }
+                }
+            }
+        }
     }
     
     
@@ -164,7 +173,8 @@ struct ImageDisplayView: View {
         VStack(spacing: 32) {
             Button(action: {
                 ServerCommands().toggleLikeOnImage(userId: 2, imageId: 3)
-                isHeartTapped = true
+                isHeartTapped = !isHeartTapped
+                heartCount += (isHeartTapped ? 1 : -1)
             }) {
                 VStack {
                     Image(systemName: "heart.fill")
