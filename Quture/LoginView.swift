@@ -9,25 +9,13 @@ import SwiftUI
 
 struct LoginView: View {
     @Binding var isUserLoggedIn: Bool
+    @State private var showingSignUpView = false
 
-    @State private var signUpEmail: String = ""
-    @State private var signUpPassword: String = ""
     @State private var loginEmail: String = ""
     @State private var loginPassword: String = ""
 
     var body: some View {
         VStack(spacing: 20) {
-            // Sign Up Section
-            VStack(spacing: 10) {
-                Text("Sign Up")
-                    .font(.title)
-                TextField("Email", text: $signUpEmail)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                SecureField("Password", text: $signUpPassword)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            }
-            .padding()
-
             // Login Section
             VStack(spacing: 10) {
                 Text("Login")
@@ -39,20 +27,53 @@ struct LoginView: View {
             }
             .padding()
 
+            // Divider Line
+            HStack {
+                Spacer()
+                VStack { Divider() }
+                .frame(width: UIScreen.main.bounds.width * 0.4)
+                Text("OR")
+                    .foregroundColor(.gray)
+                    .padding(.horizontal, 8)
+                VStack { Divider() }
+                .frame(width: UIScreen.main.bounds.width * 0.4)
+                Spacer()
+            }
+            .padding(.vertical)
+
+            // Sign Up Button
+            Button("Create Account") {
+                showingSignUpView = true
+            }
+            .padding()
+            .background(Color.black)
+            .foregroundColor(.white)
+            .font(.headline)
+            .cornerRadius(10)
+
+
             // Confirm Button
             Button("Confirm") {
-                // Perform login or sign up action and set isUserLoggedIn to true upon success
-                // For simplicity, we're just setting isUserLoggedIn to true here
+                // Perform login action and set isUserLoggedIn to true upon success
                 isUserLoggedIn = true
             }
             .padding()
-            .background(Color.blue)
+            .frame(maxWidth: .infinity)
+            .background(Color.black)
             .foregroundColor(.white)
-            .cornerRadius(10)
+            .font(.headline)
+            .cornerRadius(0)
+            .padding(.horizontal)
+        }
+        .edgesIgnoringSafeArea(.bottom) // Allows the button to extend to the bottom edge
+        .sheet(isPresented: $showingSignUpView) {
+            SignUpView(isUserLoggedIn: $isUserLoggedIn)
         }
     }
-}
 
+
+
+}
 
 
 #Preview {

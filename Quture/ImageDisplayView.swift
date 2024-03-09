@@ -164,28 +164,34 @@ struct ImageDisplayView: View {
     
     
     var bottomBar: some View {
-        HStack {
-            Spacer() // Push content to center
+        Button(action: {
+            // Your action when the bottom bar is tapped
+            print("Bottom bar tapped")
+        }) {
+            HStack {
+                Spacer() // Push content to center
 
-            Image(systemName: "bookmark") // Replace with your saved image icon
-                .resizable()
-                .frame(width: 20, height: 20) // Adjust size as needed
-                .foregroundColor(.white) // Customize icon color
-            
-            Text("Save")
-                .font(.title) // Adjust the font size as needed
-                .bold()
-                .foregroundColor(.white) // Customize text color
+                Image(systemName: "bookmark") // Replace with your saved image icon
+                    .resizable()
+                    .frame(width: 20, height: 20) // Adjust size as needed
+                    .foregroundColor(.white) // Customize icon color
+                
+                Text("Save")
+                    .font(.title) // Adjust the font size as needed
+                    .bold()
+                    .foregroundColor(.white) // Customize text color
 
-            Spacer() // Push content to center
+                Spacer() // Push content to center
+            }
+            .padding() // Add padding around the HStack
+            .background(Color.gray.opacity(0.2)) // Customized background color with some opacity
+            .cornerRadius(10) // Rounded corners for the bottom bar
+            .overlay(
+                RoundedRectangle(cornerRadius: 10) // Optional: Add a border with a rounded rectangle
+                    .stroke(Color.black, lineWidth: 2)
+            )
         }
-        .padding() // Add padding around the HStack
-        .background(Color.gray.opacity(0.2)) // Customized background color with some opacity
-        .cornerRadius(10) // Rounded corners for the bottom bar
-        .overlay(
-            RoundedRectangle(cornerRadius: 10) // Optional: Add a border with a rounded rectangle
-                .stroke(Color.black, lineWidth: 2)
-        )
+
     }
 
 

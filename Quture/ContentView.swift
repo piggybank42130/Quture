@@ -31,6 +31,8 @@ struct ContentView: View {
     @State private var isActive = false // For the splash screen
     @State private var showingSearchView = false
     @State private var isUserLoggedIn = false // For the login flow
+    @State private var showingNotificationView = false
+
     
     
     
@@ -337,6 +339,7 @@ struct ContentView: View {
     
     
     // MARK: - Bottom Bar Section
+    // MARK: - Bottom Bar Section
     var bottomBarSection: some View {
         HStack {
             // Home icon
@@ -346,17 +349,21 @@ struct ContentView: View {
                     activeScreen = .home
                 }
             
-            // Other icons as placeholders
+            // Bell icon for notifications
             Image(systemName: "bell.fill").iconModifier()
                 .frame(maxWidth: .infinity)
+                .onTapGesture {
+                    showingNotificationView = true // Trigger navigation to NotificationView
+                }
             
+            // Other icons as placeholders
             Image(systemName: "plus.square.fill").iconModifier()
                 .frame(maxWidth: .infinity)
                 .onTapGesture {
                     showingImagePicker = true
                 }
             
-            Image(systemName: "heart.fill").iconModifier()
+            Image(systemName: "bookmark.fill").iconModifier()
                 .frame(maxWidth: .infinity)
                 .onTapGesture {
                     showingVisualStudioView = true // Trigger navigation
@@ -377,9 +384,16 @@ struct ContentView: View {
             NavigationLink(destination: VisualStudioView(), isActive: $showingVisualStudioView) {
                 EmptyView()
             }
-                .hidden() // Hide the NavigationLink since it's used programmatically
+            .hidden() // Hide the NavigationLink since it's used programmatically
+        )
+        .background(
+            NavigationLink(destination: NotificationView(), isActive: $showingNotificationView) {
+                EmptyView()
+            }
+            .hidden() // Hide the NavigationLink since it's used programmatically
         )
     }
+
 }
 
 
