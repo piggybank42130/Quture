@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var showingImagePicker = false
     @State private var inputImage: UIImage?
     @State private var showingDetailScreen = false
-    @State private var rectangleContents = Array(repeating: RectangleContent(image: nil, caption: "input"), count: 20) // Example for 20 rectangles
+    @State private var rectangleContents = Array(repeating: RectangleContent(imageId: -1, image: nil, caption: "Loading..."), count: 20) // Example for 20 rectangles
     @State private var showingLoginSettings = false
     @State private var activeScreen = ActiveScreen.home
     @State private var selectedImage: UIImage? // Track the selected image
@@ -44,10 +44,17 @@ struct ContentView: View {
     
     func handleImageConfirmation(image: UIImage, caption: String, tags: Set<Tag>) {
         if let index = rectangleContents.firstIndex(where: { $0.image == nil }) {
-            rectangleContents[index] = RectangleContent(image: image, caption: caption, tags: Array(tags))
+            ServerCommands().postImage(image: image, caption: caption) { newImageId, error in
+                if let newImageId = newImageId {
+                    rectangleContents[index] = RectangleContent(imageId: newImageId, image: image, caption: caption, tags: Array(tags))
+                } else {
+                    // Handle errors or set a default image
+                    print(error?.localizedDescription ?? "Failed to fetch newImageId.")
+                }
+            }
+            
             self.showingDetailScreen = false
             self.inputImage = nil // Reset the inputImage to ensure it's ready for a new selection
-            Getter().postImage(image: image, caption: caption)
         }
     }
     
@@ -88,7 +95,7 @@ struct ContentView: View {
                             VStack(spacing: 0) {
                                 topBarSection
                                 contentSection
-                                NavigationLink(destination: ImageDisplayView(image: imageToDisplay ?? UIImage(), caption: "string"), isActive: Binding<Bool>(
+                                NavigationLink(destination: ImageDisplayView(imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string"), isActive: Binding<Bool>(
                                     get: { self.imageToDisplay != nil },
                                     set: { if !$0 { self.imageToDisplay = nil } }
                                 )) {
@@ -251,14 +258,14 @@ struct ContentView: View {
                         }
                         
                         if isLayoutModified {
-                            Text("ad")//rectangleContents[index].caption)
+                            Text(rectangleContents[index].caption)
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
                     .background(
                         NavigationLink(
-                            destination: ImageDisplayView(image: rectangleContents[index].image ?? UIImage(), caption: rectangleContents[index].caption),
+                            destination: ImageDisplayView(imageId: rectangleContents[index].imageId, image: rectangleContents[index].image ?? UIImage(), caption: rectangleContents[index].caption),
                             isActive: .init(
                                 get: { self.selectedRectangleIndex == index },
                                 set: { _ in self.selectedRectangleIndex = nil }
@@ -273,7 +280,7 @@ struct ContentView: View {
         .frame(maxHeight: .infinity)
         .onAppear {
             isLoadingImages = true
-            Getter().getImagesForUser(userId: 3) { images, captions, error in
+            ServerCommands().getImagesForUser(userId: 3) { images, captions, error in
                 if let images = images {
                     for (index, image) in images.enumerated() where index < self.rectangleContents.count {
                         self.rectangleContents[index].image = image
@@ -281,6 +288,14 @@ struct ContentView: View {
                 } else {
                     // Handle errors or set a default image
                     print(error?.localizedDescription ?? "Failed to fetch images.")
+                }
+                if let captions = captions {
+                    for (index, caption) in captions.enumerated() where index < self.rectangleContents.count {
+                        self.rectangleContents[index].caption = caption
+                    }
+                } else {
+                    // Handle errors or set a default image
+                    print(error?.localizedDescription ?? "Failed to fetch captions.")
                 }
                 isLoadingImages = false
             }

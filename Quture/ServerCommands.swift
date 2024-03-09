@@ -9,14 +9,50 @@ import SwiftUI
 import Swift
 import Foundation
 
-class Getter: ObservableObject {
-    func postImage(image: UIImage, caption: String) {
+class ServerCommands: ObservableObject {
+    func postImage(image: UIImage, caption: String, completion: @escaping (Int?, Error?) -> Void) {
         guard let imageData = image.jpegData(compressionQuality: 0.5) else { return }
         let base64ImageString = imageData.base64EncodedString()
         
         // Assuming 'sendMethod' properly sets up a POST request including setting
         // the 'Content-Type' header to 'application/json'.
         let parameters: [String: Any] = ["method_name": "post_image", "params": ["image_data": base64ImageString, "user_id": 31353, "caption": caption]]
+        
+        ServerCommunicator().sendMethod(parameters: parameters) { result in
+            switch result {
+            case .success(let data):
+                // Assuming responseData is of type Data and can be converted to a String or JSON
+                print("Image posted successfully: \(String(describing: data))")
+                // Further processing of responseData if necessary
+                
+                do {
+                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                       let result = jsonResponse["result"] as? [String: Any],
+                       let newImageId = result["new_image_id"] as? Int { // Assuming 'caption' is the correct key for the image caption
+                        // Convert Base64 string to UIImage
+
+                        completion(newImageId, nil) // Successfully converted and returning the image with caption
+
+                    } else {
+                        // The JSON is not in the expected format
+                        completion(nil, NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."]))
+                    }
+                } catch {
+                    // An error occurred during JSON deserialization
+                    completion(nil, error)
+                }
+                
+            case .failure(let error):
+                print("Failed to post image: \(error.localizedDescription)")
+                // Consider user-friendly error handling here
+            }
+        }
+    }
+    
+    func toggleLikeOnImage(userId: Int, imageId: Int) {
+        // Assuming 'sendMethod' properly sets up a POST request including setting
+        // the 'Content-Type' header to 'application/json'.
+        let parameters: [String: Any] = ["method_name": "toggle_like_on_image", "params": ["user_id": userId, "image_id": imageId]]
         
         ServerCommunicator().sendMethod(parameters: parameters) { result in
             switch result {

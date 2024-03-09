@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LoginSettingsView: View {
-    @State private var rectangleContents = Array(repeating: RectangleContent(image: nil, caption: "input"), count: 20)
+    @State private var rectangleContents = Array(repeating: RectangleContent(imageId: -1, image: nil, caption: "Loading..."), count: 20)
 
     private let rectangleWidth: CGFloat = (UIScreen.main.bounds.width - 32) / 2
     private let rectangleHeight: CGFloat = ((UIScreen.main.bounds.width - 32) / 2) * (4 / 3)
@@ -48,7 +48,7 @@ struct LoginSettingsView: View {
                 .frame(height: geometry.size.height * 0.55)
                 .onAppear {
                     isLoadingImages = true
-                    Getter().getImagesForUser(userId: 3) { images, captions, error in
+                    ServerCommands().getImagesForUser(userId: 3) { images, captions, error in
                         DispatchQueue.main.async { // Ensure UI operations are on the main thread
                             if let images = images, let captions = captions { // Safely unwrap captions here
                                 for (index, image) in images.enumerated() where index < self.rectangleContents.count {

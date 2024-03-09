@@ -13,7 +13,7 @@ struct ImageDisplayView: View {
         let customerPrice: Double = 950.00 // Dummy customer price
 
     
-    
+    var imageId: Int
     var image: UIImage
     var caption: String
 
@@ -163,7 +163,7 @@ struct ImageDisplayView: View {
     var sidebar: some View {
         VStack(spacing: 32) {
             Button(action: {
-                heartCount += 1
+                ServerCommands().toggleLikeOnImage(userId: 2, imageId: 3)
                 isHeartTapped = true
             }) {
                 VStack {
@@ -221,7 +221,7 @@ struct BidWindow: View {
 struct ImageDisplayView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            ImageDisplayView(image: UIImage(named: "yourImageNameHere") ?? UIImage(),caption:"saa")
+            ImageDisplayView(imageId: 0, image: UIImage(named: "yourImageNameHere") ?? UIImage(), caption:"Loading...")
         }
     }
 }

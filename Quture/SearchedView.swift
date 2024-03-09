@@ -6,7 +6,7 @@ struct SearchedView: View {
 
     let rectangleWidth: CGFloat = (UIScreen.main.bounds.width - 32) / 2 // Assuming 32 is the total horizontal padding
     let rectangleHeight: CGFloat = (UIScreen.main.bounds.width - 32) / 2 * (4 / 3) // For a 3:4 aspect ratio
-    @State private var rectangleContents = Array(repeating: RectangleContent(image: nil, caption: "input"), count: 100) // Example for 100 rectangles
+    @State private var rectangleContents = Array(repeating: RectangleContent(imageId: -1, image: nil, caption: "Loading..."), count: 100) // Example for 100 rectangles
 
     var body: some View {
         VStack {

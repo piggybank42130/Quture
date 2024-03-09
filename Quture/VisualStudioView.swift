@@ -12,7 +12,7 @@ struct VisualStudioView: View {
     @State private var isShoesTabExpanded: Bool = false
     @State private var isAccessoriesTabExpanded: Bool = false
     
-    let rectangles: [RectangleContent] = Array(repeating: RectangleContent(image: UIImage(systemName: "photo"), caption: ""), count: 20)
+    let rectangles: [RectangleContent] = Array(repeating: RectangleContent(imageId: -1, image: UIImage(systemName: "photo"), caption: ""), count: 20)
     @State private var selectedTab: SelectedTab = .none
     private var columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2) // Adjust the count to control the number of columns
     

@@ -10,6 +10,7 @@ import SwiftUI
 
 //MARK: Contents within the rectangle content regions
 struct RectangleContent {
+    var imageId: Int
     var image: UIImage?
     var caption: String
  //   var tags: [String] // Add this
