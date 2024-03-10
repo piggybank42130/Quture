@@ -87,8 +87,24 @@ class ServerCommands: ObservableObject {
         _ = try await serverCommunicator.sendMethod(parameters: parameters)
         // No need for further processing if no return value is expected
     }
-
-    //###GETTERS###//
+    
+    func addBid(sellerID: Int, buyerID: Int, imageID: Int, messageText: String) async throws -> Int {
+        let parameters: [String: Any] = [
+            "method_name": "add_bid",
+            "params": ["seller_id": sellerID, "buyer_id": buyerID, "image_id": imageID, "message_text": messageText]
+        ]
+        
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let result = jsonResponse["result"] as? [String: Any],
+           let bidId = result["bid_id"] as? Int{
+            return bidId
+        } else {
+            throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Failed to add bid."])
+        }
+    }
+    
+    //###GETTERS/UTILITY###//
 
     func getTagsFromImage(imageId: Int) async throws -> [Tag] {
         let parameters: [String: Any] = ["method_name": "get_image_tags", "params": ["image_id": imageId]]
@@ -224,4 +240,54 @@ class ServerCommands: ObservableObject {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
     }
+    
+    func getBidInfo (messageId: Int) async throws -> [String: Any] {
+        let parameters: [String: Any] = [
+            "method_name": "get_bid_info",
+            "params": ["message_id": messageId]
+        ]
+        
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let result = jsonResponse["result"] as? [String: Any],
+           let bidInfo = result["bid_info"] as? [String: Any]{
+            return result
+        } else {
+            throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
+        }
+    }
+    
+    func getImageBids(imageId: Int) async throws -> [Int] {
+        let parameters: [String: Any] = [
+            "method_name": "get_image_bids",
+            "params": ["image_id": imageId]
+        ]
+        
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let result = jsonResponse["result"] as? [String:Any],
+           let messageIds = result["message_ids"] as? [Int] {
+            return messageIds
+        } else {
+            throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
+        }
+    }
+    
+    func markBidSuccessful(messageId: Int) async throws -> Void {
+        let parameters: [String: Any] = [
+            "method_name": "mark_bid_successful",
+            "params": ["message_id": messageId]
+        ]
+        _ = try await serverCommunicator.sendMethod(parameters: parameters)
+    }
+    
+    func deleteBid(messageId: Int) async throws -> Void {
+        let parameters: [String: Any] = [
+            "method_name": "delete_bid",
+            "params": ["message_id": messageId]
+        ]
+        _ = try await serverCommunicator.sendMethod(parameters: parameters)
+    }
+    
+    
 }
