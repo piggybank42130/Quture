@@ -4,6 +4,8 @@ struct BidNotification: View {
     let text: String
     var onAccept: () -> Void = {}
     var onReject: () -> Void = {}
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+
 
     var body: some View {
         VStack {
@@ -41,6 +43,8 @@ struct BidNotification: View {
 struct NotificationView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @State private var bidNotifications: [Int] = Array(0..<20) // Initial set of notifications
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+
 
     var body: some View {
         ScrollView {
@@ -71,14 +75,14 @@ struct NotificationView: View {
         }) {
             Image(systemName: "arrowtriangle.left.fill")
                 .font(.system(size: 24))
-                .foregroundColor(.white)
+                .foregroundColor(Color.contrastColor(for: colorScheme))
         })
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Text("Notifications")
                     .font(.title)
                     .bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.contrastColor(for: colorScheme))
             }
         }
     }

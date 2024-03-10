@@ -7,6 +7,8 @@ struct LoginSettingsView: View {
     private let rectangleHeight: CGFloat = ((UIScreen.main.bounds.width - 32) / 2) * (4 / 3)
     @State private var isLoadingImages = true
     @State private var showingLogoutAlert = false // State to control the logout alert
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+
     
     
     var body: some View {
@@ -96,7 +98,7 @@ struct LoginSettingsView: View {
                 }) {
                     Image(systemName: "gearshape")
                         .font(.system(size: 24))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.contrastColor(for: colorScheme))
                         .onTapGesture {
                             showingLogoutAlert = true
                         }

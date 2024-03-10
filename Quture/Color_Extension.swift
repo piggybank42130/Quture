@@ -10,6 +10,8 @@ import SwiftUI
 
 extension Color {
     static let coralGreen = Color(red: 62 / 255, green: 178 / 255, blue: 174 / 255)
+    static let DarkGray = Color(red: 0.2, green: 0.2, blue: 0.2)
+
     
     static func contrastColor(for colorScheme: ColorScheme) -> Color {
             colorScheme == .dark ? .white : .black

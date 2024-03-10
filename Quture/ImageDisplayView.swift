@@ -11,7 +11,10 @@ struct ImageDisplayView: View {
     @State private var isSaveTapped = false
 
     let sellerPrice: Double = 1000.00 // Dummy seller price
-        let customerPrice: Double = 950.00 // Dummy customer price
+    let customerPrice: Double = 950.00 // Dummy customer price
+    
+    @Environment(\.colorScheme) var colorScheme
+
 
     
     var imageId: Int
@@ -43,8 +46,8 @@ struct ImageDisplayView: View {
                             Text(tag.name.capitalized)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 5)
-                                .background(Color.blue) // Customize the tag background color
-                                .foregroundColor(.white) // Customize the tag text color
+                                .background(Color.DarkGray) // Customize the tag background color
+                                .foregroundColor(Color.sameColor(forScheme: colorScheme)) // Customize the tag text color
                                 .cornerRadius(15) // Rounded corners
                         }
                     }
@@ -57,7 +60,7 @@ struct ImageDisplayView: View {
                         Spacer().frame(width: 20) // Add spacer to the left edge, adjust width as needed
                         Text(caption) // Replace with your dynamic caption variable
                             .font(.body) // Adjust the font size as needed
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.contrastColor(for: colorScheme))
                             .frame(maxWidth: .infinity, alignment: .leading) // Align the text to the left
                         Spacer().frame(width: 20) // Add spacer to the right edge, adjust width as needed
                     }
@@ -125,7 +128,7 @@ struct ImageDisplayView: View {
             }) {
                 Image(systemName: "arrowtriangle.left.fill")
                     .font(.system(size: 24))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.contrastColor(for: colorScheme))
                     .bold()
             }
             .padding(.leading, 20) // Add padding to move the icon further from the left edge
@@ -139,14 +142,14 @@ struct ImageDisplayView: View {
                 }
                 .font(.title)
                 .bold()
-                .foregroundColor(.white)
+                .foregroundColor(Color.contrastColor(for: colorScheme))
                 
                 Button("For You") {
                     print("For You tapped")
                 }
                 .font(.title)
                 .bold()
-                .foregroundColor(.white)
+                .foregroundColor(Color.contrastColor(for: colorScheme))
             }
             
             Spacer()
@@ -157,7 +160,7 @@ struct ImageDisplayView: View {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 24))
                     .bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.contrastColor(for: colorScheme))
             }
             .padding(.trailing, 20) // Add padding to move the icon further from the right edge
         }
@@ -189,22 +192,19 @@ struct ImageDisplayView: View {
                 Image(systemName: isSaveTapped ? "bookmark.fill" : "bookmark") // Replace with your saved image icon
                     .resizable()
                     .frame(width: 20, height: 20) // Adjust size as needed
-                    .foregroundColor(.white) // Customize icon color
-                
+                    .foregroundColor(Color.contrastColor(for: colorScheme)) // Adjust the color as needed
+
                 Text("Save")
                     .font(.title) // Adjust the font size as needed
                     .bold()
-                    .foregroundColor(.white) // Customize text color
+                    .foregroundColor(Color.contrastColor(for: colorScheme)) // Customize text color
 
                 Spacer() // Push content to center
             }
             .padding() // Add padding around the HStack
-            .background(Color.gray.opacity(0.2)) // Customized background color with some opacity
+            .background(Color.sameColor(forScheme: colorScheme)) // Customized background color with some opacity
             .cornerRadius(10) // Rounded corners for the bottom bar
-            .overlay(
-                RoundedRectangle(cornerRadius: 10) // Optional: Add a border with a rounded rectangle
-                    .stroke(Color.black, lineWidth: 2)
-            )
+            .frame(maxWidth: .infinity)
         }
 
     }
@@ -213,7 +213,7 @@ struct ImageDisplayView: View {
 
 
     var sidebar: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: 25) {
             Button(action: {
                 Task{
                     do {
@@ -233,6 +233,8 @@ struct ImageDisplayView: View {
                         .foregroundColor(isHeartTapped ? Color.pink : Color.primary)
                     Text("\(heartCount)")
                         .font(.system(size: 20))
+                        .foregroundColor(isHeartTapped ? Color.pink : Color.primary)
+
                 }
             }
             Button(action: {}) {

@@ -12,6 +12,8 @@ struct FloatingTextbox: View {
     @Binding var text: String
     var title: String
     var onCommit: () -> Void
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -78,6 +80,8 @@ struct DetailScreen: View {
     @FocusState private var isFieldFocused: Bool
     @FocusState private var isCaptionFocused: Bool
     @FocusState private var isPriceFocused: Bool
+    @Environment(\.colorScheme) var colorScheme
+
     
     var categories: [Tag.Category] {
         Tag.Category.allCases.filter { $0 != .fashion }
@@ -136,8 +140,8 @@ struct DetailScreen: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background(Color.black)
-                .foregroundColor(.white)
+                .background(Color.sameColor(forScheme: colorScheme))
+                .foregroundColor(Color.contrastColor(for: colorScheme))
                 .font(.headline)
                 .cornerRadius(10)
                 .padding(.horizontal)
@@ -155,8 +159,8 @@ struct DetailScreen: View {
                     Text(tag.name)
                         .padding(.vertical, 6)
                         .padding(.horizontal, 12)
-                        .background(selectedTags.wrappedValue.contains(tag) ? Color.blue : Color.gray.opacity(0.2))
-                        .foregroundColor(.white)
+                        .background(selectedTags.wrappedValue.contains(tag) ? Color.DarkGray : Color.gray.opacity(0.2))
+                        .foregroundColor(Color.contrastColor(for: colorScheme))
                         .clipShape(Capsule())
                         .font(.caption)
                         .onTapGesture {

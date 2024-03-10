@@ -13,6 +13,8 @@ struct LoginView: View {
 
     @State private var loginEmail: String = ""
     @State private var loginPassword: String = ""
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+
 
     var body: some View {
         VStack(spacing: 20) {
@@ -46,10 +48,12 @@ struct LoginView: View {
                 showingSignUpView = true
             }
             .padding()
-            .background(Color.black)
-            .foregroundColor(.white)
+            .background(Color.sameColor(forScheme: colorScheme))
+            .foregroundColor(.contrastColor(for: colorScheme))
             .font(.headline)
             .cornerRadius(10)
+            .frame(maxWidth: .infinity)
+            .cornerRadius(0)
 
 
             // Confirm Button
@@ -76,8 +80,8 @@ struct LoginView: View {
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .background(Color.black)
-            .foregroundColor(.white)
+            .background(Color.sameColor(forScheme: colorScheme))
+            .foregroundColor(.contrastColor(for: colorScheme))
             .font(.headline)
             .cornerRadius(0)
             .padding(.horizontal)

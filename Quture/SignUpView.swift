@@ -13,45 +13,52 @@ struct SignUpView: View {
     @State private var signUpUsername: String = ""
     @State private var signUpEmail: String = ""
     @State private var signUpPassword: String = ""
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        VStack(spacing: 10) {
-            Text("Sign Up")
-                .font(.title)
-            TextField("Username", text: $signUpUsername)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            TextField("Email", text: $signUpEmail)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            SecureField("Password", text: $signUpPassword)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+        ZStack {
+            // Setting the background color based on the color scheme
+            colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all)
+            
+            VStack(spacing: 10) {
+                Text("Sign Up")
+                    .font(.title)
+                TextField("Username", text: $signUpUsername)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                TextField("Email", text: $signUpEmail)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                SecureField("Password", text: $signUpPassword)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                SecureField("Confirm Password", text: $signUpPassword)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
 
-            Button("Create Account") {
-                // Perform sign-up action and set isUserLoggedIn to true upon success
-                // For simplicity, we're just setting isUserLoggedIn to true here
-                Task {
-                    do {
-                        let (newUserId) = try await ServerCommands().addUser(username: signUpUsername, email: signUpEmail, passwordHash: signUpPassword)
-
-                        DispatchQueue.main.async {
-                            LocalStorage().saveNumber(number: newUserId, to: "userId.txt")
-                            
-                            isUserLoggedIn = true
+                Button("Create Account") {
+                    // Perform sign-up action and set isUserLoggedIn to true upon success
+                    Task {
+                        do {
+                            let newUserId = try await ServerCommands().addUser(username: signUpUsername, email: signUpEmail, passwordHash: signUpPassword)
+                            DispatchQueue.main.async {
+                                LocalStorage().saveNumber(number: newUserId, to: "userId.txt")
+                                isUserLoggedIn = true
+                            }
+                        }
+                        catch {
+                            print(error) // Handle error
                         }
                     }
-                    catch {
-                        print(error) // Handle error
-                        // Make sure to handle UI update on main thread if necessary
-                    }
                 }
+                .padding()
+                .background(Color.sameColor(forScheme: colorScheme))
+                .foregroundColor(.contrastColor(for: colorScheme))
+                .cornerRadius(10)
+                .font(.title)
+                .frame(maxWidth: .infinity)
             }
             .padding()
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(10)
         }
-        .padding()
     }
 }
+
 
 #Preview {
     ContentView()
