@@ -12,12 +12,22 @@ struct VisualStudioView: View {
     @State private var isShoesTabExpanded: Bool = false
     @State private var isAccessoriesTabExpanded: Bool = false
     
-    @State private var rectangles: [RectangleContent] = Array(repeating: RectangleContent(imageId: -1, image: UIImage(systemName: "photo"), caption: ""), count: 20)
+    @State private var rectangles: [Int: [RectangleContent]] = Dictionary(uniqueKeysWithValues: TagManager.shared.tags.filter { $0.tagId != -1 }.map { ($0.tagId, [RectangleContent]()) })
+    private var topCategoryTagIds: [Int] {
+        TagManager.shared.getTagIdsByCategory(category: .top)
+    }
+    private var bottomCategoryTagIds: [Int] {
+        TagManager.shared.getTagIdsByCategory(category: .bottom)
+    }
+    private var shoeCategoryTagIds: [Int] {
+        TagManager.shared.getTagIdsByCategory(category: .shoe)
+    }
+    private var accessoriesCategoryTagIds: [Int] {
+        TagManager.shared.getTagIdsByCategory(category: .accessories)
+    }
+    
     @State private var selectedTab: SelectedTab = .none
     private var columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2) // Adjust the count to control the number of columns
-    
-    
-    
     
     var body: some View {
         ScrollView{
@@ -48,172 +58,41 @@ struct VisualStudioView: View {
                 
                 
                 if isTopsTabExpanded {
-                    // Tops: Suit
-                    Text("Suit")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
+                    
+                    
+                    ForEach(topCategoryTagIds, id: \.self) { tagId in
+                        Group { // Using Group to explicitly wrap our views
+                            if let tag = TagManager.shared.getTagById(tagId: tagId) {
+                                VStack {
+                                    Text(tag.name)
+                                        .font(.headline)
+                                        .padding(.leading)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        LazyHStack(spacing: LayoutConfig.spacing) {
+                                            ForEach(0..<(rectangles[tagId]?.count ?? 0), id: \.self) { index in
+                                                if let rectangleContent = rectangles[tagId]?[index] {
+                                                    // Simplify by handling image processing inside RectangleView or beforehand
+                                                    RectangleView(content: rectangleContent)
+                                                } else {
+                                                    // Fallback view
+                                                    EmptyView()
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .padding(.bottom)
+                                }
+                            } else {
+                                // Fallback for missing tag
+                                EmptyView()
                             }
                         }
                     }
-                    .padding(.bottom)
-                    
-                    
-                    // Tops: Button Up
-                    Text("Button Up")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(10..<20) { index in // The next set of items
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                    
-                    //Tops: Hoodie
-                    Text("Hoodie")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                    
-                    //Tops: Sweater
-                    Text("Sweater")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                    
-                    //Tops: T-shirt
-                    Text("T-shirt")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                    
-                    //Tops: Athletic
-                    Text("Athletic")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                    
-                    //Tops: Crewneck
-                    Text("Crewneck")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                    
-                    //Tops: Jacket
-                    Text("Jacket")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                    
-                    //Tops: Workwear
-                    Text("Workwear")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                    
-                    //Tops: Casual
-                    Text("Casual")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                    
-                    //Tops: Vintage
-                    Text("Vintage")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
+
                 }
+
                 
                 //MARK: BOTTOMS
                 HStack{
@@ -238,138 +117,36 @@ struct VisualStudioView: View {
                 
                 //Bottoms: Dress pants
                 if isBottomsTabExpanded {
-                    Text("Dress pants")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
+                    ForEach(bottomCategoryTagIds, id: \.self) { tagId in
+                        Group { // Using Group to explicitly wrap our views
+                            if let tag = TagManager.shared.getTagById(tagId: tagId) {
+                                VStack {
+                                    Text(tag.name)
+                                        .font(.headline)
+                                        .padding(.leading)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        LazyHStack(spacing: LayoutConfig.spacing) {
+                                            ForEach(0..<(rectangles[tagId]?.count ?? 0), id: \.self) { index in
+                                                if let rectangleContent = rectangles[tagId]?[index] {
+                                                    // Simplify by handling image processing inside RectangleView or beforehand
+                                                    RectangleView(content: rectangleContent)
+                                                } else {
+                                                    // Fallback view
+                                                    EmptyView()
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .padding(.bottom)
+                                }
+                            } else {
+                                // Fallback for missing tag
+                                EmptyView()
                             }
                         }
                     }
-                    .padding(.bottom)
-                }
-                
-                //Bottoms: Shorts
-                if isBottomsTabExpanded {
-                    Text("Shorts")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Botttoms: Jeans
-                if isBottomsTabExpanded {
-                    Text("Jeans")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Bottoms: Parachute
-                if isBottomsTabExpanded {
-                    Text("Parachute")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Bottoms: Athletic
-                if isBottomsTabExpanded {
-                    Text("Athletic")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Bottoms: Cargo
-                if isBottomsTabExpanded {
-                    Text("Cargo")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Bottoms: Fitted
-                if isBottomsTabExpanded {
-                    Text("Fitted")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Bottoms: Vintage
-                if isBottomsTabExpanded {
-                    Text("Vintage")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
                 }
                 
                 //MARK: Shoes
@@ -395,104 +172,36 @@ struct VisualStudioView: View {
                 
                 //Shoes: Boots
                 if isShoesTabExpanded {
-                    Text("Boots")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
+                    ForEach(shoeCategoryTagIds, id: \.self) { tagId in
+                        Group { // Using Group to explicitly wrap our views
+                            if let tag = TagManager.shared.getTagById(tagId: tagId) {
+                                VStack {
+                                    Text(tag.name)
+                                        .font(.headline)
+                                        .padding(.leading)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        LazyHStack(spacing: LayoutConfig.spacing) {
+                                            ForEach(0..<(rectangles[tagId]?.count ?? 0), id: \.self) { index in
+                                                if let rectangleContent = rectangles[tagId]?[index] {
+                                                    // Simplify by handling image processing inside RectangleView or beforehand
+                                                    RectangleView(content: rectangleContent)
+                                                } else {
+                                                    // Fallback view
+                                                    EmptyView()
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .padding(.bottom)
+                                }
+                            } else {
+                                // Fallback for missing tag
+                                EmptyView()
                             }
                         }
                     }
-                    .padding(.bottom)
-                }
-                
-                //Shoes: Loafers
-                if isShoesTabExpanded {
-                    Text("Loafers")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Shoes: Sneakers
-                if isShoesTabExpanded {
-                    Text("Sneakers")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Shoes: Dress shoes
-                if isShoesTabExpanded {
-                    Text("Dress shoes")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Shoes: Sandals
-                if isShoesTabExpanded {
-                    Text("Sandals")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Shoes: Customs
-                if isShoesTabExpanded {
-                    Text("Customs")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
                 }
                 
                 //MARK: Accessories
@@ -518,70 +227,36 @@ struct VisualStudioView: View {
                 
                 //Accessories: Necklaces
                 if isAccessoriesTabExpanded {
-                    Text("Necklaces")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
+                    ForEach(accessoriesCategoryTagIds, id: \.self) { tagId in
+                        Group { // Using Group to explicitly wrap our views
+                            if let tag = TagManager.shared.getTagById(tagId: tagId) {
+                                VStack {
+                                    Text(tag.name)
+                                        .font(.headline)
+                                        .padding(.leading)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        LazyHStack(spacing: LayoutConfig.spacing) {
+                                            ForEach(0..<(rectangles[tagId]?.count ?? 0), id: \.self) { index in
+                                                if let rectangleContent = rectangles[tagId]?[index] {
+                                                    // Simplify by handling image processing inside RectangleView or beforehand
+                                                    RectangleView(content: rectangleContent)
+                                                } else {
+                                                    // Fallback view
+                                                    EmptyView()
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .padding(.bottom)
+                                }
+                            } else {
+                                // Fallback for missing tag
+                                EmptyView()
                             }
                         }
                     }
-                    .padding(.bottom)
-                }
-                
-                //Accessories: Ear ring
-                if isAccessoriesTabExpanded {
-                    Text("Ear ring")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Accessories: Ring
-                if isAccessoriesTabExpanded {
-                    Text("Ring")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                
-                //Accessories: Glasses
-                if isAccessoriesTabExpanded {
-                    Text("Glasses")
-                        .font(.headline)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: LayoutConfig.spacing) {
-                            ForEach(0..<10) { index in // Assuming you have at least 10 items for demonstration
-                                RectangleView(content: rectangles[index])
-                                    .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
                 }
                 
                 Spacer()
@@ -596,37 +271,40 @@ struct VisualStudioView: View {
                 }
             )
         }
-        .onAppear{
-            Task{
-                do {
-                    let (imageIds) = try await ServerCommands().getUserSavedImageIdsByTag(userId: 3, tag: TagManager().getTagByName(byName: "Suit") ?? TagManager().getNull())
-                    print("GET")
-                    print(imageIds)
-                    for (index, imageId) in imageIds.enumerated() where index < self.rectangles.count {
-                        let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
-                        let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
-                        DispatchQueue.main.async {
-                            self.rectangles[index].imageId = imageId
-                            self.rectangles[index].tags = tags
-                            self.rectangles[index].image = image
-                            self.rectangles[index].caption = caption
-                            
-                            print("You've saved")
-                            //print("imageIds: \(imageId)")
-                            //print("Tags: \(tags)")
-                            print(self.rectangles[index].tags.contains {$0.name == "Suit"})
+        .onAppear {
+            Task {
+                let tagIds = TagManager.shared.tags.filter { $0.tagId != -1 }.map { $0.tagId }
+                for tagId in tagIds {
+                    do {
+                        // Assuming getUserSavedImageIdsByTag now takes a tag name instead of a Tag object for simplicity
+                        // Ensure you have a suitable method to handle fetching by tag name or adapt this code to work with your current setup
+                        guard let tag = TagManager.shared.getTagById(tagId: tagId)
+                        else {
+                            print("Tag not found for ID: \(tagId)")
+                            continue
                         }
+                        let imageIds = try await ServerCommands().getUserSavedImageIdsByTag(userId: 3, tag: tag)
+                        print("Fetching images for tag: \(tag.name)")
+                        print(imageIds)
+                        for imageId in imageIds {
+                            let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                            let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
+                            DispatchQueue.main.async {
+                                // Initialize tag key with an empty array if it doesn't already exist
+                                if self.rectangles[tagId] == nil {
+                                    self.rectangles[tagId] = []
+                                }
+
+                                // Create a new RectangleContent object
+                                let newRectangleContent = RectangleContent(imageId: imageId, image: image, caption: caption, tags: tags)
+
+                                // Append the new object to the array under the tag name
+                                self.rectangles[tagId]!.append(newRectangleContent)
+                            }
+                        }
+                    } catch {
+                        print("Error fetching images for tagId \(tagId): \(error)")
                     }
-                    print("GOOBERINO")
-                    let suitTops = rectangles.filter { rectangle in
-                        rectangle.tags.contains { $0.name == "Suit" }
-                    }
-                    print(suitTops)
-                    //self.isLoading = false
-                    
-                } catch {
-                    print(error)
-                    //self.isLoading = false
                 }
             }
         }
@@ -670,16 +348,34 @@ struct RectangleView: View {
     
     var body: some View {
         VStack {
-            Rectangle()
-                .fill(Color.gray) // Display a gray rectangle
-                .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight) // Use predefined sizes
+            if let uiImage = content.image {
+                // Calculate the new width based on the image's original aspect ratio.
+                let originalAspectRatio = uiImage.size.width / uiImage.size.height
+                let scaledWidth = LayoutConfig.rectangleHeight * originalAspectRatio
+                
+                Image(uiImage: uiImage)
+                    .resizable()
+                    // Scale the image to the specific height, keeping its aspect ratio
+                    .frame(width: scaledWidth, height: LayoutConfig.rectangleHeight)
+                    .clipped() // Clip the image to fit within the frame dimensions
+            } else {
+                // Display a gray rectangle if there's no image
+                Rectangle()
+                    .fill(Color.gray)
+                    .frame(height: LayoutConfig.rectangleHeight)
+            }
+            // Caption for the image
             Text(content.caption)
-                .foregroundColor(.white) // Set text color to ensure it's visible on gray background
+                .foregroundColor(.white) // Ensure the caption is visible
         }
-        .background(Color.gray) // Sets the background of each rectangle to gray
-        .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
+        // Background color for the entire VStack
+        //.background(Color.gray) // Your existing background
+        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .top)
+
     }
 }
+
+
 
 
 

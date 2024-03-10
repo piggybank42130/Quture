@@ -6,8 +6,10 @@ class TagManager {
     private(set) var tags: [Tag] = [
         // Initialize with your default tags
 
-        // Top tag
+        // Null tag
         Tag(tagId: -1, name: "NULL", category: .null),
+        
+        // Top tag
         Tag(tagId: 1, name: "Suit", category: .top),
         Tag(tagId: 2, name: "Buttonup", category: .top),
         Tag(tagId: 3, name: "Sweater", category: .top),
@@ -63,6 +65,14 @@ class TagManager {
     
     func getTagById(tagId: Int) -> Tag? {
         return tags.first { $0.tagId == tagId }
+    }
+    
+    func getAllTagNames() -> [String] {
+        return tags.filter { $0.name != "NULL" }.map { $0.name }
+    }
+    
+    func getTagIdsByCategory(category: Tag.Category) -> [Int] {
+        return tags.filter { $0.category == category }.map { $0.tagId }
     }
     
     func getNull() -> Tag{
