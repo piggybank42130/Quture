@@ -1,20 +1,19 @@
-//
-//  NewBidWindow.swift
-//  Quture
-//
-//  Created by Peter Zhang on 2024/3/5.
-//
-
-
 import SwiftUI
 
 struct NewBidWindow: View {
     @Binding var isVisible: Bool
 
     @State private var bidAmount: String = ""
-    @State private var sellerPrice: Double = 1000.00 // Initialize with default values or use passed-in values
+    @State private var sellerPrice: Double = 1000.00
     @State private var customerPrice: Double = 950.00
-    @State private var isSellerPriceActive: Bool = true // To track which price is currently being updated
+    @State private var isCustomerPriceActive: Bool = false
+    @State private var showTesterAlert: Bool = false
+    @State private var message: String = ""
+    @State private var phoneNumber: String = ""
+    @FocusState private var isInputActive: Bool
+    @State private var priceToShowInAlert: Double = 0.0 // Ensure this exists
+
+
 
     var body: some View {
         VStack(spacing: 15) {
@@ -39,63 +38,64 @@ struct NewBidWindow: View {
 
             // Buy Now and Highest Bet boxes
             HStack {
-                // "Buy Now" box with adjusted padding to make it flatter and pushed to the edge
+                // "Buy Now" box
                 VStack {
                     Text("\(sellerPrice, specifier: "%.2f")")
                         .bold()
-                        .foregroundColor(isSellerPriceActive ? .white : .black)
+                        .foregroundColor(.white)
                     Text("Buy Now")
-                        .foregroundColor(isSellerPriceActive ? .white : .black)
+                        .foregroundColor(.white)
                 }
-                .padding([.top, .bottom], 8) // Reduced vertical padding to make it flatter
-                .padding([.leading, .trailing], 10) // Horizontal padding for internal spacing
-                .frame(maxWidth: .infinity) // Ensures the box stretches to fill the available space
-                .background(isSellerPriceActive ? Color.black : Color.gray)
+                .padding([.top, .bottom], 8)
+                .padding([.leading, .trailing], 10)
+                .frame(maxWidth: .infinity)
+                .background(Color.black)
                 .cornerRadius(5)
                 .onTapGesture {
-                    self.isSellerPriceActive = true
+                    self.isCustomerPriceActive = false
                 }
 
-                // "Highest Bet" box with adjusted padding to make it flatter and pushed to the edge
+                // "Highest Bet" box
                 VStack {
                     Text("\(customerPrice, specifier: "%.2f")")
                         .bold()
-                        .foregroundColor(isSellerPriceActive ? .black : .white)
+                        .foregroundColor(isCustomerPriceActive ? .white : .black)
                     Text("Highest Bet")
-                        .foregroundColor(isSellerPriceActive ? .black : .white)
+                        .foregroundColor(isCustomerPriceActive ? .white : .black)
                 }
-                .padding([.top, .bottom], 8) // Reduced vertical padding to make it flatter
-                .padding([.leading, .trailing], 10) // Horizontal padding for internal spacing
-                .frame(maxWidth: .infinity) // Ensures the box stretches to fill the available space
-                .background(isSellerPriceActive ? Color.gray.opacity(0.3) : Color.black)
+                .padding([.top, .bottom], 8)
+                .padding([.leading, .trailing], 10)
+                .frame(maxWidth: .infinity)
+                .background(isCustomerPriceActive ? Color.black : Color.gray.opacity(0.3))
                 .cornerRadius(5)
                 .onTapGesture {
-                    self.isSellerPriceActive = false
+                    self.isCustomerPriceActive = true
                 }
-            }
-            .padding(.horizontal, 15) // Apply padding to the HStack to push the boxes to the edges
-
-            
-            //MARK: Interactive text box for entering a price
-            ZStack(alignment: .leading) {
-                TextField("Enter your bid here", text: $bidAmount)
-                    .padding(.leading, 20) // Make room for the $ symbol
-                    .foregroundColor(.black)
-                    .keyboardType(.decimalPad)
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(5)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.black, lineWidth: 1)
-                    )
-                
-                Text("$")
-                    .foregroundColor(.black)
-                    .padding(.leading, 15)
             }
             .padding(.horizontal, 15)
 
+            // Interactive text box for entering a price (only shown for Highest Bet)
+            if isCustomerPriceActive {
+                ZStack(alignment: .leading) {
+                    TextField("Enter your bid here", text: $bidAmount)
+                        .padding(.leading, 20)
+                        .foregroundColor(.black)
+                        .keyboardType(.decimalPad)
+                        .focused($isInputActive)
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(5)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color.black, lineWidth: 1)
+                        )
+                    
+                    Text("$")
+                        .foregroundColor(.black)
+                        .padding(.leading, 15)
+                }
+                .padding(.horizontal, 15)
+            }
 
             // Confirmation button
             Button(action: {
@@ -118,22 +118,56 @@ struct NewBidWindow: View {
         .cornerRadius(20)
         .shadow(radius: 10)
         .transition(.scale)
+        .dismissKeyboardOnTap() // Apply the extension here
+        .sheet(isPresented: $showTesterAlert) {
+            // Now passing the missing 'price' argument
+            CustomAlertView(isVisible: $showTesterAlert, price: $priceToShowInAlert, message: $message, phoneNumber: $phoneNumber)
+        }
+
     }
 
     private func updatePrice() {
-            if let newPrice = Double(bidAmount), newPrice > 0 {
-                if isSellerPriceActive {
-                    sellerPrice = newPrice
-                } else {
-                    customerPrice = newPrice
-                }
-                bidAmount = "" // Clear input field after updating
-            }
+        if isCustomerPriceActive, let newPrice = Double(bidAmount), newPrice > 0 {
+            customerPrice = newPrice
+            priceToShowInAlert = newPrice
+        } else {
+            // If no new bid is entered, you might want to show the current highest bid/customer price
+            priceToShowInAlert = customerPrice
         }
+        bidAmount = "" // Clear input field after updating
+        showTesterAlert = true // Prepare to show the alert
+    }
+
 }
 
+struct CustomAlertView: View {
+    @Binding var isVisible: Bool
+    @Binding var price: Double
+    @Binding var message: String
+    @Binding var phoneNumber: String
 
-
+    var body: some View {
+        VStack {
+            Text("Price: \(price, specifier: "%.2f")")
+                .foregroundColor(.black) // Ensure visibility against the white background
+                .font(.headline) // Optionally adjust the font
+            Text("Please enter your contact information:")
+                .foregroundColor(.black) // Adjust as needed for visibility
+            TextField("Message to seller", text: $message)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            TextField("Phone Number", text: $phoneNumber)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            Button("Submit") {
+                print("Message: \(message), Phone: \(phoneNumber)")
+                isVisible = false
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(radius: 8)
+    }
+}
 
 
 
@@ -155,7 +189,3 @@ struct NewBidWindow_Previews: PreviewProvider {
         }
     }
 }
-
-//#Preview {
-//    NewBidWindow()
-//}
