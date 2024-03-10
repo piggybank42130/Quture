@@ -277,23 +277,18 @@ struct ContentView: View {
         .onAppear {
             Task {
                 do {
-                    let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: 3)
+                    let (imageIds) = try await ServerCommands().generateUserFeed(userId: 1, limit: 20)
                     for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
+                        let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                         let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
                         DispatchQueue.main.async {
                             self.rectangleContents[index].imageId = imageId
                             self.rectangleContents[index].tags = tags
+                            self.rectangleContents[index].image = image
+                            self.rectangleContents[index].caption = caption
                             print("imageIds: \(imageId)")
                             print("Tags: \(tags)")
                         }
-                    }
-                    
-                    for (index, image) in images.enumerated() where index < self.rectangleContents.count {
-                        self.rectangleContents[index].image = image
-                    }
-                    
-                    for (index, caption) in captions.enumerated() where index < self.rectangleContents.count {
-                        self.rectangleContents[index].caption = caption
                     }
                     
                     self.isLoading = false
