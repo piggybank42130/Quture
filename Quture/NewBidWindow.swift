@@ -118,7 +118,6 @@ struct NewBidWindow: View {
         .cornerRadius(20)
         .shadow(radius: 10)
         .transition(.scale)
-        .dismissKeyboardOnTap() // Apply the extension here
         .sheet(isPresented: $showTesterAlert) {
             // Now passing the missing 'price' argument
             CustomAlertView(isVisible: $showTesterAlert, price: $priceToShowInAlert, message: $message, phoneNumber: $phoneNumber)

@@ -52,7 +52,11 @@ class TagManager {
         tags.append(tag)
     }
     
-    func tags(forCategory category: Tag.Category) -> [Tag] {
+    func getTagsByCategory(forCategory category: Tag.Category) -> [Tag] {
         tags.filter { $0.category == category }
+    }
+    
+    func getTagByName(byName name: String) -> Tag? {
+        tags.first { $0.name.lowercased() == name.lowercased() }
     }
 } //m

@@ -4,41 +4,29 @@ class ServerCommunicator: ObservableObject {
     let serverURL = "http://137.184.116.12:5000"
     
     // Function to request a method execution on the server with arbitrary parameters
-    func sendMethod(parameters: [String: Any], completion: @escaping (Result<Data, Error>) -> Void) {
-        
-        guard let url = URL(string: "\(serverURL)/execute-method") else { return }
+    func sendMethod(parameters: [String: Any]) async throws -> Data {
+            guard let url = URL(string: "\(serverURL)/execute-method") else {
+                throw URLError(.badURL)
+            }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
-        } catch let error {
-            completion(.failure(error))
-            return
+            do {
+                request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
+            } catch {
+                throw error // Propagate serialization error
+            }
+
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                throw URLError(.badServerResponse)
+            }
+
+            return data
         }
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
-                return
-            }
-
-            guard let data = data else {
-                DispatchQueue.main.async {
-                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Data was nil."])))
-                }
-                return
-            }
-
-            DispatchQueue.main.async {
-                completion(.success(data))
-            }
-        }.resume()
-    }
     
     
     

@@ -121,14 +121,14 @@ struct DetailScreen: View {
                 .padding()
                 
                 if let category = selectedCategory, category != .fashion {
-                    tagsScrollView(tags: TagManager.shared.tags(forCategory: category), selectedTags: $selectedTags)
+                    tagsScrollView(tags: TagManager.shared.getTagsByCategory(forCategory: category), selectedTags: $selectedTags)
                 }
                 
                 Text("Fashion Tags")
                     .font(.headline)
                     .padding(.top, 10)
                 
-                tagsScrollView(tags: TagManager.shared.tags(forCategory: .fashion), selectedTags: $selectedFashionTags)
+                tagsScrollView(tags: TagManager.shared.getTagsByCategory(forCategory: .fashion), selectedTags: $selectedFashionTags)
                 
                 Button("Confirm") {
                     onConfirm?(image, caption, price, selectedTags, selectedFashionTags)

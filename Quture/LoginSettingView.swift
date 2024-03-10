@@ -67,10 +67,12 @@ struct LoginSettingsView: View {
                     )
                 }
                 .onAppear {
-                    isLoadingImages = true
-                    ServerCommands().getImagesForUser(userId: 3) { imageIds, images, captions, error in
-                        DispatchQueue.main.async { // Ensure UI operations are on the main thread
-                            if let imageIds = imageIds, let images = images, let captions = captions { // Safely unwrap captions here
+                    Task {
+                        do {
+                            isLoadingImages = true
+                            let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: 3)
+                            DispatchQueue.main.async { // Ensure UI operations are on the main thread
+                            
                                 for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
                                     self.rectangleContents[index].imageId = imageId
                                 }
@@ -80,11 +82,11 @@ struct LoginSettingsView: View {
                                 for (index, caption) in captions.enumerated() where index < self.rectangleContents.count {
                                     self.rectangleContents[index].caption = caption
                                 }
-                            } else {
-                                // Handle errors or set a default image
-                                print(error?.localizedDescription ?? "Failed to fetch images.")
+                                isLoadingImages = false
                             }
-                            isLoadingImages = false
+                        }
+                        catch {
+                            print(error)
                         }
                     }
                 }

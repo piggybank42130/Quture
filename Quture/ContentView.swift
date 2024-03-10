@@ -47,16 +47,16 @@ struct ContentView: View {
     
     func handleImageConfirmation(image: UIImage, caption: String, tags: Set<Tag>) {
         if let index = rectangleContents.firstIndex(where: { $0.image == nil }) {
-            ServerCommands().postImage(image: image, caption: caption) { newImageId, error in
-                if let newImageId = newImageId {
-                    rectangleContents[index] = RectangleContent(imageId: newImageId, image: image, caption: caption, tags: Array(tags))
-                    ServerCommands().setTagsToImage(imageId: newImageId, tags: tags){ completed, error in
-                        DispatchQueue.main.async{
-                        }
+            Task {
+                do {
+                    let newImageId = try await ServerCommands().postImage(userId: 3, image: image, caption: caption)
+                    DispatchQueue.main.async{
+                        rectangleContents[index] = RectangleContent(imageId: newImageId, image: image, caption: caption, tags: Array(tags))
                     }
-                } else {
-                    // Handle errors or set a default image
-                    print(error?.localizedDescription ?? "Failed to fetch newImageId.")
+                    try await ServerCommands().setTagsToImage(imageId: newImageId, tags: tags)
+                }
+                catch {
+                    print(error)
                 }
             }
             
@@ -294,42 +294,33 @@ struct ContentView: View {
         .frame(maxHeight: .infinity)
         .onAppear {
             isLoadingImages = true
-            ServerCommands().getImagesForUser(userId: 3) { imageIds, images, captions, error in
-                if let imageIds = imageIds {
+            Task {
+                do {
+                    let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: 3)
                     for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
-                        self.rectangleContents[index].imageId = imageId
-                        ServerCommands().getTagsFromImage(imageId: imageId) { result in
-                            switch result {
-                                case .success(let tags):
-                                    
-                                    self.rectangleContents[index].tags = tags
-                                    print("Tags: \(tags)")
-                                case .failure(let error):
-                                    print("Error fetching tags: \(error)")
-                            }
+                        let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
+                        DispatchQueue.main.async {
+                            self.rectangleContents[index].imageId = imageId
+                            self.rectangleContents[index].tags = tags
+                            print("imageIds: \(imageId)")
+                            print("Tags: \(tags)")
                         }
                     }
-                } else {
-                    // Handle errors or set a default image
-                    print(error?.localizedDescription ?? "Failed to fetch images.")
-                }
-                if let images = images {
+                        
                     for (index, image) in images.enumerated() where index < self.rectangleContents.count {
                         self.rectangleContents[index].image = image
                     }
-                } else {
-                    // Handle errors or set a default image
-                    print(error?.localizedDescription ?? "Failed to fetch images.")
-                }
-                if let captions = captions {
+                
                     for (index, caption) in captions.enumerated() where index < self.rectangleContents.count {
                         self.rectangleContents[index].caption = caption
                     }
-                } else {
-                    // Handle errors or set a default image
-                    print(error?.localizedDescription ?? "Failed to fetch captions.")
+                
+                    isLoadingImages = false
+                    
                 }
-                isLoadingImages = false
+                catch {
+                    print(error)
+                }
             }
         }
     }

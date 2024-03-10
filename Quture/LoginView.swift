@@ -54,8 +54,25 @@ struct LoginView: View {
 
             // Confirm Button
             Button("Confirm") {
-                // Perform login action and set isUserLoggedIn to true upon success
-                isUserLoggedIn = true
+                Task {
+                    do {
+                        Task {
+                            do {
+                                let userId = try await ServerCommands().verifyUser(username: loginEmail, passwordHash: loginPassword)
+                                DispatchQueue.main.async {
+                                    LocalStorage().saveNumber(number: userId, to: "userId.txt")
+                                    isUserLoggedIn = (userId != -1)
+                                }
+                            }
+                            catch {
+                                print(error)
+                            }
+                        }
+                    }
+                    catch {
+                        print(error)
+                    }
+                }
             }
             .padding()
             .frame(maxWidth: .infinity)

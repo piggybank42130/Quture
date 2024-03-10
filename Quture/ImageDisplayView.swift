@@ -8,6 +8,7 @@ struct ImageDisplayView: View {
   
     @State private var heartCount = 0
     @State private var isHeartTapped = false
+    @State private var isSaveTapped = false
 
     let sellerPrice: Double = 1000.00 // Dummy seller price
         let customerPrice: Double = 950.00 // Dummy customer price
@@ -97,32 +98,19 @@ struct ImageDisplayView: View {
         .edgesIgnoringSafeArea(.all)
         .navigationBarHidden(true)
         .onAppear {
-            
-            ServerCommands().hasUserLikedImage(userId: 3, imageId: self.imageId) { has_liked, error in
-                print(tags)
-                DispatchQueue.main.async {
-                    if let has_liked = has_liked {
-                        isHeartTapped = has_liked;
-                    }  else {
-                        // Handle the unexpected case where like_count is nil and there's no error
-                        print(error?.localizedDescription ?? "Failed to retrieved if liked.")
+            Task {
+                do {
+                    let hasLiked = try await ServerCommands().hasUserLikedImage(userId: 3, imageId: self.imageId)
+                    let likeCount = try await ServerCommands().getLikesOnImage(imageId: self.imageId)
+                    let hasSaved = try await ServerCommands().hasUserSavedImage(userId: 3, imageId: self.imageId)
+                    DispatchQueue.main.async {
+                        self.isHeartTapped = hasLiked;
+                        self.isSaveTapped = hasSaved;
+                        self.heartCount = likeCount;
                     }
                 }
-            }
-
-            ServerCommands().getLikesOnImage(imageId: self.imageId) { like_count, error in
-                DispatchQueue.main.async { // Ensure UI operations are on the main thread
-                    if let error = error {
-                        // Handle the error, e.g., log it or show an alert
-                        print("Error fetching like count: \(error.localizedDescription)")
-                    } else if let like_count = like_count {
-                        // Safely unwrap like_count here
-                        self.heartCount = like_count
-                        print("Like count: \(self.heartCount)")
-                    } else {
-                        // Handle the unexpected case where like_count is nil and there's no error
-                        print("Unexpected response: No like count and no error")
-                    }
+                catch {
+                    print(error)
                 }
             }
         }
@@ -182,11 +170,23 @@ struct ImageDisplayView: View {
         Button(action: {
             // Your action when the bottom bar is tapped
             print("Bottom bar tapped")
+            
+            Task{
+                do {
+                    try await ServerCommands().toggleSaveOnImage(userId: 3, imageId: self.imageId)
+                    DispatchQueue.main.async{
+                        isSaveTapped = !isSaveTapped
+                    }
+                }
+                catch {
+                    print(error)
+                }
+            }
         }) {
             HStack {
                 Spacer() // Push content to center
 
-                Image(systemName: "bookmark") // Replace with your saved image icon
+                Image(systemName: isSaveTapped ? "bookmark.fill" : "bookmark") // Replace with your saved image icon
                     .resizable()
                     .frame(width: 20, height: 20) // Adjust size as needed
                     .foregroundColor(.white) // Customize icon color
@@ -215,9 +215,16 @@ struct ImageDisplayView: View {
     var sidebar: some View {
         VStack(spacing: 32) {
             Button(action: {
-                ServerCommands().toggleLikeOnImage(userId: 3, imageId: imageId)
-                isHeartTapped = !isHeartTapped
-                heartCount += (isHeartTapped ? 1 : -1)
+                Task{
+                    do {
+                        try await ServerCommands().toggleLikeOnImage(userId: 3, imageId: imageId)
+                        isHeartTapped = !isHeartTapped
+                        heartCount += (isHeartTapped ? 1 : -1)
+                    }
+                    catch {
+                        print(error)
+                    }
+                }
             }) {
                 VStack {
                     Image(systemName: "heart.fill")

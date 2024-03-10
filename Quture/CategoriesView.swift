@@ -13,18 +13,18 @@ struct CategoriesView: View {
     
     var body: some View {
         List {
-            ForEach(categories, id: \.self) { category in
-                Text(category.rawValue)
-                    .onTapGesture {
-                        selectedCategory = category
-                    }
-                if selectedCategory == category {
-                    ForEach(TagManager.shared.tags(forCategory: category), id: \.name) { tag in
-                        Text(tag.name)
-                            .padding(.leading)
-                    }
-                }
-            }
+//            ForEach(categories, id: \.self) { category in
+//                Text(category.rawValue)
+//                    .onTapGesture {
+//                        selectedCategory = category
+//                    }
+//                if selectedCategory == category {
+//                    ForEach(TagManager.shared.tags(forCategory: category), id: \.name) { tag in
+//                        Text(tag.name)
+//                            .padding(.leading)
+//                    }
+//                }
+//            }
         }
     }
 }
