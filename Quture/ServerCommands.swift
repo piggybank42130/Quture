@@ -69,9 +69,8 @@ class ServerCommands: ObservableObject {
         ]
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-           let result = jsonResponse["result"] as? [String: Any],
-           let success = result["success"] as? Bool {
-            return success
+           let result = jsonResponse["result"] as? [String: Any]{
+            return true
         } else {
             throw NSError(domain: "CustomError", code: 101, userInfo: [NSLocalizedDescriptionKey: "Failed to set tags to image."])
         }
