@@ -7,6 +7,8 @@ struct SearchedView: View {
     let rectangleWidth: CGFloat = (UIScreen.main.bounds.width - 32) / 2 // Assuming 32 is the total horizontal padding
     let rectangleHeight: CGFloat = (UIScreen.main.bounds.width - 32) / 2 * (4 / 3) // For a 3:4 aspect ratio
     @State private var rectangleContents = Array(repeating: RectangleContent(imageId: -1, image: nil, caption: "Loading..."), count: 100) // Example for 100 rectangles
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+
 
     var body: some View {
         VStack {
@@ -18,7 +20,7 @@ struct SearchedView: View {
                 }) {
                     Image(systemName: "arrowtriangle.left.fill")
                         .font(.title)
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.contrastColor(for: colorScheme))
                 }
 
                 Spacer()
@@ -30,8 +32,8 @@ struct SearchedView: View {
                 Spacer()
             }
             .padding()
-            .background(Color.black)
-            .foregroundColor(.white)
+            .background(Color.sameColor(forScheme: colorScheme))
+            .foregroundColor(.contrastColor(for: colorScheme))
 
             // Infinite list of rectangles
             ScrollView {
@@ -50,7 +52,7 @@ struct SearchedView: View {
                                     .frame(width: rectangleWidth, height: rectangleHeight)
                             }
                             Text(rectangleContents[index].caption)
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.contrastColor(for: colorScheme))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }

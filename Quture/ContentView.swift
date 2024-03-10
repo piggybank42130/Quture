@@ -195,7 +195,7 @@ struct ContentView: View {
                         }) {
                             Text(tab)
                                 .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(selectedTopTab == topTabs.firstIndex(of: tab) ? .black : .gray)
+                                .foregroundColor(selectedTopTab == topTabs.firstIndex(of: tab) ? Color.contrastColor(for: colorScheme) : .gray)
                                 .frame(minWidth: 0, maxWidth: .infinity)
                         }
                         .padding(.vertical, 2)

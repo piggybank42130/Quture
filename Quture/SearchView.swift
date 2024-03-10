@@ -4,6 +4,8 @@ struct SearchView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var searchText = "" // State variable for the search text
     @State private var navigateToSearchedView = false // State to control navigation
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+
 
     var body: some View {
         VStack {
@@ -11,7 +13,7 @@ struct SearchView: View {
             HStack {
                 TextField("Search...", text: $searchText) // Use the state variable for text binding
                     .padding(10) // Add some padding inside the TextField
-                    .background(Color.white) // Set the background color of the TextField
+                    .background(Color.sameColor(forScheme: colorScheme)) // Set the background color of the TextField
                     .cornerRadius(10) // Round the corners of the TextField background
                     .overlay(
                         RoundedRectangle(cornerRadius: 10) // Add a rounded border
@@ -30,12 +32,12 @@ struct SearchView: View {
                 Button("Cancel") { // Cancel button on the right
                     presentationMode.wrappedValue.dismiss()
                 }
-                .foregroundColor(.black)
+                .foregroundColor(Color.contrastColor(for: colorScheme))
                 .padding(.trailing)
             }
             .padding(.vertical, 10)
-            .background(Color.white)
-            .foregroundColor(.black)
+            .background(Color.sameColor(forScheme: colorScheme))
+            .foregroundColor(.contrastColor(for: colorScheme))
 
             // Horizontal bars
             ScrollView {

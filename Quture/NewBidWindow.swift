@@ -12,6 +12,7 @@ struct NewBidWindow: View {
     @State private var phoneNumber: String = ""
     @FocusState private var isInputActive: Bool
     @State private var priceToShowInAlert: Double = 0.0 // Ensure this exists
+    @Environment(\.colorScheme) var colorScheme
 
 
 
@@ -144,27 +145,34 @@ struct CustomAlertView: View {
     @Binding var price: Double
     @Binding var message: String
     @Binding var phoneNumber: String
+    @Environment(\.colorScheme) var colorScheme
+
 
     var body: some View {
-        VStack {
-            Text("Price: \(price, specifier: "%.2f")")
-                .foregroundColor(.black) // Ensure visibility against the white background
-                .font(.headline) // Optionally adjust the font
-            Text("Please enter your contact information:")
-                .foregroundColor(.black) // Adjust as needed for visibility
-            TextField("Message to seller", text: $message)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            TextField("Phone Number", text: $phoneNumber)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            Button("Submit") {
-                print("Message: \(message), Phone: \(phoneNumber)")
-                isVisible = false
+        ZStack {
+            // Setting the background color based on the color scheme
+            colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all)
+            VStack {
+                Text("Price: \(price, specifier: "%.2f")")
+                    .foregroundColor(Color.contrastColor(for: colorScheme)) // Ensure visibility against the white background
+                    .font(.headline) // Optionally adjust the font
+                Text("Please enter your contact information:")
+                    .foregroundColor(.black) // Adjust as needed for visibility
+                TextField("Message to seller", text: $message)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                TextField("Phone Number", text: $phoneNumber)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                Button("Submit") {
+                    print("Message: \(message), Phone: \(phoneNumber)")
+                    isVisible = false
+                }
             }
+            .padding()
+            .background(Color.sameColor(forScheme: colorScheme))
+            .foregroundColor(Color.contrastColor(for: colorScheme))
+            .cornerRadius(12)
+            .shadow(radius: 8)
         }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(radius: 8)
     }
 }
 
