@@ -97,9 +97,8 @@ class ServerCommands: ObservableObject {
            let result = jsonResponse["result"] as? [String: Any],
            let tagDicts = result["tags"] as? [[String: Any]] {
             return tagDicts.compactMap { dict in
-                guard let tagId = dict["tag_id"] as? Int,
-                      let tagName = dict["tag_name"] as? String else { return nil }
-                return Tag(tagId: tagId, name: tagName, category: .top) // Assuming .top is a placeholder
+                guard let tagId = dict["tag_id"] as? Int else { return nil }
+                return TagManager().getTagById(tagId: tagId) // Assuming .top is a placeholder
             }
         } else {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
@@ -111,10 +110,10 @@ class ServerCommands: ObservableObject {
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
            let result = jsonResponse["result"] as? [String: Any],
-           let hasLiked = result["has_liked"] as? Bool {
-            return hasLiked
+           let hasLiked = result["has_liked"] as? String {
+            return (hasLiked == "True")
         } else {
-            throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
+            throw NSError(domain: "CustomError poopy", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
     }
 
@@ -135,8 +134,8 @@ class ServerCommands: ObservableObject {
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
            let result = jsonResponse["result"] as? [String: Any],
-           let hasSaved = result["has_saved"] as? Bool {
-            return hasSaved
+           let hasSaved = result["has_saved"] as? String {
+            return (hasSaved == "True")
         } else {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }

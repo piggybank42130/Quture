@@ -62,9 +62,7 @@ struct VisualStudioView: View {
                         }
                     }
                     .padding(.bottom)
-                    .onAppear{
-                       
-                    }
+                    
                     
                     // Tops: Button Up
                     Text("Button Up")
@@ -597,6 +595,34 @@ struct VisualStudioView: View {
                     }
                 }
             )
+        }
+        .onAppear{
+            Task{
+                do {
+                    let (imageIds) = try await ServerCommands().getUserSavedImageIdsByTag(userId: 3, tag: TagManager().getTagById(tagId: 1)!)
+                    for (index, imageId) in imageIds.enumerated() where index < self.rectangles.count {
+                        let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                        let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
+                        DispatchQueue.main.async {
+                            self.rectangles[index].imageId = imageId
+                            self.rectangles[index].tags = tags
+                            self.rectangles[index].image = image
+                            self.rectangles[index].caption = caption
+                            
+                            print("You've saved")
+                            print("imageIds: \(imageId)")
+                            print("Tags: \(tags)")
+                        }
+                    }
+                    print("GOOBERINO")
+                    
+                    //self.isLoading = false
+                    
+                } catch {
+                    print(error)
+                    //self.isLoading = false
+                }
+            }
         }
     }
     

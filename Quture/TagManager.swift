@@ -59,4 +59,9 @@ class TagManager {
     func getTagByName(byName name: String) -> Tag? {
         tags.first { $0.name.lowercased() == name.lowercased() }
     }
+    
+    func getTagById(tagId: Int) -> Tag? {
+        return tags.first { $0.tagId == tagId }
+    }
+
 } //m

@@ -15,6 +15,8 @@ struct ContentView: View {
     @State private var inputImage: UIImage?
     @State private var showingDetailScreen = false
     @State private var rectangleContents = Array(repeating: RectangleContent(imageId: -1, image: nil, caption: "Loading..."), count: 20) // Example for 20 rectangles
+    @State private var selectedContent: RectangleContent?
+
     @State private var showingLoginSettings = false
     @State private var activeScreen = ActiveScreen.home
     @State private var selectedImage: UIImage? // Track the selected image
@@ -32,9 +34,9 @@ struct ContentView: View {
     @State private var showingSearchView = false
     @State private var isUserLoggedIn = false // For the login flow
     @State private var showingNotificationView = false
+    @State private var isLoading = true
+    @State private var isNavigationActive = false
 
-    
-    
     
     
     
@@ -252,48 +254,25 @@ struct ContentView: View {
     
     // MARK: - Content Section
     var contentSection: some View {
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible())], spacing: 10) {
-                ForEach(rectangleContents.indices, id: \.self) { index in
-                    VStack {
-                        if let image = rectangleContents[index].image {
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                                .clipped()
-                                .onTapGesture {
-                                    self.selectedRectangleIndex = index // Mark the selected image
-                                }
-                        } else {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-                        }
-                        
-                        if isLayoutModified {
-                            Text(rectangleContents[index].caption)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
-                    .background(
+        Group {
+            if isLoading {
+                ProgressView("Loading images...") // Make sure this is not inside another view unintentionally
+            } else {
+                DynamicImageGridView(contents: rectangleContents, onImageTap: { content in
+                    self.selectedContent = content
+                    self.isNavigationActive = true // Trigger navigation
+
+                })
+                .background(
                         NavigationLink(
-                            destination: ImageDisplayView(imageId: rectangleContents[index].imageId, image: rectangleContents[index].image ?? UIImage(), caption: rectangleContents[index].caption, tags: rectangleContents[index].tags),
-                            isActive: .init(
-                                get: { self.selectedRectangleIndex == index },
-                                set: { _ in self.selectedRectangleIndex = nil }
-                            )
+                            destination: ImageDisplayView(imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
+                            isActive: $isNavigationActive
                         ) { EmptyView() }
-                            .hidden()
                     )
-                }
             }
-            .padding(.horizontal, 16)
         }
-        .frame(maxHeight: .infinity)
+
         .onAppear {
-            isLoadingImages = true
             Task {
                 do {
                     let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: 3)
@@ -306,29 +285,99 @@ struct ContentView: View {
                             print("Tags: \(tags)")
                         }
                     }
-                        
+                    
                     for (index, image) in images.enumerated() where index < self.rectangleContents.count {
                         self.rectangleContents[index].image = image
                     }
-                
+                    
                     for (index, caption) in captions.enumerated() where index < self.rectangleContents.count {
                         self.rectangleContents[index].caption = caption
                     }
-                
-                    isLoadingImages = false
                     
-                }
-                catch {
+                    self.isLoading = false
+                
+                } catch {
                     print(error)
+                    self.isLoading = false
                 }
             }
         }
+    
+
+//        ScrollView {
+//            LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible())], spacing: 10) {
+//                ForEach(rectangleContents.indices, id: \.self) { index in
+//                    VStack {
+//                        if let image = rectangleContents[index].image {
+//                            Image(uiImage: image)
+//                                .resizable()
+//                                .aspectRatio(contentMode: .fit)
+//                                .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
+//                                .clipped()
+//                                .onTapGesture {
+//                                    self.selectedRectangleIndex = index // Mark the selected image
+//                                }
+//                        } else {
+//                            Rectangle()
+//                                .fill(Color.gray.opacity(0.3))
+//                                .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
+//                        }
+//                        
+//                        if isLayoutModified {
+//                            Text(rectangleContents[index].caption)
+//                                .foregroundColor(.white)
+//                                .frame(maxWidth: .infinity, alignment: .leading)
+//                        }
+//                    }
+//                    .background(
+//                        NavigationLink(
+//                            destination: ImageDisplayView(imageId: rectangleContents[index].imageId, image: rectangleContents[index].image ?? UIImage(), caption: rectangleContents[index].caption, tags: rectangleContents[index].tags),
+//                            isActive: .init(
+//                                get: { self.selectedRectangleIndex == index },
+//                                set: { _ in self.selectedRectangleIndex = nil }
+//                            )
+//                        ) { EmptyView() }
+//                            .hidden()
+//                    )
+//                }
+//            }
+//            .padding(.horizontal, 16)
+//        }
+//        .frame(maxHeight: .infinity)
+//        .onAppear {
+//            isLoadingImages = true
+//            Task {
+//                do {
+//                    let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: 3)
+//                    for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
+//                        let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
+//                        DispatchQueue.main.async {
+//                            self.rectangleContents[index].imageId = imageId
+//                            self.rectangleContents[index].tags = tags
+//                            print("imageIds: \(imageId)")
+//                            print("Tags: \(tags)")
+//                        }
+//                    }
+//                        
+//                    for (index, image) in images.enumerated() where index < self.rectangleContents.count {
+//                        self.rectangleContents[index].image = image
+//                    }
+//                
+//                    for (index, caption) in captions.enumerated() where index < self.rectangleContents.count {
+//                        self.rectangleContents[index].caption = caption
+//                    }
+//                
+//                    isLoadingImages = false
+//                    
+//                }
+//                catch {
+//                    print(error)
+//                }
+//            }
+//        }
     }
     
     
-    
-    
-    // MARK: - Bottom Bar Section
     // MARK: - Bottom Bar Section
     var bottomBarSection: some View {
         HStack {
