@@ -241,6 +241,22 @@ class ServerCommands: ObservableObject {
         }
     }
     
+    func generateUserFeed(userId: Int, limit: Int) async throws -> [Int] {
+        let parameters: [String: Any] = [
+            "method_name": "generate_user_feed",
+            "params": ["user_id": userId, "limit": limit]
+        ]
+
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let result = jsonResponse["result"] as? [String: Any],
+           let imageIds = result["image_ids"] as? [Int] {
+            return imageIds
+        } else {
+            throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
+        }
+    }
+    
     func getBidInfo (messageId: Int) async throws -> [String: Any] {
         let parameters: [String: Any] = [
             "method_name": "get_bid_info",
