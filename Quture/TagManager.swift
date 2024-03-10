@@ -7,6 +7,7 @@ class TagManager {
         // Initialize with your default tags
 
         // Top tag
+        Tag(tagId: -1, name: "NULL", category: .null),
         Tag(tagId: 1, name: "Suit", category: .top),
         Tag(tagId: 2, name: "Buttonup", category: .top),
         Tag(tagId: 3, name: "Sweater", category: .top),
@@ -62,6 +63,10 @@ class TagManager {
     
     func getTagById(tagId: Int) -> Tag? {
         return tags.first { $0.tagId == tagId }
+    }
+    
+    func getNull() -> Tag{
+        return Tag(tagId: -1, name: "NULL", category: .null)
     }
 
 } //m
