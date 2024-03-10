@@ -36,6 +36,8 @@ struct ContentView: View {
     @State private var showingNotificationView = false
     @State private var isLoading = true
     @State private var isNavigationActive = false
+    
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
 
     
     
@@ -193,7 +195,7 @@ struct ContentView: View {
                         }) {
                             Text(tab)
                                 .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(selectedTopTab == topTabs.firstIndex(of: tab) ? .white : .primary)
+                                .foregroundColor(selectedTopTab == topTabs.firstIndex(of: tab) ? (colorScheme == .light ? .black : .white) : .gray)
                                 .frame(minWidth: 0, maxWidth: .infinity)
                         }
                         .padding(.vertical, 2)
@@ -204,7 +206,7 @@ struct ContentView: View {
                 .cornerRadius(10)
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.black, lineWidth: 0.5)
+                        .stroke(Color.sameColor(forScheme: colorScheme), lineWidth: 0.5)
                 )
                 
                 Spacer()
@@ -214,7 +216,7 @@ struct ContentView: View {
                 }) {
                     Image(systemName: "magnifyingglass")
                         .iconModifier()
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.contrastColor(for: colorScheme))
                 }
             }
             
@@ -234,7 +236,7 @@ struct ContentView: View {
                                 .background(Color.gray.opacity(0.2))
                                 .cornerRadius(10)
                         }
-                        .foregroundColor(.white) // Set the text color for the button
+                        .foregroundColor(Color.contrastColor(for: colorScheme)) // Set the text color for the button
                     }
                 }
                 .padding(.horizontal)
@@ -303,78 +305,6 @@ struct ContentView: View {
             }
         }
     
-
-//        ScrollView {
-//            LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible())], spacing: 10) {
-//                ForEach(rectangleContents.indices, id: \.self) { index in
-//                    VStack {
-//                        if let image = rectangleContents[index].image {
-//                            Image(uiImage: image)
-//                                .resizable()
-//                                .aspectRatio(contentMode: .fit)
-//                                .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-//                                .clipped()
-//                                .onTapGesture {
-//                                    self.selectedRectangleIndex = index // Mark the selected image
-//                                }
-//                        } else {
-//                            Rectangle()
-//                                .fill(Color.gray.opacity(0.3))
-//                                .frame(width: LayoutConfig.rectangleWidth, height: LayoutConfig.rectangleHeight)
-//                        }
-//                        
-//                        if isLayoutModified {
-//                            Text(rectangleContents[index].caption)
-//                                .foregroundColor(.white)
-//                                .frame(maxWidth: .infinity, alignment: .leading)
-//                        }
-//                    }
-//                    .background(
-//                        NavigationLink(
-//                            destination: ImageDisplayView(imageId: rectangleContents[index].imageId, image: rectangleContents[index].image ?? UIImage(), caption: rectangleContents[index].caption, tags: rectangleContents[index].tags),
-//                            isActive: .init(
-//                                get: { self.selectedRectangleIndex == index },
-//                                set: { _ in self.selectedRectangleIndex = nil }
-//                            )
-//                        ) { EmptyView() }
-//                            .hidden()
-//                    )
-//                }
-//            }
-//            .padding(.horizontal, 16)
-//        }
-//        .frame(maxHeight: .infinity)
-//        .onAppear {
-//            isLoadingImages = true
-//            Task {
-//                do {
-//                    let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: 3)
-//                    for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
-//                        let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
-//                        DispatchQueue.main.async {
-//                            self.rectangleContents[index].imageId = imageId
-//                            self.rectangleContents[index].tags = tags
-//                            print("imageIds: \(imageId)")
-//                            print("Tags: \(tags)")
-//                        }
-//                    }
-//                        
-//                    for (index, image) in images.enumerated() where index < self.rectangleContents.count {
-//                        self.rectangleContents[index].image = image
-//                    }
-//                
-//                    for (index, caption) in captions.enumerated() where index < self.rectangleContents.count {
-//                        self.rectangleContents[index].caption = caption
-//                    }
-//                
-//                    isLoadingImages = false
-//                    
-//                }
-//                catch {
-//                    print(error)
-//                }
-//            }
-//        }
     }
     
     
@@ -417,7 +347,7 @@ struct ContentView: View {
         }
         .padding(.horizontal)
         .frame(height: 50)
-        .background(Color.black)
+        .background(Color.sameColor(forScheme: colorScheme))
         .padding(.bottom)
         .background(
             NavigationLink(destination: VisualStudioView(), isActive: $showingVisualStudioView) {
