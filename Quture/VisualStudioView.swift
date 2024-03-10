@@ -11,6 +11,8 @@ struct VisualStudioView: View {
     @State private var isBottomsTabExpanded: Bool = false
     @State private var isShoesTabExpanded: Bool = false
     @State private var isAccessoriesTabExpanded: Bool = false
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+
     
     @State private var rectangles: [Int: [RectangleContent]] = Dictionary(uniqueKeysWithValues: TagManager.shared.tags.filter { $0.tagId != -1 }.map { ($0.tagId, [RectangleContent]()) })
     private var topCategoryTagIds: [Int] {
@@ -43,12 +45,12 @@ struct VisualStudioView: View {
                         HStack {
                             Text("Tops")
                                 .font(.system(size: 24))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.contrastColor(for: colorScheme))
                             Image(systemName: isTopsTabExpanded ? "chevron.up" : "chevron.down")
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.contrastColor(for: colorScheme))
                         }
                         .padding(EdgeInsets(top: 20, leading: 40, bottom: 20, trailing: 40)) // Increase padding to make button bigger
-                        .background(Color.black)
+                        .background(Color.sameColor(forScheme: colorScheme))
                         .cornerRadius(8)
                     }
                     .padding(.leading, -15)
@@ -102,12 +104,12 @@ struct VisualStudioView: View {
                         HStack {
                             Text("Bottoms")
                                 .font(.system(size: 24))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.contrastColor(for: colorScheme))
                             Image(systemName: isBottomsTabExpanded ? "chevron.up" : "chevron.down")
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.contrastColor(for: colorScheme))
                         }
                         .padding(EdgeInsets(top: 20, leading: 40, bottom: 20, trailing: 40)) // Increase padding to make button bigger
-                        .background(Color.black)
+                        .background(Color.sameColor(forScheme: colorScheme))
                         .cornerRadius(8)
                     }
                     .padding(.leading, -15)
@@ -157,12 +159,12 @@ struct VisualStudioView: View {
                         HStack {
                             Text("Shoes")
                                 .font(.system(size: 24))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.contrastColor(for: colorScheme))
                             Image(systemName: isShoesTabExpanded ? "chevron.up" : "chevron.down")
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.contrastColor(for: colorScheme))
                         }
                         .padding(EdgeInsets(top: 20, leading: 40, bottom: 20, trailing: 40)) // Increase padding to make button bigger
-                        .background(Color.black)
+                        .background(Color.sameColor(forScheme: colorScheme))
                         .cornerRadius(8)
                     }
                     .padding(.leading, -15)
@@ -212,12 +214,12 @@ struct VisualStudioView: View {
                         HStack {
                             Text("Accessories")
                                 .font(.system(size: 24))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.contrastColor(for: colorScheme))
                             Image(systemName: isAccessoriesTabExpanded ? "chevron.up" : "chevron.down")
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.contrastColor(for: colorScheme))
                         }
                         .padding(EdgeInsets(top: 20, leading: 40, bottom: 20, trailing: 40)) // Increase padding to make button bigger
-                        .background(Color.black)
+                        .background(Color.sameColor(forScheme: colorScheme))
                         .cornerRadius(8)
                     }
                     .padding(.leading, -15)
@@ -317,7 +319,7 @@ struct VisualStudioView: View {
             }) {
                 Image(systemName: "arrowtriangle.left.fill") // Triangle-shaped back button
                     .font(.system(size: 24))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.contrastColor(for: colorScheme))
                     .padding(.leading, 20) // Add padding to move the icon further from the left edge
             }
             
@@ -326,7 +328,7 @@ struct VisualStudioView: View {
             Text("Save") // Center-aligned text
                 .font(.title)
                 .bold()
-                .foregroundColor(.white)
+                .foregroundColor(Color.contrastColor(for: colorScheme))
             
             Spacer()
             
@@ -339,12 +341,15 @@ struct VisualStudioView: View {
                 .opacity(0) // Make it invisible
         }
         .padding(.vertical, 10)
-        .background(Color.black) // Set your desired background color here
+        .background(Color.sameColor(forScheme: colorScheme)) // Set your desired background color here
     }
 }
 
 struct RectangleView: View {
     let content: RectangleContent
+    
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+
     
     var body: some View {
         VStack {
@@ -366,7 +371,7 @@ struct RectangleView: View {
             }
             // Caption for the image
             Text(content.caption)
-                .foregroundColor(.white) // Ensure the caption is visible
+                .foregroundColor(Color.contrastColor(for: colorScheme)) // Ensure the caption is visible
         }
         // Background color for the entire VStack
         //.background(Color.gray) // Your existing background
