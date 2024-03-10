@@ -212,7 +212,7 @@ class ServerCommands: ObservableObject {
     func getUserSavedImageIdsByTag(userId: Int, tag: Tag) async throws -> [Int] {
         let parameters: [String: Any] = [
             "method_name": "get_user_saved_image_ids_by_tag",
-            "params": ["user_id": userId, "tag_name": tag.name]
+            "params": ["user_id": userId, "tag_id": tag.tagId]
         ]
 
         let data = try await serverCommunicator.sendMethod(parameters: parameters)

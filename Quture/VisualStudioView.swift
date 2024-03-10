@@ -599,7 +599,9 @@ struct VisualStudioView: View {
         .onAppear{
             Task{
                 do {
-                    let (imageIds) = try await ServerCommands().getUserSavedImageIdsByTag(userId: 3, tag: TagManager().getTagById(tagId: 1)!)
+                    let (imageIds) = try await ServerCommands().getUserSavedImageIdsByTag(userId: 3, tag: TagManager().getTagByName(byName: "Suit") ?? TagManager().getNull())
+                    print("GET")
+                    print(imageIds)
                     for (index, imageId) in imageIds.enumerated() where index < self.rectangles.count {
                         let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                         let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
@@ -610,12 +612,16 @@ struct VisualStudioView: View {
                             self.rectangles[index].caption = caption
                             
                             print("You've saved")
-                            print("imageIds: \(imageId)")
-                            print("Tags: \(tags)")
+                            //print("imageIds: \(imageId)")
+                            //print("Tags: \(tags)")
+                            print(self.rectangles[index].tags.contains {$0.name == "Suit"})
                         }
                     }
                     print("GOOBERINO")
-                    
+                    let suitTops = rectangles.filter { rectangle in
+                        rectangle.tags.contains { $0.name == "Suit" }
+                    }
+                    print(suitTops)
                     //self.isLoading = false
                     
                 } catch {
