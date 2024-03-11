@@ -289,7 +289,7 @@ struct VisualStudioView: View {
                         print("Fetching images for tag: \(tag.name)")
                         print(imageIds)
                         for imageId in imageIds {
-                            let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                            let (userId, image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                             let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
                             DispatchQueue.main.async {
                                 // Initialize tag key with an empty array if it doesn't already exist
@@ -298,7 +298,7 @@ struct VisualStudioView: View {
                                 }
 
                                 // Create a new RectangleContent object
-                                let newRectangleContent = RectangleContent(imageId: imageId, image: image, caption: caption, tags: tags)
+                                let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
 
                                 // Append the new object to the array under the tag name
                                 self.rectangles[tagId]!.append(newRectangleContent)
@@ -363,6 +363,13 @@ struct RectangleView: View {
                     // Scale the image to the specific height, keeping its aspect ratio
                     .frame(width: scaledWidth, height: LayoutConfig.rectangleHeight)
                     .clipped() // Clip the image to fit within the frame dimensions
+                
+                Text(content.caption)
+                    .font(.caption)
+                    .foregroundColor(Color.contrastColor(for: colorScheme))
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .frame(width: scaledWidth, alignment: .leading)
             } else {
                 // Display a gray rectangle if there's no image
                 Rectangle()
@@ -370,8 +377,7 @@ struct RectangleView: View {
                     .frame(height: LayoutConfig.rectangleHeight)
             }
             // Caption for the image
-            Text(content.caption)
-                .foregroundColor(Color.contrastColor(for: colorScheme)) // Ensure the caption is visible
+
         }
         // Background color for the entire VStack
         //.background(Color.gray) // Your existing background

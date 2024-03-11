@@ -9,12 +9,14 @@ struct ImageDisplayView: View {
     @State private var heartCount = 0
     @State private var isHeartTapped = false
     @State private var isSaveTapped = false
+    @State private var username: String = ""
     
     let sellerPrice: Double = 1000.00 // Dummy seller price
     let customerPrice: Double = 950.00 // Dummy customer price
     
     @Environment(\.colorScheme) var colorScheme
     
+    var userId: Int
     var imageId: Int
     var image: UIImage
     var caption: String
@@ -47,7 +49,7 @@ struct ImageDisplayView: View {
                         Circle()
                             .frame(width: 30, height: 30)
                             .foregroundColor(.gray)
-                        Text("username")
+                        Text(username)
                             .font(.caption)
                     }
                     
@@ -155,10 +157,12 @@ struct ImageDisplayView: View {
         .onAppear {
             Task {
                 do {
-                    let hasLiked = try await ServerCommands().hasUserLikedImage(userId: 3, imageId: self.imageId)
+                    let username = try await ServerCommands().getUsername(userId: userId)
+                    let hasLiked = try await ServerCommands().hasUserLikedImage(userId: userId, imageId: self.imageId)
                     let likeCount = try await ServerCommands().getLikesOnImage(imageId: self.imageId)
-                    let hasSaved = try await ServerCommands().hasUserSavedImage(userId: 3, imageId: self.imageId)
+                    let hasSaved = try await ServerCommands().hasUserSavedImage(userId: userId, imageId: self.imageId)
                     DispatchQueue.main.async {
+                        self.username = username
                         self.isHeartTapped = hasLiked
                         self.isSaveTapped = hasSaved
                         self.heartCount = likeCount
@@ -208,7 +212,7 @@ struct ImageDisplayView: View {
 struct ImageDisplayView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            ImageDisplayView(imageId: 0, image: UIImage(named: "yourImageNameHere") ?? UIImage(), caption:"Loading...", tags: [])
+            ImageDisplayView(userId: 0, imageId: 0, image: UIImage(named: "yourImageNameHere") ?? UIImage(), caption:"Loading...", tags: [])
         }
     }
 }

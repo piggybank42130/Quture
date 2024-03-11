@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var showingImagePicker = false
     @State private var inputImage: UIImage?
     @State private var showingDetailScreen = false
-    @State private var rectangleContents = Array(repeating: RectangleContent(imageId: -1, image: nil, caption: "Loading..."), count: 20) // Example for 20 rectangles
+    @State private var rectangleContents: [RectangleContent] = [] // Example for 20 rectangles
     @State private var selectedContent: RectangleContent?
 
     @State private var showingLoginSettings = false
@@ -55,7 +55,7 @@ struct ContentView: View {
                 do {
                     let newImageId = try await ServerCommands().postImage(userId: 3, image: image, caption: caption)
                     DispatchQueue.main.async{
-                        rectangleContents[index] = RectangleContent(imageId: newImageId, image: image, caption: caption, tags: Array(tags))
+                        rectangleContents[index] = RectangleContent(userId: 1, imageId: newImageId, image: image, caption: caption, tags: Array(tags))
                     }
                     try await ServerCommands().setTagsToImage(imageId: newImageId, tags: tags)
                 }
@@ -107,7 +107,7 @@ struct ContentView: View {
                                 VStack(spacing: 0) {
                                     topBarSection
                                     contentSection
-                                    NavigationLink(destination: ImageDisplayView(imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string", tags: []), isActive: Binding<Bool>(
+                                    NavigationLink(destination: ImageDisplayView(userId: 0, imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string", tags: []), isActive: Binding<Bool>(
                                         get: { self.imageToDisplay != nil },
                                         set: { if !$0 { self.imageToDisplay = nil } }
                                     )) {
@@ -177,15 +177,23 @@ struct ContentView: View {
     var topBarSection: some View {
         VStack(spacing: 10) {
             HStack {
-                Image(systemName: "circle.fill")
-                    .iconModifier()
-                    .foregroundColor(.coralGreen)
+                RoundedRectangle(cornerRadius: 20) // Smaller corner radius for a smaller switch
+                    .frame(width: 40, height: 20) // Smaller frame for a more compact appearance
+                    .foregroundColor(showingImageDetailView ? .coralGreen : Color.gray) // Color change based on the switch state
+                    .overlay(
+                        // This will represent the circle of the switch
+                        Circle()
+                            .foregroundColor(Color.white)
+                            .frame(width: 18, height: 18) // Smaller circle to fit the smaller switch
+                            .offset(x: showingImageDetailView ? 9 : -9, y: 0) // Adjusted movement for the smaller size
+                            .animation(.easeInOut(duration: 0.2), value: showingImageDetailView)
+                    )
                     .onTapGesture {
-                        //isLayoutModified.toggle()
+                        // Toggle the switch state
                         showingImageDetailView.toggle()
-                        print(showingImageDetailView)
-                    
                     }
+                    .padding(.leading, 10) // Move the entire switch slightly to the right
+
                 
                 Spacer()
                 
@@ -268,7 +276,7 @@ struct ContentView: View {
                 })
                 .background(
                         NavigationLink(
-                            destination: ImageDisplayView(imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
+                            destination: ImageDisplayView(userId: self.selectedContent?.userId ?? 0, imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
                             isActive: $isNavigationActive
                         ) { EmptyView() }
                     )
@@ -280,14 +288,13 @@ struct ContentView: View {
                 do {
                     // Directly assign the result without using parentheses
                     let imageIds = try await ServerCommands().generateUserFeed(userId: 1, limit: 20)
-                    for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
-                        let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                    self.rectangleContents = []
+                    for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
+                        let (userId, image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                         let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
                         DispatchQueue.main.async {
-                            self.rectangleContents[index].imageId = imageId
-                            self.rectangleContents[index].tags = tags
-                            self.rectangleContents[index].image = image
-                            self.rectangleContents[index].caption = caption
+                            let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
+                            rectangleContents.append(newRectangleContent)
                         }
                     }
                     
@@ -298,7 +305,7 @@ struct ContentView: View {
                     self.isLoading = false
                 }
             }
-        }    
+        }
     }
     
     
