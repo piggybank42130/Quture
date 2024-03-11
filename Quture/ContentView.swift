@@ -36,6 +36,8 @@ struct ContentView: View {
     @State private var showingNotificationView = false
     @State private var isLoading = true
     @State private var isNavigationActive = false
+    @State private var hasNotifications = false
+
     
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
 
@@ -320,11 +322,14 @@ struct ContentView: View {
                 }
             
             // Bell icon for notifications
-            Image(systemName: "bell.fill").iconModifier()
-                .frame(maxWidth: .infinity)
-                .onTapGesture {
-                    showingNotificationView = true // Trigger navigation to NotificationView
-                }
+            Image(systemName: hasNotifications ? "bell.badge.fill" : "bell.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24) // Adjust the size as needed
+                    .onTapGesture {
+                        showingNotificationView = true // Trigger navigation or action
+                        // Optionally reset the notification state here if needed
+                    }
             
             // Other icons as placeholders
             Image(systemName: "plus.square.fill").iconModifier()
