@@ -2,11 +2,21 @@ import SwiftUI
 
 struct LoginSettingsView: View {
     @State private var rectangleContents = Array(repeating: RectangleContent(imageId: -1, image: nil, caption: "Loading..."), count: 20)
-    
+    @State private var selectedContent: RectangleContent?
+
     private let rectangleWidth: CGFloat = (UIScreen.main.bounds.width - 32) / 2
     private let rectangleHeight: CGFloat = ((UIScreen.main.bounds.width - 32) / 2) * (4 / 3)
     @State private var isLoadingImages = true
     @State private var showingLogoutAlert = false // State to control the logout alert
+    @State private var isNavigationActive = false
+    @State private var showingImageDetailView = true
+    
+
+    
+    
+    @State private var isLoading = true
+
+
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
 
     
@@ -30,33 +40,6 @@ struct LoginSettingsView: View {
                     .font(.title)
                     .padding()
                 
-                
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible())], spacing: 20) {
-                        ForEach(0..<rectangleContents.count, id: \.self) { index in
-                            VStack {
-                                if let uiImage = rectangleContents[index].image {
-                                    Image(uiImage: uiImage)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: rectangleWidth, height: rectangleHeight)
-                                } else {
-                                    Rectangle()
-                                        .fill(Color.gray.opacity(0.3))
-                                        .frame(width: rectangleWidth, height: rectangleHeight)
-                                }
-                                
-                                Text(rectangleContents[index].caption)
-                                    .foregroundColor(.white)
-                                    .padding(.top, 4)
-                            }
-                            .padding(.bottom, 10)
-                        }
-                    }
-                    .padding(.horizontal, 16)
-                }
-                .frame(height: geometry.size.height * 0.55)
-                
                 .alert(isPresented: $showingLogoutAlert) {
                     Alert(
                         title: Text("Log Out"),
@@ -72,7 +55,7 @@ struct LoginSettingsView: View {
                     Task {
                         do {
                             isLoadingImages = true
-                            let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: 3)
+                            let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: 1)
                             DispatchQueue.main.async { // Ensure UI operations are on the main thread
                             
                                 for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
@@ -103,6 +86,48 @@ struct LoginSettingsView: View {
                             showingLogoutAlert = true
                         }
                 })
+                
+                Group {
+                    if isLoading {
+                        ProgressView("Loading Images...")
+                    } else {
+                        DynamicImageGridView(contents: rectangleContents, isCaptionShown: $showingImageDetailView, onImageTap: { content in
+                            self.selectedContent = content
+                            self.isNavigationActive = true // Trigger navigation
+                        })
+                        .background(
+                                NavigationLink(
+                                    destination: ImageDisplayView(imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
+                                    isActive: $isNavigationActive
+                                ) { EmptyView() }
+                            )
+
+                    }
+                }
+                .onAppear {
+                    Task {
+                        do {
+                            // Directly assign the result without using parentheses
+                            let imageIds = try await ServerCommands().getUserImageIds(userId: 1).prefix(rectangleContents.count)
+                            self.rectangleContents = []
+                            for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
+
+                                let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                                let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
+                                DispatchQueue.main.async {
+                                    let newRectangleContent = RectangleContent(imageId: imageId, image: image, caption: caption, tags: tags)
+                                    rectangleContents.append(newRectangleContent)
+                                }
+                            }
+                            
+                            self.isLoading = false
+                        
+                        } catch {
+                            print(error)
+                            self.isLoading = false
+                        }
+                    }
+                }
             }
         }
     }

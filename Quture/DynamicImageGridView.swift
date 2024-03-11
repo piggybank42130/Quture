@@ -55,11 +55,14 @@ struct DynamicImageGridView: View {
                 ZStack(alignment: .topLeading) {
                     ForEach(items) { item in
                         VStack(alignment: .leading, spacing: 5) { // Use a consistent spacing and adjust dynamically within views
-                            Image(uiImage: item.content.image!)
+                            Image(uiImage: item.content.image ?? UIImage())
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: width, height: item.content.height(forWidth: width))
                                 .clipped()
+                                .onTapGesture {
+                                    onImageTap(item.content) // Trigger the action on tap
+                                }
                             
                             if isCaptionShown {
                                 Text(item.content.caption)

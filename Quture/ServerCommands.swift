@@ -159,6 +159,7 @@ class ServerCommands: ObservableObject {
 
     func retrieveImage(imageId: Int) async throws -> (UIImage, String) {
         let parameters: [String: Any] = ["method_name": "retrieve_image", "params": ["image_id": imageId]]
+        print(parameters)
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
             if let result = jsonResponse["result"] as? [String: Any],

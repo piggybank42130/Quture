@@ -280,14 +280,13 @@ struct ContentView: View {
                 do {
                     // Directly assign the result without using parentheses
                     let imageIds = try await ServerCommands().generateUserFeed(userId: 1, limit: 20)
-                    for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
+                    self.rectangleContents = []
+                    for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
                         let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                         let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
                         DispatchQueue.main.async {
-                            self.rectangleContents[index].imageId = imageId
-                            self.rectangleContents[index].tags = tags
-                            self.rectangleContents[index].image = image
-                            self.rectangleContents[index].caption = caption
+                            let newRectangleContent = RectangleContent(imageId: imageId, image: image, caption: caption, tags: tags)
+                            rectangleContents.append(newRectangleContent)
                         }
                     }
                     
@@ -298,7 +297,7 @@ struct ContentView: View {
                     self.isLoading = false
                 }
             }
-        }    
+        }
     }
     
     
