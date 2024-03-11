@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct BidNotification: View {
-    let text: String
+
+    let id: Int
+       let text: String
     var onAccept: () -> Void = {}
     var onReject: () -> Void = {}
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
@@ -43,40 +45,52 @@ struct BidNotification: View {
 struct NotificationView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @State private var bidNotifications: [Int] = Array(0..<20) // Initial set of notifications
-    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+    @State private var showAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
+    @State private var actionToConfirm: (() -> Void)?
     @ObservedObject var notificationsModel: BidNotificationsModel
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
 
     var body: some View {
         ScrollView {
             LazyVStack {
                 ForEach(bidNotifications, id: \.self) { index in
-                    BidNotification(text: "New bid received! \(index)", onAccept: {
-                        // Handle accept action
-                        print("Bid \(index) accepted")
+                    BidNotification(id: index, text: "New bid received! \(index)", onAccept: {
+                        alertTitle = "Confirm Bid"
+                        alertMessage = "You are about to confirm the bid."
+                        actionToConfirm = {
+                            // Logic to accept the bid
+                            bidNotifications.removeAll { $0 == index }
+                        }
+                        showAlert = true
                     }, onReject: {
-                        // Handle reject action
-                        print("Bid \(index) rejected")
+                        alertTitle = "Decline Bid"
+                        alertMessage = "You are about to decline the bid."
+                        actionToConfirm = {
+                            // Logic to reject the bid
+                            bidNotifications.removeAll { $0 == index }
+                        }
+                        showAlert = true
                     })
-                    .frame(height: 150) // Set the height of each notification
-                    .padding(.vertical, 2) // Add some vertical padding between notifications
+                    .frame(height: 150)
+                    .padding(.vertical, 2)
                     .padding(.horizontal, 4)
-//                    .onAppear {
-//                        // Load more notifications when the last one appears
-//                        if index == bidNotifications.last {
-//                            loadMoreNotifications()
-//                        }
-//                    }
                 }
             }
         }
+        .alert(isPresented: $showAlert) {
+            Alert(
+                title: Text(alertTitle),
+                message: Text(alertMessage),
+                primaryButton: .destructive(Text("Confirm")) {
+                    actionToConfirm?()
+                },
+                secondaryButton: .cancel()
+            )
+        }
         .navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: Button(action: {
-            self.presentationMode.wrappedValue.dismiss()
-        }) {
-            Image(systemName: "arrowtriangle.left.fill")
-                .font(.system(size: 24))
-                .foregroundColor(Color.contrastColor(for: colorScheme))
-        })
+        .navigationBarItems(leading: backButton)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Text("Notifications")
@@ -87,12 +101,17 @@ struct NotificationView: View {
         }
     }
 
-    private func loadMoreNotifications() {
-        // Append more notifications to the list
-        let nextSet = bidNotifications.count..<bidNotifications.count + 20
-        bidNotifications.append(contentsOf: Array(nextSet))
+    private var backButton: some View {
+        Button(action: {
+            self.presentationMode.wrappedValue.dismiss()
+        }) {
+            Image(systemName: "arrowtriangle.left.fill")
+                .font(.system(size: 24))
+                .foregroundColor(Color.contrastColor(for: colorScheme))
+        }
     }
 }
+
 
 struct NotificationsView_Previews: PreviewProvider {
     static var previews: some View {
