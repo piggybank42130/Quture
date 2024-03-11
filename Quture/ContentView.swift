@@ -37,8 +37,8 @@ struct ContentView: View {
     @State private var isLoading = true
     @State private var isNavigationActive = false
     @State private var hasNotifications = false
-    @StateObject private var notificationsModel = BidNotificationsModel()
-    
+    @State private var unseenCount: Int = 0
+
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
 
     
@@ -109,7 +109,7 @@ struct ContentView: View {
                                 VStack(spacing: 0) {
                                     topBarSection
                                     contentSection
-                                    NavigationLink(destination: ImageDisplayView(userId: 0, imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string", tags: [], notificationsModel: notificationsModel), isActive: Binding<Bool>(
+                                    NavigationLink(destination: ImageDisplayView(posterId: -1, imageId: -1, image: imageToDisplay ?? UIImage(), caption: "string", tags: []), isActive: Binding<Bool>(
                                         get: { self.imageToDisplay != nil },
                                         set: { if !$0 { self.imageToDisplay = nil } }
                                     )) {
@@ -117,7 +117,7 @@ struct ContentView: View {
                                     }
                                 }
                             case .loginSettings:
-                                LoginSettingsView(notificationsModel:notificationsModel)
+                                LoginSettingsView()
                             }
                             
                             Spacer()
@@ -279,7 +279,7 @@ struct ContentView: View {
                     })
                     .background(
                         NavigationLink(
-                            destination: ImageDisplayView(userId: self.selectedContent?.userId ?? 0, imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? [], notificationsModel: notificationsModel),
+                            destination: ImageDisplayView(posterId: self.selectedContent?.userId ?? 0, imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
                             isActive: $isNavigationActive
                         ) { EmptyView() }
                     )
@@ -326,10 +326,35 @@ struct ContentView: View {
                 }
             
             // Bell icon for notifications
-            Image(systemName: "bell.fill").iconModifier()
-                .frame(maxWidth: .infinity)
-                .onTapGesture {
-                    showingNotificationView = true // Trigger navigation to NotificationView
+            ZStack(alignment: .topTrailing) {
+                    Image(systemName: "bell.fill")
+                        .iconModifier()
+                        .frame(maxWidth: .infinity)
+                        .onTapGesture {
+                            showingNotificationView = true // Trigger navigation to NotificationView
+                        }
+                        .onAppear {
+                            Task {
+                                do {
+                                    let count = try await ServerCommands().countUnseenBidMessages(userId: 1)
+                                    unseenCount = count
+                                    print("Unseen total: \(unseenCount)")
+                                } catch {
+                                    print(error)
+                                }
+                            }
+                        }
+
+                    // Only show the notification count if unseenCount is greater than 0
+                    if unseenCount > 0 {
+                        Text("1")
+                            .font(.caption).bold()
+                            .foregroundColor(.white)
+                            .padding(8) // Adjust padding to fit the number
+                            .background(Color.red)
+                            .clipShape(Circle())
+                            .offset(x: -5, y: -10) // Adjust position to correctly place the badge
+                    }
                 }
             
             // Other icons as placeholders
@@ -365,7 +390,7 @@ struct ContentView: View {
             .hidden() // Hide the NavigationLink since it's used programmatically
         )
         .background(
-            NavigationLink(destination: NotificationView(notificationsModel: notificationsModel), isActive: $showingNotificationView) {
+            NavigationLink(destination: NotificationView(), isActive: $showingNotificationView) {
                 EmptyView()
             }
             .hidden() // Hide the NavigationLink since it's used programmatically

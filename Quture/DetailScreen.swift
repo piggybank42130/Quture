@@ -95,14 +95,14 @@ struct DetailScreen: View {
                     .scaledToFit()
                 
                 HStack {
-                    TextField("Enter a caption...", text: $caption)
+                    TextField("Caption", text: $caption)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .focused($isCaptionFocused)
                         .onChange(of: isCaptionFocused) { isFocused in
                             showingCaptionInputOverlay = isFocused
                         }
                     Spacer()
-                    TextField("Enter a price...", text: $price)
+                    TextField("(Optional) Price", text: $price)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.decimalPad)
                         .focused($isPriceFocused)

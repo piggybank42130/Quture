@@ -10,9 +10,6 @@ struct LoginSettingsView: View {
     @State private var showingLogoutAlert = false // State to control the logout alert
     @State private var isNavigationActive = false
     @State private var showingImageDetailView = true
-    var notificationsModel: BidNotificationsModel
-
-
     
     
     @State private var isLoading = true
@@ -98,7 +95,7 @@ struct LoginSettingsView: View {
                         })
                         .background(
                                 NavigationLink(
-                                    destination: ImageDisplayView(userId: self.selectedContent?.userId ?? 0, imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? [], notificationsModel: notificationsModel),
+                                    destination: ImageDisplayView(posterId: self.selectedContent?.userId ?? 0, imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
                                     isActive: $isNavigationActive
                                 ) { EmptyView() }
                             )
@@ -131,12 +128,5 @@ struct LoginSettingsView: View {
                 }
             }
         }
-    }
-}
-
-struct LoginSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        let model = BidNotificationsModel()
-        LoginSettingsView(notificationsModel: model)
     }
 }

@@ -16,14 +16,12 @@ struct ImageDisplayView: View {
     
     @Environment(\.colorScheme) var colorScheme
     
-    var userId: Int
+    var posterId: Int
     var imageId: Int
     var image: UIImage
     var caption: String
     var tags: [Tag]
-    
-    var notificationsModel: BidNotificationsModel
-    
+        
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -143,7 +141,7 @@ struct ImageDisplayView: View {
             }
             
             if isNewBidWindowVisible {
-                NewBidWindow(isVisible: $isNewBidWindowVisible, notificationsModel: notificationsModel)
+                NewBidWindow(isVisible: $isNewBidWindowVisible, sellerId: posterId, imageId: imageId)
                     .transition(.scale)
             }
             
@@ -159,10 +157,10 @@ struct ImageDisplayView: View {
         .onAppear {
             Task {
                 do {
-                    let username = try await ServerCommands().getUsername(userId: userId)
-                    let hasLiked = try await ServerCommands().hasUserLikedImage(userId: userId, imageId: self.imageId)
+                    let username = try await ServerCommands().getUsername(userId: posterId)
+                    let hasLiked = try await ServerCommands().hasUserLikedImage(userId: 1, imageId: self.imageId)
                     let likeCount = try await ServerCommands().getLikesOnImage(imageId: self.imageId)
-                    let hasSaved = try await ServerCommands().hasUserSavedImage(userId: userId, imageId: self.imageId)
+                    let hasSaved = try await ServerCommands().hasUserSavedImage(userId: 1, imageId: self.imageId)
                     DispatchQueue.main.async {
                         self.username = username
                         self.isHeartTapped = hasLiked
@@ -213,9 +211,8 @@ struct ImageDisplayView: View {
 
 struct ImageDisplayView_Previews: PreviewProvider {
     static var previews: some View {
-        let notificationsModel = BidNotificationsModel()
         NavigationView {
-            ImageDisplayView(userId: 0, imageId: 0, image: UIImage(named: "yourImageNameHere") ?? UIImage(), caption:"Loading...", tags: [], notificationsModel: notificationsModel)
+            ImageDisplayView(posterId: -1, imageId: -1, image: UIImage(named: "yourImageNameHere") ?? UIImage(), caption:"Loading...", tags: [])
         }
     }
 }

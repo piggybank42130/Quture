@@ -49,7 +49,6 @@ struct NotificationView: View {
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @State private var actionToConfirm: (() -> Void)?
-    @ObservedObject var notificationsModel: BidNotificationsModel
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
 
     var body: some View {
@@ -109,14 +108,5 @@ struct NotificationView: View {
                 .font(.system(size: 24))
                 .foregroundColor(Color.contrastColor(for: colorScheme))
         }
-    }
-}
-
-
-struct NotificationsView_Previews: PreviewProvider {
-    static var previews: some View {
-        //Instantiate BidNotificationsModel
-        let model = BidNotificationsModel()
-        NotificationView(notificationsModel: model)
     }
 }

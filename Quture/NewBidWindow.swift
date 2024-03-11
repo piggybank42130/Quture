@@ -2,10 +2,13 @@ import SwiftUI
 
 struct NewBidWindow: View {
     @Binding var isVisible: Bool
+    @State var sellerId: Int
+    @State var imageId: Int
 
     @State private var bidAmount: String = ""
+    
     @State private var sellerPrice: Double = 1000.00
-    @State private var customerPrice: Double = 950.00
+    @State private var customerPrice: Double = -1.0
     @State private var isCustomerPriceActive: Bool = false
     @State private var showTesterAlert: Bool = false
     @State private var message: String = ""
@@ -17,15 +20,13 @@ struct NewBidWindow: View {
     
     @Environment(\.colorScheme) var colorScheme
     //Vars to handle shared notifications model
-    var notificationsModel: BidNotificationsModel
-
 
     var body: some View {
         VStack(spacing: 15) {
             // Top bar with title and close button
             HStack {
                 Spacer()
-                Text("Please Make a Bid")
+                Text("Send a Purchase Request")
                     .font(.headline)
                     .bold()
                     .foregroundColor(.black)
@@ -47,14 +48,14 @@ struct NewBidWindow: View {
                 VStack {
                     Text("\(sellerPrice, specifier: "%.2f")")
                         .bold()
-                        .foregroundColor(.white)
+                        .foregroundColor(isCustomerPriceActive ? .black : .white)
                     Text("Buy Now")
-                        .foregroundColor(.white)
+                        .foregroundColor(isCustomerPriceActive ? .black : .white)
                 }
                 .padding([.top, .bottom], 8)
                 .padding([.leading, .trailing], 10)
                 .frame(maxWidth: .infinity)
-                .background(Color.black)
+                .background(isCustomerPriceActive ? Color.gray.opacity(0.3) : Color.black)
                 .cornerRadius(5)
                 .onTapGesture {
                     self.isCustomerPriceActive = false
@@ -62,10 +63,7 @@ struct NewBidWindow: View {
 
                 // "Highest Bet" box
                 VStack {
-                    Text("\(customerPrice, specifier: "%.2f")")
-                        .bold()
-                        .foregroundColor(isCustomerPriceActive ? .white : .black)
-                    Text("Highest Bet")
+                    Text("Make a Bid")
                         .foregroundColor(isCustomerPriceActive ? .white : .black)
                 }
                 .padding([.top, .bottom], 8)
@@ -104,6 +102,7 @@ struct NewBidWindow: View {
 
             // Confirmation button
             Button(action: {
+                print("pushed")
                 updatePrice()
             }) {
                 Text("Confirm")
@@ -130,34 +129,31 @@ struct NewBidWindow: View {
             }
         .sheet(isPresented: $showTesterAlert) {
             // Now passing the missing 'price' argument
-            CustomAlertView(isVisible: $showTesterAlert, price: $priceToShowInAlert, message: $message, phoneNumber: $phoneNumber, notificationsModel: notificationsModel)
+            CustomAlertView(isVisible: $showTesterAlert, sellerId: $sellerId, imageId: $imageId, price: $priceToShowInAlert, message: $message, phoneNumber: $phoneNumber)
         }
 
     }
 
     private func updatePrice() {
-        guard isCustomerPriceActive else { return }
-        if let newPrice = Double(bidAmount), newPrice > customerPrice {
-            customerPrice = newPrice
-            priceToShowInAlert = newPrice
+        let newPrice = Double(bidAmount) ?? -1
+        customerPrice = isCustomerPriceActive ? newPrice : sellerPrice
+        if (customerPrice > 0){
+            priceToShowInAlert = customerPrice
             bidAmount = "" // Clear input field after updating
             showTesterAlert = true // Prepare to show the alert
-            let notificationMessage = "New bid of $\(newPrice) placed."
-            notificationsModel.addNotification(notificationMessage)
-        } else {
-            alertMessage = "Your bid must be higher than the current highest bid of \(String(format: "%.2f", customerPrice))."
-            showAlert = true
+            let notificationMessage = "New bid of $\(customerPrice) placed."
+            print(notificationMessage)
         }
     }
-
 }
 
 struct CustomAlertView: View {
     @Binding var isVisible: Bool
+    @Binding var sellerId: Int
+    @Binding var imageId: Int
     @Binding var price: Double
     @Binding var message: String
     @Binding var phoneNumber: String
-    var notificationsModel: BidNotificationsModel
     @Environment(\.colorScheme) var colorScheme
 
 
@@ -178,7 +174,15 @@ struct CustomAlertView: View {
                 Button("Submit") {
                     if !message.isEmpty && !phoneNumber.isEmpty{
                         print("Message: \(message), Phone: \(phoneNumber)")
-                        notificationsModel.addNotification("Bid of $\(String(format: "%.2f", price)) placed with message: \(message) and contact: \(phoneNumber)")
+                        let message = "Bid of $\(String(format: "%.2f", price)) placed with message: \(message) and contact: \(phoneNumber)"
+                        Task{
+                            do {
+                                let newBidId = try await ServerCommands().addBid(sellerId: sellerId, buyerId: 1, imageId: imageId, messageText: message)
+                            }
+                            catch {
+                                print(error)
+                            }
+                        }
                         isVisible = false
                     }
                 }
@@ -188,27 +192,6 @@ struct CustomAlertView: View {
             .foregroundColor(Color.contrastColor(for: colorScheme))
             .cornerRadius(12)
             .shadow(radius: 8)
-        }
-    }
-}
-
-
-struct NewBidWindow_Previews: PreviewProvider {
-    static var previews: some View {
-        // This wrapper view will simulate the external state that controls the visibility of NewBidWindow
-        WrapperView()
-    }
-
-    struct WrapperView: View {
-        @State private var isVisible = true // Initial state to show the NewBidWindow
-        
-        var notificationsModel = BidNotificationsModel()
-        
-        var body: some View {
-            // Pass a binding to the isVisible state to NewBidWindow
-            NewBidWindow(isVisible: $isVisible, notificationsModel: notificationsModel)
-                .padding()
-                .background(Color.gray.opacity(0.5)) // Optional: to help visualize the preview
         }
     }
 }

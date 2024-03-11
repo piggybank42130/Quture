@@ -285,9 +285,7 @@ struct VisualStudioView: View {
                             print("Tag not found for ID: \(tagId)")
                             continue
                         }
-                        let imageIds = try await ServerCommands().getUserSavedImageIdsByTag(userId: 3, tag: tag)
-                        print("Fetching images for tag: \(tag.name)")
-                        print(imageIds)
+                        let imageIds = try await ServerCommands().getUserSavedImageIdsByTag                        (userId: 3, tag: tag)
                         for imageId in imageIds {
                             let (userId, image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                             let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
