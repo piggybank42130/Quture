@@ -177,15 +177,23 @@ struct ContentView: View {
     var topBarSection: some View {
         VStack(spacing: 10) {
             HStack {
-                Image(systemName: "circle.fill")
-                    .iconModifier()
-                    .foregroundColor(.coralGreen)
+                RoundedRectangle(cornerRadius: 20) // Smaller corner radius for a smaller switch
+                    .frame(width: 40, height: 20) // Smaller frame for a more compact appearance
+                    .foregroundColor(showingImageDetailView ? .coralGreen : Color.gray) // Color change based on the switch state
+                    .overlay(
+                        // This will represent the circle of the switch
+                        Circle()
+                            .foregroundColor(Color.white)
+                            .frame(width: 18, height: 18) // Smaller circle to fit the smaller switch
+                            .offset(x: showingImageDetailView ? 9 : -9, y: 0) // Adjusted movement for the smaller size
+                            .animation(.easeInOut(duration: 0.2), value: showingImageDetailView)
+                    )
                     .onTapGesture {
-                        //isLayoutModified.toggle()
+                        // Toggle the switch state
                         showingImageDetailView.toggle()
-                        print(showingImageDetailView)
-                    
                     }
+                    .padding(.leading, 10) // Move the entire switch slightly to the right
+
                 
                 Spacer()
                 

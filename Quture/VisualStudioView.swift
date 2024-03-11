@@ -363,6 +363,13 @@ struct RectangleView: View {
                     // Scale the image to the specific height, keeping its aspect ratio
                     .frame(width: scaledWidth, height: LayoutConfig.rectangleHeight)
                     .clipped() // Clip the image to fit within the frame dimensions
+                
+                Text(content.caption)
+                    .font(.caption)
+                    .foregroundColor(Color.contrastColor(for: colorScheme))
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .frame(width: scaledWidth, alignment: .leading)
             } else {
                 // Display a gray rectangle if there's no image
                 Rectangle()
@@ -370,8 +377,7 @@ struct RectangleView: View {
                     .frame(height: LayoutConfig.rectangleHeight)
             }
             // Caption for the image
-            Text(content.caption)
-                .foregroundColor(Color.contrastColor(for: colorScheme)) // Ensure the caption is visible
+
         }
         // Background color for the entire VStack
         //.background(Color.gray) // Your existing background
