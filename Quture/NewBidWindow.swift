@@ -12,6 +12,8 @@ struct NewBidWindow: View {
     @State private var phoneNumber: String = ""
     @FocusState private var isInputActive: Bool
     @State private var priceToShowInAlert: Double = 0.0 // Ensure this exists
+    @State private var showAlert = false
+    @State private var alertMessage = ""
     @Environment(\.colorScheme) var colorScheme
 
 
@@ -119,6 +121,11 @@ struct NewBidWindow: View {
         .cornerRadius(20)
         .shadow(radius: 10)
         .transition(.scale)
+        .alert("Invalid Bid", isPresented: $showAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(alertMessage)
+            }
         .sheet(isPresented: $showTesterAlert) {
             // Now passing the missing 'price' argument
             CustomAlertView(isVisible: $showTesterAlert, price: $priceToShowInAlert, message: $message, phoneNumber: $phoneNumber)
@@ -127,15 +134,16 @@ struct NewBidWindow: View {
     }
 
     private func updatePrice() {
-        if isCustomerPriceActive, let newPrice = Double(bidAmount), newPrice > 0 {
+        guard isCustomerPriceActive else { return }
+        if let newPrice = Double(bidAmount), newPrice > customerPrice {
             customerPrice = newPrice
             priceToShowInAlert = newPrice
+            bidAmount = "" // Clear input field after updating
+            showTesterAlert = true // Prepare to show the alert
         } else {
-            // If no new bid is entered, you might want to show the current highest bid/customer price
-            priceToShowInAlert = customerPrice
+            alertMessage = "Your bid must be higher than the current highest bid of \(String(format: "%.2f", customerPrice))."
+            showAlert = true
         }
-        bidAmount = "" // Clear input field after updating
-        showTesterAlert = true // Prepare to show the alert
     }
 
 }
