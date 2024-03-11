@@ -60,12 +60,12 @@ struct NotificationView: View {
                     .frame(height: 150) // Set the height of each notification
                     .padding(.vertical, 2) // Add some vertical padding between notifications
                     .padding(.horizontal, 4)
-                    .onAppear {
-                        // Load more notifications when the last one appears
-                        if index == bidNotifications.last {
-                            loadMoreNotifications()
-                        }
-                    }
+//                    .onAppear {
+//                        // Load more notifications when the last one appears
+//                        if index == bidNotifications.last {
+//                            loadMoreNotifications()
+//                        }
+//                    }
                 }
             }
         }

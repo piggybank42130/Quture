@@ -6,11 +6,14 @@
 //
 
 import Combine
+import Dispatch
 
 class BidNotificationsModel: ObservableObject{
     @Published var notifications: [String] = []
     
     func addNotification(_ notification: String) {
-        notifications.append(notification)
+        DispatchQueue.main.async{
+            self.notifications.append(notification)
+        }
     }
 }

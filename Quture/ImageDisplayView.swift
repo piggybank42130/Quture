@@ -213,8 +213,9 @@ struct ImageDisplayView: View {
 
 struct ImageDisplayView_Previews: PreviewProvider {
     static var previews: some View {
+        let notificationsModel = BidNotificationsModel()
         NavigationView {
-            ImageDisplayView(userId: 0, imageId: 0, image: UIImage(named: "yourImageNameHere") ?? UIImage(), caption:"Loading...", tags: [])
+            ImageDisplayView(userId: 0, imageId: 0, image: UIImage(named: "yourImageNameHere") ?? UIImage(), caption:"Loading...", tags: [], notificationsModel: notificationsModel)
         }
     }
 }

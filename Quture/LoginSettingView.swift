@@ -10,12 +10,13 @@ struct LoginSettingsView: View {
     @State private var showingLogoutAlert = false // State to control the logout alert
     @State private var isNavigationActive = false
     @State private var showingImageDetailView = true
-    
+    var notificationsModel: BidNotificationsModel
+
 
     
     
     @State private var isLoading = true
-
+    
 
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
 
@@ -97,7 +98,7 @@ struct LoginSettingsView: View {
                         })
                         .background(
                                 NavigationLink(
-                                    destination: ImageDisplayView(userId: self.selectedContent?.userId ?? 0, imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
+                                    destination: ImageDisplayView(userId: self.selectedContent?.userId ?? 0, imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? [], notificationsModel: notificationsModel),
                                     isActive: $isNavigationActive
                                 ) { EmptyView() }
                             )
@@ -135,6 +136,7 @@ struct LoginSettingsView: View {
 
 struct LoginSettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginSettingsView()
+        let model = BidNotificationsModel()
+        LoginSettingsView(notificationsModel: model)
     }
 }

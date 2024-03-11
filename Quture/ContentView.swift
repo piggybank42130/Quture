@@ -37,7 +37,7 @@ struct ContentView: View {
     @State private var isLoading = true
     @State private var isNavigationActive = false
     @State private var hasNotifications = false
-
+    @StateObject private var notificationsModel = BidNotificationsModel()
     
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
 
@@ -109,7 +109,7 @@ struct ContentView: View {
                                 VStack(spacing: 0) {
                                     topBarSection
                                     contentSection
-                                    NavigationLink(destination: ImageDisplayView(userId: 0, imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string", tags: []), isActive: Binding<Bool>(
+                                    NavigationLink(destination: ImageDisplayView(userId: 0, imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string", tags: [], notificationsModel: notificationsModel), isActive: Binding<Bool>(
                                         get: { self.imageToDisplay != nil },
                                         set: { if !$0 { self.imageToDisplay = nil } }
                                     )) {
@@ -117,7 +117,7 @@ struct ContentView: View {
                                     }
                                 }
                             case .loginSettings:
-                                LoginSettingsView()
+                                LoginSettingsView(notificationsModel:notificationsModel)
                             }
                             
                             Spacer()
@@ -268,21 +268,23 @@ struct ContentView: View {
     // MARK: - Content Section
     var contentSection: some View {
         Group {
-            if isLoading {
-                ProgressView("Loading images...") // Make sure this is not inside another view unintentionally
-            } else {
-                DynamicImageGridView(contents: rectangleContents, isCaptionShown: $showingImageDetailView, onImageTap: { content in
-                    self.selectedContent = content
-                    self.isNavigationActive = true // Trigger navigation
-
-                })
-                .background(
+            VStack{
+                if isLoading {
+                    ProgressView("Loading images...") // Make sure this is not inside another view unintentionally
+                } else {
+                    DynamicImageGridView(contents: rectangleContents, isCaptionShown: $showingImageDetailView, onImageTap: { content in
+                        self.selectedContent = content
+                        self.isNavigationActive = true // Trigger navigation
+                        
+                    })
+                    .background(
                         NavigationLink(
-                            destination: ImageDisplayView(userId: self.selectedContent?.userId ?? 0, imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
+                            destination: ImageDisplayView(userId: self.selectedContent?.userId ?? 0, imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? [], notificationsModel: notificationsModel),
                             isActive: $isNavigationActive
                         ) { EmptyView() }
                     )
-
+                    
+                }
             }
         }
         .onAppear {
@@ -362,7 +364,7 @@ struct ContentView: View {
             .hidden() // Hide the NavigationLink since it's used programmatically
         )
         .background(
-            NavigationLink(destination: NotificationView(), isActive: $showingNotificationView) {
+            NavigationLink(destination: NotificationView(notificationsModel: notificationsModel), isActive: $showingNotificationView) {
                 EmptyView()
             }
             .hidden() // Hide the NavigationLink since it's used programmatically

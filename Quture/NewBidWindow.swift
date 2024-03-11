@@ -142,6 +142,8 @@ struct NewBidWindow: View {
             priceToShowInAlert = newPrice
             bidAmount = "" // Clear input field after updating
             showTesterAlert = true // Prepare to show the alert
+            let notificationMessage = "New bid of $\(newPrice) placed."
+            notificationsModel.addNotification(notificationMessage)
         } else {
             alertMessage = "Your bid must be higher than the current highest bid of \(String(format: "%.2f", customerPrice))."
             showAlert = true
@@ -189,8 +191,6 @@ struct CustomAlertView: View {
         }
     }
 }
-
-
 
 
 struct NewBidWindow_Previews: PreviewProvider {
