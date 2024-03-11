@@ -39,7 +39,7 @@ class ServerCommands: ObservableObject {
     }
 
     func postImage(userId: Int, image: UIImage, caption: String) async throws -> Int {
-        guard let imageData = image.jpegData(compressionQuality: 0.5) else {
+        guard let imageData = image.jpegData(compressionQuality: 1) else {
             throw NSError(domain: "ImageError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Image compression failed."])
         }
         let base64ImageString = imageData.base64EncodedString()
@@ -105,6 +105,18 @@ class ServerCommands: ObservableObject {
     }
     
     //###GETTERS/UTILITY###//
+    
+    func getUsername(userId: Int) async throws -> String {
+        let parameters: [String: Any] = ["method_name": "get_username", "params": ["user_id": userId]]
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let result = jsonResponse["result"] as? [String: Any],
+           let username = result["username"] as? String {
+            return (username)
+        } else {
+            throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
+        }
+    }
 
     func getTagsFromImage(imageId: Int) async throws -> [Tag] {
         let parameters: [String: Any] = ["method_name": "get_image_tags", "params": ["image_id": imageId]]
@@ -157,16 +169,16 @@ class ServerCommands: ObservableObject {
         }
     }
 
-    func retrieveImage(imageId: Int) async throws -> (UIImage, String) {
+    func retrieveImage(imageId: Int) async throws -> (Int, UIImage, String) {
         let parameters: [String: Any] = ["method_name": "retrieve_image", "params": ["image_id": imageId]]
         print(parameters)
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
             if let result = jsonResponse["result"] as? [String: Any],
                let imageData = result["image_data"] as? [String: Any],
-               let imageDataString = imageData["image_data"] as? String, let imageCaption = imageData["caption"] as? String{
-                if let imageData = Data(base64Encoded: imageDataString),let image = UIImage(data: imageData) {
-                return (image, imageCaption)
+               let imageDataString = imageData["image_data"] as? String, let imageCaption = imageData["caption"] as? String, let userId = imageData["user_id"] as? Int{
+                if let imageData = Data(base64Encoded: imageDataString), let image = UIImage(data: imageData) {
+                return (userId, image, imageCaption)
                     
                 }
                 else{
@@ -188,7 +200,7 @@ class ServerCommands: ObservableObject {
         var captions = [String]()
 
         for imageId in imageIds {
-            let (image, caption) = try await retrieveImage(imageId: imageId)
+            let (userId, image, caption) = try await retrieveImage(imageId: imageId)
             images.append(image)
             captions.append(caption)
         }
@@ -202,7 +214,7 @@ class ServerCommands: ObservableObject {
         var captions = [String]()
 
         for imageId in imageIds {
-            let (image, caption) = try await retrieveImage(imageId: imageId)
+            let (userId, image, caption) = try await retrieveImage(imageId: imageId)
             images.append(image)
             captions.append(caption)
         }

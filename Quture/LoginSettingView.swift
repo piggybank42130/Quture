@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LoginSettingsView: View {
-    @State private var rectangleContents = Array(repeating: RectangleContent(imageId: -1, image: nil, caption: "Loading..."), count: 20)
+    @State private var rectangleContents = Array(repeating: RectangleContent(userId: -1, imageId: -1, image: nil, caption: "Loading..."), count: 20)
     @State private var selectedContent: RectangleContent?
 
     private let rectangleWidth: CGFloat = (UIScreen.main.bounds.width - 32) / 2
@@ -97,7 +97,7 @@ struct LoginSettingsView: View {
                         })
                         .background(
                                 NavigationLink(
-                                    destination: ImageDisplayView(imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
+                                    destination: ImageDisplayView(userId: self.selectedContent?.userId ?? 0, imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
                                     isActive: $isNavigationActive
                                 ) { EmptyView() }
                             )
@@ -112,10 +112,10 @@ struct LoginSettingsView: View {
                             self.rectangleContents = []
                             for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
 
-                                let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                                let (userId, image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                                 let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
                                 DispatchQueue.main.async {
-                                    let newRectangleContent = RectangleContent(imageId: imageId, image: image, caption: caption, tags: tags)
+                                    let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
                                     rectangleContents.append(newRectangleContent)
                                 }
                             }

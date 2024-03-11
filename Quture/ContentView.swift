@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var showingImagePicker = false
     @State private var inputImage: UIImage?
     @State private var showingDetailScreen = false
-    @State private var rectangleContents = Array(repeating: RectangleContent(imageId: -1, image: nil, caption: "Loading..."), count: 20) // Example for 20 rectangles
+    @State private var rectangleContents: [RectangleContent] = [] // Example for 20 rectangles
     @State private var selectedContent: RectangleContent?
 
     @State private var showingLoginSettings = false
@@ -55,7 +55,7 @@ struct ContentView: View {
                 do {
                     let newImageId = try await ServerCommands().postImage(userId: 3, image: image, caption: caption)
                     DispatchQueue.main.async{
-                        rectangleContents[index] = RectangleContent(imageId: newImageId, image: image, caption: caption, tags: Array(tags))
+                        rectangleContents[index] = RectangleContent(userId: 1, imageId: newImageId, image: image, caption: caption, tags: Array(tags))
                     }
                     try await ServerCommands().setTagsToImage(imageId: newImageId, tags: tags)
                 }
@@ -107,7 +107,7 @@ struct ContentView: View {
                                 VStack(spacing: 0) {
                                     topBarSection
                                     contentSection
-                                    NavigationLink(destination: ImageDisplayView(imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string", tags: []), isActive: Binding<Bool>(
+                                    NavigationLink(destination: ImageDisplayView(userId: 0, imageId: 0, image: imageToDisplay ?? UIImage(), caption: "string", tags: []), isActive: Binding<Bool>(
                                         get: { self.imageToDisplay != nil },
                                         set: { if !$0 { self.imageToDisplay = nil } }
                                     )) {
@@ -268,7 +268,7 @@ struct ContentView: View {
                 })
                 .background(
                         NavigationLink(
-                            destination: ImageDisplayView(imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
+                            destination: ImageDisplayView(userId: self.selectedContent?.userId ?? 0, imageId: self.selectedContent?.imageId ?? 0, image: self.selectedContent?.image ?? UIImage(), caption: self.selectedContent?.caption ?? "", tags: self.selectedContent?.tags ?? []),
                             isActive: $isNavigationActive
                         ) { EmptyView() }
                     )
@@ -282,10 +282,10 @@ struct ContentView: View {
                     let imageIds = try await ServerCommands().generateUserFeed(userId: 1, limit: 20)
                     self.rectangleContents = []
                     for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
-                        let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                        let (userId, image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                         let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
                         DispatchQueue.main.async {
-                            let newRectangleContent = RectangleContent(imageId: imageId, image: image, caption: caption, tags: tags)
+                            let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
                             rectangleContents.append(newRectangleContent)
                         }
                     }
