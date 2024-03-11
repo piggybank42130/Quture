@@ -11,6 +11,8 @@ struct DynamicImageGridView: View {
     @State private var selectedContent: RectangleContent?
 
     var contents: [RectangleContent] // Your rectangle contents
+    @Binding var isCaptionShown: Bool
+
     private let columns: Int = 2
     private let horizontalSpacing: CGFloat = 10 // Spacing between columns
     private let verticalSpacing: CGFloat = 10 // Spacing between rows
@@ -52,21 +54,27 @@ struct DynamicImageGridView: View {
 
                 ZStack(alignment: .topLeading) {
                     ForEach(items) { item in
-                        if let image = item.content.image {
-                            Image(uiImage: image)
+                        VStack(alignment: .leading, spacing: 5) { // Use a consistent spacing and adjust dynamically within views
+                            Image(uiImage: item.content.image!)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: width, height: item.content.height(forWidth: width)) // Dynamic height based on aspect ratio
+                                .frame(width: width, height: item.content.height(forWidth: width))
                                 .clipped()
-                                .position(x: CGFloat(item.column) * (width + horizontalSpacing) + width / 2,
-                                          y: item.yOffset + item.content.height(forWidth: width) / 2) // Adjust position calculation if needed
-                                .onTapGesture {
-                                    self.onImageTap(item.content)
-                                }
+                            
+                            if isCaptionShown {
+                                Text(item.content.caption)
+                                    .font(.caption)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                    .frame(width: width, alignment: .leading)
+                                    .opacity(isCaptionShown ? 1 : 0) // Use opacity to animate visibility
+                            }
                         }
+                        .position(x: CGFloat(item.column) * (width + horizontalSpacing) + width / 2,
+                                  y: item.yOffset + item.content.height(forWidth: width) / 2)
+                        .animation(.easeInOut(duration: 0.3)) // Apply animation to position change
                     }
                 }
-                // Adjust the frame height based on the tallest column
                 .frame(width: geometry.size.width, height: calculateTotalHeight(items: items, in: width) + topPadding)
             }
         }
@@ -78,13 +86,18 @@ struct DynamicImageGridView: View {
         
         for content in contents {
             let shortestColumnIndex = yOffset.enumerated().min(by: { $0.element < $1.element })?.offset ?? 0
-            let itemHeight = content.height(forWidth: columnWidth) // Dynamic height calculation based on aspect ratio
+            let imageHeight = content.height(forWidth: columnWidth) // Dynamic height calculation based on aspect ratio
+            let captionHeight: CGFloat = isCaptionShown ? 20 : 0 // Assuming a fixed caption height, adjust as necessary
+            let totalHeight = imageHeight + (isCaptionShown ? (verticalSpacing / 2) : 0) + captionHeight // Adjusted padding for caption
             items.append(DynamicImageGridItem(content: content, column: shortestColumnIndex, yOffset: yOffset[shortestColumnIndex]))
-            yOffset[shortestColumnIndex] += itemHeight + verticalSpacing
+            yOffset[shortestColumnIndex] += totalHeight + verticalSpacing
         }
         
         return items
     }
+
+
+
 
     private func calculateTotalHeight(items: [DynamicImageGridItem], in columnWidth: CGFloat) -> CGFloat {
         let maxHeight = items.reduce(into: [CGFloat](repeating: 0, count: columns)) { partialResult, item in

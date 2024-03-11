@@ -181,9 +181,10 @@ struct ContentView: View {
                     .iconModifier()
                     .foregroundColor(.coralGreen)
                     .onTapGesture {
-                        withAnimation {
-                            isLayoutModified.toggle()
-                        }
+                        //isLayoutModified.toggle()
+                        showingImageDetailView.toggle()
+                        print(showingImageDetailView)
+                    
                     }
                 
                 Spacer()
@@ -260,7 +261,7 @@ struct ContentView: View {
             if isLoading {
                 ProgressView("Loading images...") // Make sure this is not inside another view unintentionally
             } else {
-                DynamicImageGridView(contents: rectangleContents, onImageTap: { content in
+                DynamicImageGridView(contents: rectangleContents, isCaptionShown: $showingImageDetailView, onImageTap: { content in
                     self.selectedContent = content
                     self.isNavigationActive = true // Trigger navigation
 
@@ -271,13 +272,14 @@ struct ContentView: View {
                             isActive: $isNavigationActive
                         ) { EmptyView() }
                     )
+
             }
         }
-
         .onAppear {
             Task {
                 do {
-                    let (imageIds) = try await ServerCommands().generateUserFeed(userId: 1, limit: 20)
+                    // Directly assign the result without using parentheses
+                    let imageIds = try await ServerCommands().generateUserFeed(userId: 1, limit: 20)
                     for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
                         let (image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                         let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
@@ -286,8 +288,6 @@ struct ContentView: View {
                             self.rectangleContents[index].tags = tags
                             self.rectangleContents[index].image = image
                             self.rectangleContents[index].caption = caption
-                            print("imageIds: \(imageId)")
-                            print("Tags: \(tags)")
                         }
                     }
                     
@@ -298,8 +298,7 @@ struct ContentView: View {
                     self.isLoading = false
                 }
             }
-        }
-    
+        }    
     }
     
     
