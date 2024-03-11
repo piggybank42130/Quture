@@ -15,47 +15,52 @@ class TagManager {
         Tag(tagId: 8, name: "Suit", category: .top),
         Tag(tagId: 9, name: "Sweater", category: .top),
         Tag(tagId: 10, name: "T-shirt", category: .top),
-        Tag(tagId: 11, name: "Vintage", category: .top),
-        Tag(tagId: 12, name: "Workwear", category: .top),
+        Tag(tagId: 11, name: "Top", category: .top),
+        Tag(tagId: 12, name: "Vintage", category: .top),
+        Tag(tagId: 13, name: "Workwear", category: .top),
         
-        // Bottom tags
-        Tag(tagId: 13, name: "Athletic", category: .bottom),
-        Tag(tagId: 14, name: "Cargo", category: .bottom),
-        Tag(tagId: 15, name: "Dress", category: .bottom),
-        Tag(tagId: 16, name: "Dress pants", category: .bottom),
-        Tag(tagId: 17, name: "Fitted", category: .bottom),
-        Tag(tagId: 18, name: "Jeans", category: .bottom),
-        Tag(tagId: 19, name: "Pants", category: .bottom),
-        Tag(tagId: 20, name: "Parachute", category: .bottom),
-        Tag(tagId: 21, name: "Shorts", category: .bottom),
-        Tag(tagId: 22, name: "Skirt", category: .bottom),
-        Tag(tagId: 23, name: "Vintage", category: .bottom),
+        // Bottom tags - Adjusting IDs due to insertion
+        Tag(tagId: 14, name: "Athletic", category: .bottom),
+        Tag(tagId: 15, name: "Bottom", category: .bottom),
+        Tag(tagId: 16, name: "Cargo", category: .bottom),
+        Tag(tagId: 17, name: "Dress", category: .bottom),
+        Tag(tagId: 18, name: "Dress pants", category: .bottom),
+        Tag(tagId: 19, name: "Fitted", category: .bottom),
+        Tag(tagId: 20, name: "Jeans", category: .bottom),
+        Tag(tagId: 21, name: "Pants", category: .bottom),
+        Tag(tagId: 22, name: "Parachute", category: .bottom),
+        Tag(tagId: 23, name: "Shorts", category: .bottom),
+        Tag(tagId: 24, name: "Skirt", category: .bottom),
+        Tag(tagId: 25, name: "Vintage", category: .bottom),
         
-        // Shoe tags
-        Tag(tagId: 24, name: "Boots", category: .shoe),
-        Tag(tagId: 25, name: "Customs", category: .shoe),
-        Tag(tagId: 26, name: "Dress shoes", category: .shoe),
-        Tag(tagId: 27, name: "Loafers", category: .shoe),
-        Tag(tagId: 28, name: "Sandals", category: .shoe),
-        Tag(tagId: 29, name: "Sneakers", category: .shoe),
+        // Shoe tags - Adjusting IDs due to insertion
+        Tag(tagId: 26, name: "Boots", category: .shoe),
+        Tag(tagId: 27, name: "Customs", category: .shoe),
+        Tag(tagId: 28, name: "Dress shoes", category: .shoe),
+        Tag(tagId: 29, name: "Loafers", category: .shoe),
+        Tag(tagId: 30, name: "Sandals", category: .shoe),
+        Tag(tagId: 31, name: "Shoe", category: .shoe),
+        Tag(tagId: 32, name: "Sneakers", category: .shoe),
         
-        // Accessories tags
-        Tag(tagId: 30, name: "Ear ring", category: .accessories),
-        Tag(tagId: 31, name: "Glasses", category: .accessories),
-        Tag(tagId: 32, name: "Hat", category: .accessories),
-        Tag(tagId: 33, name: "Necklace", category: .accessories),
-        Tag(tagId: 34, name: "Ring", category: .accessories),
+        // Accessories tags - Adjusting IDs due to insertion
+        Tag(tagId: 33, name: "Accessories", category:.accessories),
+        Tag(tagId: 34, name: "Ear ring", category: .accessories),
+        Tag(tagId: 35, name: "Glasses", category: .accessories),
+        Tag(tagId: 36, name: "Hat", category: .accessories),
+        Tag(tagId: 37, name: "Necklace", category: .accessories),
+        Tag(tagId: 38, name: "Ring", category: .accessories),
         
-        // Fashion tags
-        Tag(tagId: 35, name: "Archive", category: .fashion),
-        Tag(tagId: 36, name: "Athleisure", category: .fashion),
-        Tag(tagId: 37, name: "Avant-Garde", category: .fashion),
-        Tag(tagId: 38, name: "Customs", category: .fashion),
-        Tag(tagId: 39, name: "Denim", category: .fashion),
-        Tag(tagId: 40, name: "Minimalism", category: .fashion),
-        Tag(tagId: 41, name: "Preppy", category: .fashion),
-        Tag(tagId: 42, name: "Streetwear", category: .fashion),
-        Tag(tagId: 43, name: "Techwear", category: .fashion)
+        // Fashion tags - Adjusting IDs due to insertion
+        Tag(tagId: 39, name: "Archive", category: .fashion),
+        Tag(tagId: 40, name: "Athleisure", category: .fashion),
+        Tag(tagId: 41, name: "Avant-Garde", category: .fashion),
+        Tag(tagId: 42, name: "Customs", category: .fashion),
+        Tag(tagId: 43, name: "Denim", category: .fashion),
+        Tag(tagId: 44, name: "Fashion", category: .fashion),
+        Tag(tagId: 45, name: "Minimalism", category: .fashion),
+        Tag(tagId: 46, name: "Preppy", category: .fashion),
+        Tag(tagId: 47, name: "Streetwear", category: .fashion),
+        Tag(tagId: 48, name: "Techwear", category: .fashion)
     ]
      
     func addTag(_ tag: Tag) {
