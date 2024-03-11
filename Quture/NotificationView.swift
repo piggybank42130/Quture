@@ -44,7 +44,7 @@ struct NotificationView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @State private var bidNotifications: [Int] = Array(0..<20) // Initial set of notifications
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
-
+    @ObservedObject var notificationsModel: BidNotificationsModel
 
     var body: some View {
         ScrollView {
@@ -96,6 +96,8 @@ struct NotificationView: View {
 
 struct NotificationsView_Previews: PreviewProvider {
     static var previews: some View {
-        NotificationView()
+        //Instantiate BidNotificationsModel
+        let model = BidNotificationsModel()
+        NotificationView(notificationsModel: model)
     }
 }

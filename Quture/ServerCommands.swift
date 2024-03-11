@@ -318,5 +318,11 @@ class ServerCommands: ObservableObject {
         _ = try await serverCommunicator.sendMethod(parameters: parameters)
     }
     
-    
+    func markBidAsSeen(messageId: Int, sellerId: Int) async throws -> Void {
+        let parameters: [String: Any] = [
+            "method_name": "mark_bid_as_seen",
+            "params": ["message_id": messageId, "seller_id": sellerId]
+        ]
+        _ = try await serverCommunicator.sendMethod(parameters: parameters)
+    }
 }

@@ -14,8 +14,10 @@ struct NewBidWindow: View {
     @State private var priceToShowInAlert: Double = 0.0 // Ensure this exists
     @State private var showAlert = false
     @State private var alertMessage = ""
+    
     @Environment(\.colorScheme) var colorScheme
-
+    //Vars to handle shared notifications model
+    var notificationsModel: BidNotificationsModel
 
 
     var body: some View {
@@ -128,7 +130,7 @@ struct NewBidWindow: View {
             }
         .sheet(isPresented: $showTesterAlert) {
             // Now passing the missing 'price' argument
-            CustomAlertView(isVisible: $showTesterAlert, price: $priceToShowInAlert, message: $message, phoneNumber: $phoneNumber)
+            CustomAlertView(isVisible: $showTesterAlert, price: $priceToShowInAlert, message: $message, phoneNumber: $phoneNumber, notificationsModel: notificationsModel)
         }
 
     }
@@ -153,6 +155,7 @@ struct CustomAlertView: View {
     @Binding var price: Double
     @Binding var message: String
     @Binding var phoneNumber: String
+    var notificationsModel: BidNotificationsModel
     @Environment(\.colorScheme) var colorScheme
 
 
@@ -171,8 +174,11 @@ struct CustomAlertView: View {
                 TextField("Phone Number", text: $phoneNumber)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 Button("Submit") {
-                    print("Message: \(message), Phone: \(phoneNumber)")
-                    isVisible = false
+                    if !message.isEmpty && !phoneNumber.isEmpty{
+                        print("Message: \(message), Phone: \(phoneNumber)")
+                        notificationsModel.addNotification("Bid of $\(String(format: "%.2f", price)) placed with message: \(message) and contact: \(phoneNumber)")
+                        isVisible = false
+                    }
                 }
             }
             .padding()
@@ -195,10 +201,12 @@ struct NewBidWindow_Previews: PreviewProvider {
 
     struct WrapperView: View {
         @State private var isVisible = true // Initial state to show the NewBidWindow
-
+        
+        var notificationsModel = BidNotificationsModel()
+        
         var body: some View {
             // Pass a binding to the isVisible state to NewBidWindow
-            NewBidWindow(isVisible: $isVisible)
+            NewBidWindow(isVisible: $isVisible, notificationsModel: notificationsModel)
                 .padding()
                 .background(Color.gray.opacity(0.5)) // Optional: to help visualize the preview
         }

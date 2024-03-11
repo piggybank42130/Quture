@@ -22,6 +22,8 @@ struct ImageDisplayView: View {
     var caption: String
     var tags: [Tag]
     
+    var notificationsModel: BidNotificationsModel
+    
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -141,7 +143,7 @@ struct ImageDisplayView: View {
             }
             
             if isNewBidWindowVisible {
-                NewBidWindow(isVisible: $isNewBidWindowVisible)
+                NewBidWindow(isVisible: $isNewBidWindowVisible, notificationsModel: notificationsModel)
                     .transition(.scale)
             }
             
