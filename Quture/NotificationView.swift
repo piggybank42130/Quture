@@ -13,11 +13,11 @@ struct BidNotification: View, Identifiable {
     @State var bidPrice: Double
     
     @State var isNew: Bool
-
+    
     var onAccept: () -> Void = {}
     var onReject: () -> Void = {}
     @Environment(\.colorScheme) var colorScheme
-
+    
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack {
@@ -25,12 +25,12 @@ struct BidNotification: View, Identifiable {
                     .font(.headline)
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .center) // Aligns text with the width of the bid title
-
+                
                 Text(bidText)
                     .font(.headline)
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .center) // Aligns text with the width of the bid title
-
+                
                 Text("I'm offering $\(String(format: "%.2f", bidPrice))")
                     .font(.headline)
                     .padding()
@@ -65,7 +65,7 @@ struct BidNotification: View, Identifiable {
                 }
                 .frame(maxWidth: .infinity) // Makes HStack cover the full width
                 .padding(.horizontal) // Pads the horizontal sides of the HStack to align with the text
-
+                
             }
             .frame(maxWidth: .infinity)
             .background(Color.gray.opacity(0.3))
@@ -74,7 +74,7 @@ struct BidNotification: View, Identifiable {
             
             // Red circle indicator for new notifications
             if isNew {
-                 RoundedRectangle(cornerRadius: 25)
+                RoundedRectangle(cornerRadius: 25)
                     .fill(Color.red)
                     .frame(width: 40, height: 25) // Adjust size to fit the text
                     .overlay(
@@ -84,10 +84,32 @@ struct BidNotification: View, Identifiable {
                     )
                     .offset(x: -10, y: -10) // Adjusts the position relative to the top right corner
             }
+            else {
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(Color.gray)
+                    .frame(width: 100, height: 25) // Adjust size to fit the text
+                    .overlay(
+                        Text("MARK AS NEW")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                    )
+                    .offset(x: -10, y: -10) // Adjusts the position relative to the top right corner
+                    .onTapGesture {
+                        Task{
+                            do {
+                                try await ServerCommands().markBidAsUnseen(bidId: bidId, sellerId: bidSellerId)
+                                withAnimation(.easeInOut) { // Animate the transition
+                                    isNew = true
+                                }
+                            }
+                            catch{
+                                print(error)
+                            }
+                        }
+                    }
+            }
         }
     }
-
-    
 }
 
 

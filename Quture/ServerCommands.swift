@@ -368,6 +368,14 @@ class ServerCommands: ObservableObject {
         _ = try await serverCommunicator.sendMethod(parameters: parameters)
     }
     
+    func markBidAsUnseen(bidId: Int, sellerId: Int) async throws -> Void {
+        let parameters: [String: Any] = [
+            "method_name": "mark_bid_as_unseen",
+            "params": ["bid_id": bidId, "seller_id": sellerId]
+        ]
+        _ = try await serverCommunicator.sendMethod(parameters: parameters)
+    }
+    
     func deleteBid(bidId: Int) async throws -> Void {
         let parameters: [String: Any] = [
             "method_name": "delete_bid",
