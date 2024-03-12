@@ -174,7 +174,7 @@ struct CustomAlertView: View {
                 Button("Submit") {
                     if !message.isEmpty && !phoneNumber.isEmpty{
                         print("Message: \(message), Phone: \(phoneNumber)")
-                        let message = "Bid of $\(String(format: "%.2f", price)) placed with message: \(message) and contact: \(phoneNumber)"
+                        let message = "\(message)\n\nMy phone number is \(phoneNumber)"//Bid of $\(String(format: "%.2f", price)) placed with message: \(message) and contact: \(phoneNumber)"
                         Task{
                             do {
                                 let newBidId = try await ServerCommands().addBid(sellerId: sellerId, buyerId: 1, imageId: imageId, messageText: message)

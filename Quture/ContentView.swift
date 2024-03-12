@@ -347,7 +347,7 @@ struct ContentView: View {
 
                     // Only show the notification count if unseenCount is greater than 0
                     if unseenCount > 0 {
-                        Text("1")
+                        Text("\(unseenCount)")
                             .font(.caption).bold()
                             .foregroundColor(.white)
                             .padding(8) // Adjust padding to fit the number
@@ -390,7 +390,7 @@ struct ContentView: View {
             .hidden() // Hide the NavigationLink since it's used programmatically
         )
         .background(
-            NavigationLink(destination: NotificationView(), isActive: $showingNotificationView) {
+            NavigationLink(destination: NotificationView(sellerId: 1), isActive: $showingNotificationView) {
                 EmptyView()
             }
             .hidden() // Hide the NavigationLink since it's used programmatically

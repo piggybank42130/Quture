@@ -25,7 +25,7 @@ struct ImageDisplayView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                Spacer().frame(height: 50) // Space from the top
+                Spacer().frame(height: 75) // Space from the top
                 
                 Image(uiImage: image)
                     .resizable()

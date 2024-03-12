@@ -352,34 +352,26 @@ class ServerCommands: ObservableObject {
         }
     }
     
-    func markBidSuccessful(messageId: Int) async throws -> Void {
+    func markBidSuccessful(bidId: Int) async throws -> Void {
         let parameters: [String: Any] = [
             "method_name": "mark_bid_successful",
-            "params": ["message_id": messageId]
+            "params": ["bid_id": bidId]
         ]
         _ = try await serverCommunicator.sendMethod(parameters: parameters)
     }
     
-    func markBidSeen(messageId: Int) async throws -> Void {
-        let parameters: [String: Any] = [
-            "method_name": "mark_bid_successful",
-            "params": ["message_id": messageId]
-        ]
-        _ = try await serverCommunicator.sendMethod(parameters: parameters)
-    }
-    
-    func deleteBid(messageId: Int) async throws -> Void {
-        let parameters: [String: Any] = [
-            "method_name": "delete_bid",
-            "params": ["message_id": messageId]
-        ]
-        _ = try await serverCommunicator.sendMethod(parameters: parameters)
-    }
-    
-    func markBidAsSeen(messageId: Int, sellerId: Int) async throws -> Void {
+    func markBidAsSeen(bidId: Int, sellerId: Int) async throws -> Void {
         let parameters: [String: Any] = [
             "method_name": "mark_bid_as_seen",
-            "params": ["message_id": messageId, "seller_id": sellerId]
+            "params": ["bid_id": bidId, "seller_id": sellerId]
+        ]
+        _ = try await serverCommunicator.sendMethod(parameters: parameters)
+    }
+    
+    func deleteBid(bidId: Int) async throws -> Void {
+        let parameters: [String: Any] = [
+            "method_name": "delete_bid",
+            "params": ["bid_id": bidId]
         ]
         _ = try await serverCommunicator.sendMethod(parameters: parameters)
     }
