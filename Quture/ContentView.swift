@@ -32,7 +32,7 @@ struct ContentView: View {
     @State private var isLoadingImages = true
     @State private var isActive = false // For the splash screen
     @State private var showingSearchView = false
-    @State private var isUserLoggedIn = false // For the login flow
+    @State var isUserLoggedIn = !LocalStorage().needToLogin() // For the login flow
     @State private var showingNotificationView = false
     @State private var isLoading = true
     @State private var isNavigationActive = false
@@ -50,12 +50,15 @@ struct ContentView: View {
     let rectangleMultiplier = 2.6
     let shrinkRatio: CGFloat = 0.8
     
-    
+     func handleLoginSuccess() {
+         activeScreen = .home
+     }
+     
     func handleImageConfirmation(image: UIImage, caption: String, tags: Set<Tag>) {
         if let index = rectangleContents.firstIndex(where: { $0.image == nil }) {
             Task {
                 do {
-                    let newImageId = try await ServerCommands().postImage(userId: 3, image: image, caption: caption)
+                    let newImageId = try await ServerCommands().postImage(userId: 1, image: image, caption: caption)
                     DispatchQueue.main.async{
                         rectangleContents[index] = RectangleContent(userId: 1, imageId: newImageId, image: image, caption: caption, tags: Array(tags))
                     }
@@ -117,7 +120,7 @@ struct ContentView: View {
                                     }
                                 }
                             case .loginSettings:
-                                LoginSettingsView()
+                                LoginSettingsView(isUserLoggedIn: $isUserLoggedIn)
                             }
                             
                             Spacer()
@@ -149,13 +152,14 @@ struct ContentView: View {
                         }
                     } //end of navigation view
                 } else {
-                    LoginView(isUserLoggedIn: $isUserLoggedIn)
+                    
+                    LoginView(isUserLoggedIn: $isUserLoggedIn, onLoginSuccess: handleLoginSuccess)
                 }
             } else {
                 SplashScreen()
             }
         }
-        .onAppear {
+        .onAppear {            
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 withAnimation {
                     self.isActive = true
@@ -222,13 +226,16 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                Button(action: {
-                    showingSearchView = true
-                }) {
-                    Image(systemName: "magnifyingglass")
-                        .iconModifier()
-                        .foregroundColor(Color.contrastColor(for: colorScheme))
-                }
+                 Button(action: {
+                     showingSearchView = true
+                 }) {
+                     Image(systemName: "magnifyingglass")
+                         .iconModifier()
+                         .foregroundColor(Color.contrastColor(for: colorScheme))
+                 }
+                 .frame(width: 36, height: 36) // Set a smaller frame for the icon.
+                 .padding(.trailing,  10) // Adjust padding here to move it leftward
+                 .padding(.leading, -10)
             }
             
             // Scrolling Tab Section

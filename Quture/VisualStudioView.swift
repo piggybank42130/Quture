@@ -12,9 +12,9 @@ struct VisualStudioView: View {
     @State private var isShoesTabExpanded: Bool = false
     @State private var isAccessoriesTabExpanded: Bool = false
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
-
     
     @State private var rectangles: [Int: [RectangleContent]] = Dictionary(uniqueKeysWithValues: TagManager.shared.tags.filter { $0.tagId != -1 }.map { ($0.tagId, [RectangleContent]()) })
+    
     private var topCategoryTagIds: [Int] {
         TagManager.shared.getTagIdsByCategory(category: .top)
     }
@@ -28,8 +28,13 @@ struct VisualStudioView: View {
         TagManager.shared.getTagIdsByCategory(category: .accessories)
     }
     
+    
     @State private var selectedTab: SelectedTab = .none
     private var columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2) // Adjust the count to control the number of columns
+    
+    func resetRectangles() {
+        self.rectangles = Dictionary(uniqueKeysWithValues: TagManager.shared.tags.filter { $0.tagId != -1 }.map { ($0.tagId, [RectangleContent]()) })
+    }
     
     var body: some View {
         ScrollView{
@@ -76,7 +81,8 @@ struct VisualStudioView: View {
                                             ForEach(0..<(rectangles[tagId]?.count ?? 0), id: \.self) { index in
                                                 if let rectangleContent = rectangles[tagId]?[index] {
                                                     // Simplify by handling image processing inside RectangleView or beforehand
-                                                    RectangleView(content: rectangleContent)
+                                                    RectangleView(content: rectangleContent,onNavigationTriggered: { self.resetRectangles() }
+                                                    )
                                                 } else {
                                                     // Fallback view
                                                     EmptyView()
@@ -133,7 +139,8 @@ struct VisualStudioView: View {
                                             ForEach(0..<(rectangles[tagId]?.count ?? 0), id: \.self) { index in
                                                 if let rectangleContent = rectangles[tagId]?[index] {
                                                     // Simplify by handling image processing inside RectangleView or beforehand
-                                                    RectangleView(content: rectangleContent)
+                                                    RectangleView(content: rectangleContent,onNavigationTriggered: { self.resetRectangles() }
+                                                    )
                                                 } else {
                                                     // Fallback view
                                                     EmptyView()
@@ -188,7 +195,8 @@ struct VisualStudioView: View {
                                             ForEach(0..<(rectangles[tagId]?.count ?? 0), id: \.self) { index in
                                                 if let rectangleContent = rectangles[tagId]?[index] {
                                                     // Simplify by handling image processing inside RectangleView or beforehand
-                                                    RectangleView(content: rectangleContent)
+                                                    RectangleView(content: rectangleContent,onNavigationTriggered: { self.resetRectangles() }
+                                                    )
                                                 } else {
                                                     // Fallback view
                                                     EmptyView()
@@ -243,7 +251,10 @@ struct VisualStudioView: View {
                                             ForEach(0..<(rectangles[tagId]?.count ?? 0), id: \.self) { index in
                                                 if let rectangleContent = rectangles[tagId]?[index] {
                                                     // Simplify by handling image processing inside RectangleView or beforehand
-                                                    RectangleView(content: rectangleContent)
+                                                    RectangleView(content: rectangleContent,onNavigationTriggered: {        self.resetRectangles()
+                                                        
+                                                        }
+                                                    )
                                                 } else {
                                                     // Fallback view
                                                     EmptyView()
@@ -274,39 +285,40 @@ struct VisualStudioView: View {
             )
         }
         .onAppear {
-            Task {
-                let tagIds = TagManager.shared.tags.filter { $0.tagId != -1 }.map { $0.tagId }
-                for tagId in tagIds {
-                    do {
-                        // Assuming getUserSavedImageIdsByTag now takes a tag name instead of a Tag object for simplicity
-                        // Ensure you have a suitable method to handle fetching by tag name or adapt this code to work with your current setup
-                        guard let tag = TagManager.shared.getTagById(tagId: tagId)
-                        else {
-                            print("Tag not found for ID: \(tagId)")
-                            continue
-                        }
-                        let imageIds = try await ServerCommands().getUserSavedImageIdsByTag                        (userId: 3, tag: tag)
-                        for imageId in imageIds {
-                            let (userId, image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
-                            let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
-                            DispatchQueue.main.async {
-                                // Initialize tag key with an empty array if it doesn't already exist
-                                if self.rectangles[tagId] == nil {
-                                    self.rectangles[tagId] = []
-                                }
-
-                                // Create a new RectangleContent object
-                                let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
-
-                                // Append the new object to the array under the tag name
-                                self.rectangles[tagId]!.append(newRectangleContent)
+            
+                Task {
+                    let tagIds = TagManager.shared.tags.filter { $0.tagId != -1 }.map { $0.tagId }
+                    for tagId in tagIds {
+                        do {
+                            // Assuming getUserSavedImageIdsByTag now takes a tag name instead of a Tag object for simplicity
+                            // Ensure you have a suitable method to handle fetching by tag name or adapt this code to work with your current setup
+                            guard let tag = TagManager.shared.getTagById(tagId: tagId)
+                            else {
+                                print("Tag not found for ID: \(tagId)")
+                                continue
                             }
+                            let imageIds = try await ServerCommands().getUserSavedImageIdsByTag                        (userId: 1, tag: tag)
+                            for imageId in imageIds {
+                                let (userId, image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                                let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
+                                DispatchQueue.main.async {
+                                    // Initialize tag key with an empty array if it doesn't already exist
+                                    if self.rectangles[tagId] == nil {
+                                        self.rectangles[tagId] = []
+                                    }
+
+                                    // Create a new RectangleContent object
+                                    let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
+
+                                    // Append the new object to the array under the tag name
+                                    self.rectangles[tagId]!.append(newRectangleContent)
+                                }
+                            }
+                        } catch {
+                            print("Error fetching images for tagId \(tagId): \(error)")
                         }
-                    } catch {
-                        print("Error fetching images for tagId \(tagId): \(error)")
                     }
                 }
-            }
         }
     }
     
@@ -348,7 +360,9 @@ struct RectangleView: View {
     
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
 
-    
+    @State private var isNavigationActive = false
+    var onNavigationTriggered: () -> Void
+
     var body: some View {
         VStack {
             if let uiImage = content.image {
@@ -361,6 +375,17 @@ struct RectangleView: View {
                     // Scale the image to the specific height, keeping its aspect ratio
                     .frame(width: scaledWidth, height: LayoutConfig.rectangleHeight)
                     .clipped() // Clip the image to fit within the frame dimensions
+                    .onTapGesture {
+                        self.isNavigationActive = true
+                    }
+                    .background(
+                        NavigationLink(
+                            destination: ImageDisplayView(posterId: content.userId ?? 0, imageId: content.imageId ?? 0, image: content.image ?? UIImage(), caption: content.caption ?? "", tags: content.tags ?? [], onReturn: {
+                                    self.onNavigationTriggered()
+                                }),
+                            isActive: $isNavigationActive
+                        ) { EmptyView() }
+                    )
                 
                 Text(content.caption)
                     .font(.caption)
@@ -381,22 +406,5 @@ struct RectangleView: View {
         //.background(Color.gray) // Your existing background
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .top)
 
-    }
-}
-
-
-
-
-
-// This part should be outside any struct or class declaration
-extension CGFloat {
-    var abs: CGFloat {
-        return Swift.abs(self)
-    }
-}
-
-struct VisualStudioView_Previews: PreviewProvider {
-    static var previews: some View {
-        VisualStudioView()
     }
 }

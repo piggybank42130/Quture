@@ -38,7 +38,7 @@ struct SignUpView: View {
                         do {
                             let newUserId = try await ServerCommands().addUser(username: signUpUsername, email: signUpEmail, passwordHash: signUpPassword)
                             DispatchQueue.main.async {
-                                LocalStorage().saveNumber(number: newUserId, to: "userId.txt")
+                                LocalStorage().saveUserId(number: newUserId)
                                 isUserLoggedIn = true
                             }
                         }

@@ -21,7 +21,8 @@ struct ImageDisplayView: View {
     var image: UIImage
     var caption: String
     var tags: [Tag]
-        
+    var onReturn: (() -> Void)?
+    
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -60,7 +61,7 @@ struct ImageDisplayView: View {
                         Button(action: {
                             Task{
                                 do {
-                                    try await ServerCommands().toggleLikeOnImage(userId: 3, imageId: imageId)
+                                    try await ServerCommands().toggleLikeOnImage(userId: 1, imageId: imageId)
                                     isHeartTapped = !isHeartTapped
                                     heartCount += (isHeartTapped ? 1 : -1)
                                 }
@@ -86,7 +87,7 @@ struct ImageDisplayView: View {
                             print("Bookmark tapped")
                             Task {
                                 do {
-                                    try await ServerCommands().toggleSaveOnImage(userId: 3, imageId: self.imageId)
+                                    try await ServerCommands().toggleSaveOnImage(userId: 1, imageId: self.imageId)
                                     DispatchQueue.main.async {
                                         isSaveTapped.toggle()
                                     }
@@ -172,7 +173,9 @@ struct ImageDisplayView: View {
                 }
             }
         }
-        
+//        .onDisappear(){
+//            self.onReturn?() // Safely call the optional closure
+//        }
     }
     
     
@@ -180,11 +183,14 @@ struct ImageDisplayView: View {
         HStack {
             Button(action: {
                 self.presentationMode.wrappedValue.dismiss()
+                self.onReturn?()
+
             }) {
                 Image(systemName: "arrowtriangle.left.fill")
                     .font(.system(size: 24))
                     .foregroundColor(Color.contrastColor(for: colorScheme))
                     .bold()
+
             }
             .padding(.leading, 20) // Add padding to move the icon further from the left edge
             

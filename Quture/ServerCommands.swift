@@ -85,6 +85,7 @@ class ServerCommands: ObservableObject {
     func toggleSaveOnImage(userId: Int, imageId: Int) async throws -> Void {
         let parameters: [String: Any] = ["method_name": "toggle_save_on_image", "params": ["user_id": userId, "image_id": imageId]]
         _ = try await serverCommunicator.sendMethod(parameters: parameters)
+        let saved = try await hasUserSavedImage(userId: userId, imageId: imageId)
         // No need for further processing if no return value is expected
     }
     

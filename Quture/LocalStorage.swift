@@ -8,10 +8,10 @@
 import Foundation
 
 struct LocalStorage {
-    func saveNumber(number: Int, to fileName: String) {
+    func saveUserId(number: Int) {
         // Find the document directory of the app
         if let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let fileURL = documentDirectory.appendingPathComponent(fileName)
+            let fileURL = documentDirectory.appendingPathComponent("userId.txt")
             
             // Convert number to String
             let numberString = "\(number)"
@@ -26,10 +26,10 @@ struct LocalStorage {
         }
     }
     
-    func getNumber(from fileName: String) -> Int? {
+    func getUserId() -> Int? {
         // Find the document directory of the app
         if let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let fileURL = documentDirectory.appendingPathComponent(fileName)
+            let fileURL = documentDirectory.appendingPathComponent("userId.txt")
             
             // Read the content of the file
             do {
@@ -37,8 +37,17 @@ struct LocalStorage {
                 return Int(numberString)
             } catch {
                 print("Failed to read number: \(error)")
+                return -1
             }
         }
-        return nil
+        return -1
+    }
+    
+    func needToLogin() -> Bool{
+        return getUserId() == -1
+    }
+    
+    func logout() -> Void{
+        saveUserId(number: -1)
     }
 }

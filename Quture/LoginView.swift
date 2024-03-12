@@ -15,6 +15,7 @@ struct LoginView: View {
     @State private var loginPassword: String = ""
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
 
+    let onLoginSuccess: () -> Void
 
     var body: some View {
         VStack(spacing: 20) {
@@ -64,8 +65,11 @@ struct LoginView: View {
                             do {
                                 let userId = try await ServerCommands().verifyUser(username: loginEmail, passwordHash: loginPassword)
                                 DispatchQueue.main.async {
-                                    LocalStorage().saveNumber(number: userId, to: "userId.txt")
+                                    LocalStorage().saveUserId(number: userId)
                                     isUserLoggedIn = (userId != -1)
+                                    if (isUserLoggedIn) {
+                                        onLoginSuccess()
+                                    }
                                 }
                             }
                             catch {
