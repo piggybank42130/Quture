@@ -269,17 +269,19 @@ class ServerCommands: ObservableObject {
         }
     }
     
-    func getBidInfo (messageId: Int) async throws -> [String: Any] {
+    func getBidInfo(bidId: Int) async throws -> (Int, Int, Int, String, Bool) {
         let parameters: [String: Any] = [
             "method_name": "get_bid_info",
-            "params": ["message_id": messageId]
+            "params": ["bid_id": bidId]
         ]
         
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        print(try JSONSerialization.jsonObject(with: data, options: []))
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
            let result = jsonResponse["result"] as? [String: Any],
-           let bidInfo = result["bid_info"] as? [String: Any]{
-            return result
+           let bidInfo = result["bid_info"] as? [String: Any], let buyerId = bidInfo["buyer_id"] as? Int, let sellerId = bidInfo["seller_id"] as? Int, let imageId = bidInfo["image_id"] as? Int, let messageText = bidInfo["message_text"] as? String, let seenBySeller = bidInfo["seen_by_seller"] as? Int{
+            return (buyerId, sellerId, imageId, messageText, seenBySeller == 1)
+            
         } else {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
@@ -295,10 +297,47 @@ class ServerCommands: ObservableObject {
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
            let result = jsonResponse["result"] as? [String:Any],
            let messageIds = result["message_ids"] as? [Int] {
-            return messageIds
+            for messageId in messageIds{
+                print(messageId)
+            }
+            return []
         } else {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
+    }
+
+    func getSellerBidIds(sellerId: Int) async throws -> [Int] {
+        let parameters: [String: Any] = [
+            "method_name": "get_seller_bid_ids",
+            "params": ["seller_id": sellerId]
+        ]
+
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let result = jsonResponse["result"] as? [String: Any],
+           let bidIds = result["bid_ids"] as? [Int] {
+            return bidIds
+        } else {
+            throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
+        }
+    }
+    
+    func getSellerBidInfo(sellerId: Int) async throws -> ([Int], [Int], [Int], [Int], [String], [Bool]) {
+        let bidIds = try await getSellerBidIds(sellerId: sellerId)
+        var buyerIds = [] as [Int]
+        var sellerIds = [] as [Int]
+        var imageIds = [] as [Int]
+        var messageTexts = [] as [String]
+        var seenBySellers = [] as [Bool]
+        for bidId in bidIds{
+            let (newBuyerId, newSellerId, newImageId, newMessageText, newSeenBySeller) = try await ServerCommands().getBidInfo(bidId: bidId)
+            buyerIds.append(newBuyerId)
+            sellerIds.append(newSellerId)
+            imageIds.append(newImageId)
+            messageTexts.append(newMessageText)
+            seenBySellers.append(newSeenBySeller)
+        }
+        return (bidIds, buyerIds, sellerIds, imageIds, messageTexts, seenBySellers)
     }
     
     func countUnseenBidMessages(userId: Int) async throws -> Int {
@@ -314,6 +353,14 @@ class ServerCommands: ObservableObject {
     }
     
     func markBidSuccessful(messageId: Int) async throws -> Void {
+        let parameters: [String: Any] = [
+            "method_name": "mark_bid_successful",
+            "params": ["message_id": messageId]
+        ]
+        _ = try await serverCommunicator.sendMethod(parameters: parameters)
+    }
+    
+    func markBidSeen(messageId: Int) async throws -> Void {
         let parameters: [String: Any] = [
             "method_name": "mark_bid_successful",
             "params": ["message_id": messageId]
