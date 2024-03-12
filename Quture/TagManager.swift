@@ -35,7 +35,7 @@ class TagManager {
         
         // Shoe tags - Adjusting IDs due to insertion
         Tag(tagId: 26, name: "Boots", category: .shoe),
-        Tag(tagId: 27, name: "Customs", category: .shoe),
+        Tag(tagId: 27, name: "Custom shoes", category: .shoe),
         Tag(tagId: 28, name: "Dress shoes", category: .shoe),
         Tag(tagId: 29, name: "Loafers", category: .shoe),
         Tag(tagId: 30, name: "Sandals", category: .shoe),

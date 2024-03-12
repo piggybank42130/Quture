@@ -6,57 +6,20 @@ struct SearchView: View {
     @State private var navigateToSearchedView = false // State to control navigation
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
     @State private var isMatchFound = false
+    @State private var matchingTagNames: [String] = []
+    @State private var searchDebounceTimer: Timer?
 
     var body: some View {
         VStack {
-            // Top bar
-            HStack {
-                TextField("Search...", text: $searchText) // Use the state variable for text binding
-                    .padding(10) // Add some padding inside the TextField
-                    .background(Color.sameColor(forScheme: colorScheme)) // Set the background color of the TextField
-                    .cornerRadius(10) // Round the corners of the TextField background
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10) // Add a rounded border
-                            .stroke(Color.gray, lineWidth: 1) // Set the color and width of the border
-                    )
-                    .padding(.leading)
-                    .onSubmit {
-                        isMatchFound = doesSearchTermMatchAnyTag(searchTerm: searchText)
-                        hideKeyboard()
-                    }
-
+            //Search Bar
+            searchTopBar
+            
+            if isMatchFound && !matchingTagNames.isEmpty{
+                searchResultsView
+            }
+            else{
                 Spacer()
-
-                Button("Cancel") { // Cancel button on the right
-                    presentationMode.wrappedValue.dismiss()
-                }
-                .foregroundColor(Color.contrastColor(for: colorScheme))
-                .padding(.trailing)
             }
-            .padding(.vertical, 10)
-            .background(Color.sameColor(forScheme: colorScheme))
-            .foregroundColor(.contrastColor(for: colorScheme))
-            if isMatchFound {
-                // Horizontal bars
-                ScrollView {
-                    VStack(spacing: 10) {
-                        ForEach(0..<12, id: \.self) { index in
-                            NavigationLink(destination: SearchedView(searchText: "Input \(index + 1)")) {
-                                VStack {
-                                    Text("Input \(index + 1)")
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding()
-                                        .background(Color.gray.opacity(0.2))
-                                        .cornerRadius(5)
-                                }
-                            }
-                            .buttonStyle(PlainButtonStyle()) // Remove the default button style
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-            }
-            Spacer()
         }
         .navigationBarHidden(true)
         .background(
@@ -67,10 +30,64 @@ struct SearchView: View {
         )
     }
     
+    private var searchTopBar: some View{
+        HStack {
+            TextField("Search...", text: $searchText)
+                .onChange(of: searchText) { newValue in
+                                    searchDebounced(text: newValue)
+                }
+                .padding(10)
+                .background(Color.sameColor(forScheme: colorScheme))
+                .cornerRadius(10)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray, lineWidth: 1)
+                )
+                .padding(.leading)
+
+            Spacer()
+
+            Button("Cancel") {
+                presentationMode.wrappedValue.dismiss()
+            }
+            .foregroundColor(Color.contrastColor(for: colorScheme))
+            .padding(.trailing)
+        }
+        .padding(.vertical, 10)
+        .background(Color.sameColor(forScheme: colorScheme))
+        .foregroundColor(.contrastColor(for: colorScheme))
+    }
+    
+    private var searchResultsView: some View {
+        ScrollView {
+            VStack(spacing: 10) {
+                ForEach(matchingTagNames, id: \.self) { tagName in
+                    NavigationLink(destination: SearchedView(searchText: tagName)) {
+                        Text(tagName)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(5)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+    
     // Function to dismiss the keyboard
     private func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
+    private func searchDebounced(text: String) {
+            searchDebounceTimer?.invalidate()
+            searchDebounceTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+                Task {
+                    await searchForTags()
+                }
+            }
+        }
     
     // Function to check if search term matches any tags
     private func doesSearchTermMatchAnyTag(searchTerm: String) -> Bool {
@@ -79,8 +96,28 @@ struct SearchView: View {
             tag.name.lowercased().contains(lowercaseSearchTerm)
         }
     }
+    
+    private func searchForTags() async {
+        print("Searching for tags with searchTerm: \(searchText)")
+        do {
+            print("Fetching tags")
+            let tagIds = try await ServerCommands().searchTags(searchTerm: searchText)
+            print(tagIds)
+            let tagNames = tagIds.compactMap { TagManager.shared.getTagById(tagId: $0)?.name }
+            print(tagNames)
+            DispatchQueue.main.async {
+                self.matchingTagNames = tagNames
+                self.isMatchFound = !tagNames.isEmpty
+            }
+        } catch {
+            print("")
+            DispatchQueue.main.async {
+                self.isMatchFound = false
+                self.matchingTagNames = []
+            }
+        }
+    }
 }
-
 struct SearchView_Previews: PreviewProvider {
     static var previews: some View {
         SearchView()
