@@ -24,32 +24,48 @@ struct BidNotification: View, Identifiable {
                 Text(bidTitle)
                     .font(.headline)
                     .padding()
+                    .frame(maxWidth: .infinity, alignment: .center) // Aligns text with the width of the bid title
+
                 Text(bidText)
-                    .font(.subheadline)
+                    .font(.headline)
                     .padding()
+                    .frame(maxWidth: .infinity, alignment: .center) // Aligns text with the width of the bid title
+
                 Text("I'm offering $\(String(format: "%.2f", bidPrice))")
                     .font(.headline)
                     .padding()
-
-                HStack {
-                    Spacer()
-
+                    .frame(maxWidth: .infinity, alignment: .center) // Aligns text with the width of the bid title
+                
+                HStack(spacing: 10) { // Added spacing between buttons
                     Button(action: onAccept) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.largeTitle)
+                        Rectangle()
                             .foregroundColor(.green)
+                            .frame(height: 50) // Removed the fixed width
+                            .cornerRadius(10) // Rounded corners
+                            .overlay(
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.white)
+                            )
                     }
-                    .padding()
-
+                    .padding(.horizontal, 2) // Minor horizontal padding for button
+                    .padding(.vertical, 10)
+                    
                     Button(action: onReject) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.largeTitle)
+                        Rectangle()
                             .foregroundColor(.red)
+                            .frame(height: 50) // Removed the fixed width
+                            .cornerRadius(10) // Rounded corners
+                            .overlay(
+                                Image(systemName: "xmark")
+                                    .foregroundColor(.white)
+                            )
                     }
-                    .padding()
-
-                    Spacer()
+                    .padding(.horizontal, 2) // Minor horizontal padding for button
+                    .padding(.vertical, 10)
                 }
+                .frame(maxWidth: .infinity) // Makes HStack cover the full width
+                .padding(.horizontal) // Pads the horizontal sides of the HStack to align with the text
+
             }
             .frame(maxWidth: .infinity)
             .background(Color.gray.opacity(0.3))
@@ -66,10 +82,12 @@ struct BidNotification: View, Identifiable {
                             .font(.caption)
                             .foregroundColor(.white)
                     )
-                    .offset(x: -10, y: -10) // Adjusts the position relative to the bottom right corner
+                    .offset(x: -10, y: -10) // Adjusts the position relative to the top right corner
             }
         }
     }
+
+    
 }
 
 
@@ -137,7 +155,7 @@ struct NotificationView: View {
                                  bidNotifications.removeAll { $0.bidId == bidId }
                                  Task{
                                       do {
-                                           try await ServerCommands().markBidSuccessful(messageId: Int)
+                                           //try await ServerCommands().markBidSuccessful(messageId: Int)
                                       }
                                       catch {
                                            print(error)
