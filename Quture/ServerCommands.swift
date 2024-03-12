@@ -60,6 +60,21 @@ class ServerCommands: ObservableObject {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
     }
+    
+    func uploadProfilePicture(userId: Int, image: UIImage) async throws -> Void {
+        guard let imageData = image.jpegData(compressionQuality: 1) else {
+            throw NSError(domain: "ImageError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Image compression failed."])
+        }
+        let base64ImageString = imageData.base64EncodedString()
+        let parameters: [String: Any] = [
+            "method_name": "post_image",
+            "params": [
+                "user_id": userId,
+                "image_data": base64ImageString
+            ]
+        ]
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+    }
 
     func setTagsToImage(imageId: Int, tags: Set<Tag>) async throws -> Bool {
         let tagsWithInterestArray = tags.map { ["tag_id": $0.tagId, "interest_level": 1.0] }
@@ -179,6 +194,29 @@ class ServerCommands: ObservableObject {
                let imageDataString = imageData["image_data"] as? String, let imageCaption = imageData["caption"] as? String, let userId = imageData["user_id"] as? Int{
                 if let imageData = Data(base64Encoded: imageDataString), let image = UIImage(data: imageData) {
                 return (userId, image, imageCaption)
+                    
+                }
+                else{
+                    throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
+                }
+            }
+            else{
+                throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
+            }
+        } else {
+            throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
+        }
+    }
+    
+    func retrieveProfilePicture(userId: Int) async throws -> UIImage {
+        let parameters: [String: Any] = ["method_name": "retrieve_image", "params": ["user_id": userId]]
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
+            if let result = jsonResponse["result"] as? [String: Any],
+               let imageData = result["image_data"] as? [String: Any],
+               let imageDataString = imageData["image_data"] as? String{
+                if let imageData = Data(base64Encoded: imageDataString), let image = UIImage(data: imageData) {
+                return image
                     
                 }
                 else{
