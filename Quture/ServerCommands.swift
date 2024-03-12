@@ -399,4 +399,20 @@ class ServerCommands: ObservableObject {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
     }
+    
+    func getImagesForTag(tagId: Int) async throws -> [Int] {
+        let parameters: [String: Any] = [
+            "method_name": "get_images_for_tag",
+            "params": ["tag_id": tagId]
+        ]
+
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let result = jsonResponse["result"] as? [String: Any],
+           let imageIds = result["image_ids"] as? [Int] {
+            return imageIds
+        } else {
+            throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
+        }
+    }
 }
