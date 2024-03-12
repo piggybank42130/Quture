@@ -5,7 +5,7 @@ struct SearchView: View {
     @State private var searchText = "" // State variable for the search text
     @State private var navigateToSearchedView = false // State to control navigation
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
-
+    @State private var isMatchFound = false
 
     var body: some View {
         VStack {
@@ -21,10 +21,8 @@ struct SearchView: View {
                     )
                     .padding(.leading)
                     .onSubmit {
-                        if !searchText.isEmpty {
-                            navigateToSearchedView = true
-                            hideKeyboard() // Dismiss the keyboard
-                        }
+                        isMatchFound = doesSearchTermMatchAnyTag(searchTerm: searchText)
+                        hideKeyboard()
                     }
 
                 Spacer()
@@ -38,26 +36,26 @@ struct SearchView: View {
             .padding(.vertical, 10)
             .background(Color.sameColor(forScheme: colorScheme))
             .foregroundColor(.contrastColor(for: colorScheme))
-
-            // Horizontal bars
-            ScrollView {
-                VStack(spacing: 10) {
-                    ForEach(0..<12, id: \.self) { index in
-                        NavigationLink(destination: SearchedView(searchText: "Input \(index + 1)")) {
-                            VStack {
-                                Text("Input \(index + 1)")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding()
-                                    .background(Color.gray.opacity(0.2))
-                                    .cornerRadius(5)
+            if isMatchFound {
+                // Horizontal bars
+                ScrollView {
+                    VStack(spacing: 10) {
+                        ForEach(0..<12, id: \.self) { index in
+                            NavigationLink(destination: SearchedView(searchText: "Input \(index + 1)")) {
+                                VStack {
+                                    Text("Input \(index + 1)")
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding()
+                                        .background(Color.gray.opacity(0.2))
+                                        .cornerRadius(5)
+                                }
                             }
+                            .buttonStyle(PlainButtonStyle()) // Remove the default button style
                         }
-                        .buttonStyle(PlainButtonStyle()) // Remove the default button style
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
             }
-
             Spacer()
         }
         .navigationBarHidden(true)
@@ -72,6 +70,14 @@ struct SearchView: View {
     // Function to dismiss the keyboard
     private func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
+    // Function to check if search term matches any tags
+    private func doesSearchTermMatchAnyTag(searchTerm: String) -> Bool {
+        let lowercaseSearchTerm = searchTerm.lowercased()
+        return TagManager.shared.tags.contains { tag in
+            tag.name.lowercased().contains(lowercaseSearchTerm)
+        }
     }
 }
 

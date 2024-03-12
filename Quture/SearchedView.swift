@@ -64,6 +64,7 @@ struct SearchedView: View {
         }
         .navigationBarHidden(true) // Hide the default navigation bar
     }
+    
 }
 
 struct SearchedView_Previews: PreviewProvider {
