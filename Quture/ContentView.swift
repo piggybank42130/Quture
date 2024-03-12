@@ -244,7 +244,7 @@ struct ContentView: View {
                                 .font(.system(size: 16))
                                 .padding(.vertical, 6)
                                 .frame(width: 100)
-                                .background(Color.gray.opacity(0.2))
+                                //.background(Color.gray.opacity(0.2))
                                 .cornerRadius(10)
                         }
                         .foregroundColor(Color.contrastColor(for: colorScheme)) // Set the text color for the button
@@ -254,7 +254,7 @@ struct ContentView: View {
             }
             .frame(height: 40)
         }
-        .background(Color.gray.opacity(0.2))
+        //.background(Color.gray.opacity(0.2))
         .background(
             NavigationLink(destination: SearchView(), isActive: $showingSearchView) {
                 EmptyView()
@@ -381,7 +381,7 @@ struct ContentView: View {
         }
         .padding(.horizontal)
         .frame(height: 50)
-        .background(Color.sameColor(forScheme: colorScheme))
+        //.background(Color.sameColor(forScheme: colorScheme))
         .padding(.bottom)
         .background(
             NavigationLink(destination: VisualStudioView(), isActive: $showingVisualStudioView) {

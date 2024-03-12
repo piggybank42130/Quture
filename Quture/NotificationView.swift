@@ -155,7 +155,7 @@ struct NotificationView: View {
                                  bidNotifications.removeAll { $0.bidId == bidId }
                                  Task{
                                       do {
-                                           //try await ServerCommands().markBidSuccessful(messageId: Int)
+                                           try await ServerCommands().markBidSuccessful(bidId: bidId)
                                       }
                                       catch {
                                            print(error)
@@ -169,6 +169,14 @@ struct NotificationView: View {
                             actionToConfirm = {
                                 // Logic to reject the bid
                                 bidNotifications.removeAll { $0.bidId == bidId }
+                                 Task{
+                                      do {
+                                           try await ServerCommands().deleteBid(bidId: bidId)
+                                      }
+                                      catch {
+                                           print(error)
+                                      }
+                                 }
                             }
                             showAlert = true
                         })

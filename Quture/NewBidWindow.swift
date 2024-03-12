@@ -52,9 +52,8 @@ struct NewBidWindow: View {
                     Text("Buy Now")
                         .foregroundColor(isCustomerPriceActive ? .black : .white)
                 }
-                .padding([.top, .bottom], 8)
-                .padding([.leading, .trailing], 10)
-                .frame(maxWidth: .infinity)
+                .padding()
+                .frame(maxWidth: .infinity, minHeight: 50, maxHeight: 50) // Explicit height set here
                 .background(isCustomerPriceActive ? Color.gray.opacity(0.3) : Color.black)
                 .cornerRadius(5)
                 .onTapGesture {
@@ -66,9 +65,8 @@ struct NewBidWindow: View {
                     Text("Make a Bid")
                         .foregroundColor(isCustomerPriceActive ? .white : .black)
                 }
-                .padding([.top, .bottom], 8)
-                .padding([.leading, .trailing], 10)
-                .frame(maxWidth: .infinity)
+                .padding()
+                .frame(maxWidth: .infinity, minHeight: 50, maxHeight: 50) // Same explicit height set here
                 .background(isCustomerPriceActive ? Color.black : Color.gray.opacity(0.3))
                 .cornerRadius(5)
                 .onTapGesture {
