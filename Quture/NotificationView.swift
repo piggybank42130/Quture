@@ -13,12 +13,106 @@ struct BidNotification: View, Identifiable {
     @State var bidPrice: Double
     
     @State var isNew: Bool
+    @State var isSellerResponse: Bool
+    @State var isBidSuccessful: Bool
+    @State var onCheckmarkPressed: () -> Void = {}
     
     var onAccept: () -> Void = {}
     var onReject: () -> Void = {}
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
+        ZStack(alignment: .topTrailing) {
+            VStack {
+                if isSellerResponse {
+                    buyerView //show the buyer notif if it's a seller response
+                } else {
+                    sellerView //show seller notif if it's a buyer response
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .background(Color.gray.opacity(0.3))
+            .cornerRadius(20)
+            .padding(.vertical, 2)
+            
+        }
+    }
+    
+    private var buyerView: some View{
+        ZStack(alignment: .topTrailing) {
+            VStack {
+                let statusMessage = isBidSuccessful ? "Your bid of $\(String(format: "%.2f", bidPrice)) has been accepted." : "Your bid of $\(String(format: "%.2f", bidPrice)) has been rejected."
+                Text(statusMessage)
+                    .font(.headline)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .multilineTextAlignment(.center)
+                
+                HStack(spacing: 10) { // Added spacing between buttons
+                    Button(action: onCheckmarkPressed) {
+                        Rectangle()
+                            .foregroundColor(.green)
+                            .frame(height: 50)
+                            .cornerRadius(10)
+                            .overlay(
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.white)
+                            )
+                    }
+                    .padding(.horizontal, 2) // Minor horizontal padding for button
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 2) // Minor horizontal padding for button
+                    .padding(.vertical, 10)
+                    
+                }
+                .frame(maxWidth: .infinity) // Makes HStack cover the full width
+                .padding(.horizontal) // Pads the horizontal sides of the HStack to align with the text
+                
+            }
+            .frame(maxWidth: .infinity)
+            .background(Color.gray.opacity(0.3))
+            .cornerRadius(20)
+            .padding(.vertical, 2)
+            
+            // Red circle indicator for new notifications
+            if isNew {
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(Color.red)
+                    .frame(width: 40, height: 25) // Adjust size to fit the text
+                    .overlay(
+                        Text("NEW")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                    )
+                    .offset(x: -10, y: -10) // Adjusts the position relative to the top right corner
+            }
+            else {
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(Color.gray)
+                    .frame(width: 100, height: 25) // Adjust size to fit the text
+                    .overlay(
+                        Text("MARK AS NEW")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                    )
+                    .offset(x: -10, y: -10) // Adjusts the position relative to the top right corner
+                    .onTapGesture {
+                        Task{
+                            do {
+                                try await ServerCommands().markBidAsUnseen(bidId: bidId, sellerId: bidSellerId)
+                                withAnimation(.easeInOut) { // Animate the transition
+                                    isNew = true
+                                }
+                            }
+                            catch{
+                                print(error)
+                            }
+                        }
+                    }
+            }
+        }
+    }
+    private var sellerView: some View {
         ZStack(alignment: .topTrailing) {
             VStack {
                 Text(bidTitle)
@@ -158,7 +252,7 @@ struct NotificationView: View {
         .onAppear{
             Task {
                 do{
-                    let (bidIds, buyerIds, sellerIds, imageIds, messageTexts, seenBySellers) = try await ServerCommands().getSellerBidInfo(sellerId: sellerId)
+                    let (bidIds, buyerIds, sellerIds, imageIds, messageTexts, seenBySellers, successfulBids) = try await ServerCommands().getSellerBidInfo(sellerId: sellerId)
                     
                     for index in 0..<bidIds.count {
                         let bidId = bidIds[index]
@@ -168,19 +262,27 @@ struct NotificationView: View {
                         let bidMessageText = messageTexts[index]
                         let bidSeenBySeller = seenBySellers[index]
                         let buyerUsername = try await ServerCommands().getUsername(userId: bidBuyerId)
-                         print(bidSeenBySeller)
-                        let newBid = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidSellerId, bidImageId: bidImageId, bidTitle: "New Purchase Request from \(buyerUsername):", bidText: "\(bidMessageText)", bidPrice: 1000.00, isNew: !bidSeenBySeller, onAccept: {
+                        let isBidSuccessful = successfulBids[index]
+                        print(bidSeenBySeller)
+                        let newBid = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidSellerId, bidImageId: bidImageId, bidTitle: "New Purchase Request from \(buyerUsername):", bidText: "\(bidMessageText)", bidPrice: 1000.00, isNew: !bidSeenBySeller, isSellerResponse: false, isBidSuccessful: isBidSuccessful, onAccept: {
                             alertTitle = "Confirm Bid"
                             alertMessage = "You are about to confirm the bid."
                             actionToConfirm = {
                                 // Logic to accept the bid
-                                 bidNotifications.removeAll { $0.bidId == bidId }
+                                bidNotifications.removeAll { $0.bidId == bidId }
                                  Task{
                                       do {
-                                           try await ServerCommands().markBidSuccessful(bidId: bidId)
+                                          try await ServerCommands().markBidSuccessful(bidId: bidId)
+                                          let newBuyerNotif = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidImageId, bidImageId: bidImageId, bidTitle: "", bidText: "", bidPrice: 1000.00, isNew: bidSeenBySeller, isSellerResponse: true, isBidSuccessful: true, onCheckmarkPressed: {
+                                              DispatchQueue.main.async {
+                                                  bidNotifications.removeAll { $0.bidId == bidId }
+                                              }
+                                          })
+                                          print("seller accepted, response sent to buyer")
+                                          bidNotifications.append(newBuyerNotif)
                                       }
                                       catch {
-                                           print(error)
+                                          print(error)
                                       }
                                  }
                             }
@@ -193,7 +295,14 @@ struct NotificationView: View {
                                 bidNotifications.removeAll { $0.bidId == bidId }
                                  Task{
                                       do {
-                                           try await ServerCommands().deleteBid(bidId: bidId)
+                                          let newBuyerNotif = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidImageId, bidImageId: bidImageId, bidTitle: "", bidText: "", bidPrice: 1000.00, isNew: bidSeenBySeller, isSellerResponse: true, isBidSuccessful: false, onCheckmarkPressed: {
+                                              DispatchQueue.main.async {
+                                                  bidNotifications.removeAll { $0.bidId == bidId }
+                                              }
+                                          })
+                                          try await ServerCommands().deleteBid(bidId: bidId)
+                                          print("seller rejected, response sent to buyer")
+                                          bidNotifications.append(newBuyerNotif)
                                       }
                                       catch {
                                            print(error)
