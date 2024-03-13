@@ -121,7 +121,7 @@ struct VisualStudioView: View {
                     .padding(.leading, -15)
                     Spacer()
                 }
-                .padding(.top, 110)
+                .padding(.top, 10)
                 
                 //Bottoms: Dress pants
                 if isBottomsTabExpanded {
@@ -177,7 +177,7 @@ struct VisualStudioView: View {
                     .padding(.leading, -15)
                     Spacer()
                 }
-                .padding(.top, 140)
+                .padding(.top, 10)
                 
                 //Shoes: Boots
                 if isShoesTabExpanded {
@@ -233,7 +233,7 @@ struct VisualStudioView: View {
                     .padding(.leading, -15)
                     Spacer()
                 }
-                .padding(.top, 150)
+                .padding(.top, 10)
                 
                 //Accessories: Necklaces
                 if isAccessoriesTabExpanded {
@@ -297,7 +297,7 @@ struct VisualStudioView: View {
                                 print("Tag not found for ID: \(tagId)")
                                 continue
                             }
-                            let imageIds = try await ServerCommands().getUserSavedImageIdsByTag                        (userId: 1, tag: tag)
+                            let imageIds = try await ServerCommands().getUserSavedImageIdsByTag                        (userId: LocalStorage().getUserId(), tag: tag)
                             for imageId in imageIds {
                                 let (userId, image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                                 let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)

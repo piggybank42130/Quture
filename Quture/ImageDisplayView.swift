@@ -10,9 +10,12 @@ struct ImageDisplayView: View {
     @State private var isHeartTapped = false
     @State private var isSaveTapped = false
     @State private var username: String = ""
-    
+    @State private var profileImage: UIImage? = nil
+
     let sellerPrice: Double = 1000.00 // Dummy seller price
     let customerPrice: Double = 950.00 // Dummy customer price
+    
+    
     
     @Environment(\.colorScheme) var colorScheme
     
@@ -48,8 +51,24 @@ struct ImageDisplayView: View {
                     // VStack for the user profile and its placeholder text
                     VStack(spacing: 2) {
                         Circle()
-                            .frame(width: 30, height: 30)
+                            .frame(width: 60, height: 60)
                             .foregroundColor(.gray)
+                            .overlay(
+                                Group {
+                                    if let profileUIImage = profileImage {
+                                        Image(uiImage: profileUIImage) // Use the retrieved profileImage
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill) // Fill the circle with the image
+                                    } else {
+                                        Image(systemName: "person.crop.circle.fill") // Default placeholder
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .padding()
+                                    }
+                                }
+                            )
+                            .clipShape(Circle()) //Clip image to circle
+
                         Text(username)
                             .font(.caption)
                     }
@@ -61,7 +80,7 @@ struct ImageDisplayView: View {
                         Button(action: {
                             Task{
                                 do {
-                                    try await ServerCommands().toggleLikeOnImage(userId: 1, imageId: imageId)
+                                    try await ServerCommands().toggleLikeOnImage(userId: LocalStorage().getUserId(), imageId: imageId)
                                     isHeartTapped = !isHeartTapped
                                     heartCount += (isHeartTapped ? 1 : -1)
                                 }
@@ -87,7 +106,7 @@ struct ImageDisplayView: View {
                             print("Bookmark tapped")
                             Task {
                                 do {
-                                    try await ServerCommands().toggleSaveOnImage(userId: 1, imageId: self.imageId)
+                                    try await ServerCommands().toggleSaveOnImage(userId: LocalStorage().getUserId(), imageId: self.imageId)
                                     DispatchQueue.main.async {
                                         isSaveTapped.toggle()
                                     }
@@ -159,11 +178,13 @@ struct ImageDisplayView: View {
             Task {
                 do {
                     let username = try await ServerCommands().getUsername(userId: posterId)
-                    let hasLiked = try await ServerCommands().hasUserLikedImage(userId: 1, imageId: self.imageId)
+                    let profileImage = try await ServerCommands().retrieveProfilePicture(userId: posterId)
+                    let hasLiked = try await ServerCommands().hasUserLikedImage(userId: LocalStorage().getUserId(), imageId: self.imageId)
                     let likeCount = try await ServerCommands().getLikesOnImage(imageId: self.imageId)
-                    let hasSaved = try await ServerCommands().hasUserSavedImage(userId: 1, imageId: self.imageId)
+                    let hasSaved = try await ServerCommands().hasUserSavedImage(userId: LocalStorage().getUserId(), imageId: self.imageId)
                     DispatchQueue.main.async {
                         self.username = username
+                        self.profileImage = profileImage
                         self.isHeartTapped = hasLiked
                         self.isSaveTapped = hasSaved
                         self.heartCount = likeCount

@@ -221,13 +221,18 @@ class ServerCommands: ObservableObject {
                     
                 }
                 else{
+                    return UIImage(systemName: "person.crop.circle.fill")
                     throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
                 }
             }
             else{
+                return Image(systemName: "person.crop.circle.fill")
+
                 throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
             }
         } else {
+            return Image(systemName: "person.crop.circle.fill")
+
             throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
         }
     }

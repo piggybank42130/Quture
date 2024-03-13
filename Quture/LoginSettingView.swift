@@ -66,10 +66,7 @@ struct LoginSettingsView: View {
                         .onAppear {
                             Task {
                                 do {
-                                    guard let userId = LocalStorage().getUserId() else {
-                                        print("No user ID found.")
-                                        return
-                                    }
+                                    let userId = LocalStorage().getUserId()
                                     print(userId)
                                     let fetchedProfileImage = try await ServerCommands().retrieveProfilePicture(userId: userId)
                                     DispatchQueue.main.async { // Update UI on the main thread
@@ -128,10 +125,7 @@ struct LoginSettingsView: View {
                     .onAppear {
                         Task {
                             do {
-                                guard let userId = LocalStorage().getUserId() else {
-                                    print("No user ID found.")
-                                    return
-                                }
+                                let userId = LocalStorage().getUserId()
                                 // Directly assign the result without using parentheses
                                 let imageIds = try await ServerCommands().getUserImageIds(userId: userId).prefix(rectangleContents.count)
                                 self.rectangleContents = []

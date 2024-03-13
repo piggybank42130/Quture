@@ -26,7 +26,7 @@ struct LocalStorage {
         }
     }
     
-    func getUserId() -> Int? {
+    func getUserId() -> Int {
         // Find the document directory of the app
         if let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             let fileURL = documentDirectory.appendingPathComponent("userId.txt")
@@ -34,7 +34,7 @@ struct LocalStorage {
             // Read the content of the file
             do {
                 let numberString = try String(contentsOf: fileURL, encoding: .utf8)
-                return Int(numberString)
+                return 1//Int(numberString) ?? -1
             } catch {
                 print("Failed to read number: \(error)")
                 return -1

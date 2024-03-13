@@ -58,9 +58,9 @@ struct ContentView: View {
         if let index = rectangleContents.firstIndex(where: { $0.image == nil }) {
             Task {
                 do {
-                    let newImageId = try await ServerCommands().postImage(userId: 1, image: image, caption: caption)
+                    let newImageId = try await ServerCommands().postImage(userId: LocalStorage().getUserId(), image: image, caption: caption)
                     DispatchQueue.main.async{
-                        rectangleContents[index] = RectangleContent(userId: 1, imageId: newImageId, image: image, caption: caption, tags: Array(tags))
+                        rectangleContents[index] = RectangleContent(userId: LocalStorage().getUserId(), imageId: newImageId, image: image, caption: caption, tags: Array(tags))
                     }
                     try await ServerCommands().setTagsToImage(imageId: newImageId, tags: tags)
                 }
@@ -160,7 +160,7 @@ struct ContentView: View {
             }
         }
         .onAppear {            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 withAnimation {
                     self.isActive = true
                 }
@@ -239,27 +239,27 @@ struct ContentView: View {
             }
             
             // Scrolling Tab Section
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 20) {
-                    ForEach(["Minimalism", "Techwear", "Avant-Garde", "Preppy", "Customs", "Denim", "Athleisure", "Archive"], id: \.self) { category in
-                        Button(action: {
-                            // Perform an action when a category is tapped
-                            print("\(category) tapped")
-                            
-                        }) {
-                            Text(category)
-                                .font(.system(size: 16))
-                                .padding(.vertical, 6)
-                                .frame(width: 100)
-                                //.background(Color.gray.opacity(0.2))
-                                .cornerRadius(10)
-                        }
-                        .foregroundColor(Color.contrastColor(for: colorScheme)) // Set the text color for the button
-                    }
-                }
-                .padding(.horizontal)
-            }
-            .frame(height: 40)
+//            ScrollView(.horizontal, showsIndicators: false) {
+//                HStack(spacing: 20) {
+//                    ForEach(["Minimalism", "Techwear", "Avant-Garde", "Preppy", "Customs", "Denim", "Athleisure", "Archive"], id: \.self) { category in
+//                        Button(action: {
+//                            // Perform an action when a category is tapped
+//                            print("\(category) tapped")
+//                            
+//                        }) {
+//                            Text(category)
+//                                .font(.system(size: 16))
+//                                .padding(.vertical, 6)
+//                                .frame(width: 100)
+//                                //.background(Color.gray.opacity(0.2))
+//                                .cornerRadius(10)
+//                        }
+//                        .foregroundColor(Color.contrastColor(for: colorScheme)) // Set the text color for the button
+//                    }
+//                }
+//                .padding(.horizontal)
+//            }
+//            .frame(height: 40)
         }
         //.background(Color.gray.opacity(0.2))
         .background(
@@ -298,7 +298,7 @@ struct ContentView: View {
             Task {
                 do {
                     // Directly assign the result without using parentheses
-                    let imageIds = try await ServerCommands().generateUserFeed(userId: 1, limit: 20)
+                    let imageIds = try await ServerCommands().generateUserFeed(userId: LocalStorage().getUserId(), limit: 20)
                     self.rectangleContents = []
                     for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
                         let (userId, image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
@@ -343,7 +343,7 @@ struct ContentView: View {
                         .onAppear {
                             Task {
                                 do {
-                                    let count = try await ServerCommands().countUnseenBidMessages(userId: 1)
+                                    let count = try await ServerCommands().countUnseenBidMessages(userId: LocalStorage().getUserId())
                                     unseenCount = count
                                     print("Unseen total: \(unseenCount)")
                                 } catch {
@@ -354,7 +354,7 @@ struct ContentView: View {
                         .onChange(of: activeScreen) { _ in
                             Task {
                                 do {
-                                    let count = try await ServerCommands().countUnseenBidMessages(userId: 1)
+                                    let count = try await ServerCommands().countUnseenBidMessages(userId: LocalStorage().getUserId())
                                     unseenCount = count
                                     print("Unseen total: \(unseenCount)")
                                 } catch {
@@ -365,7 +365,7 @@ struct ContentView: View {
                         .onChange(of: showingImageDetail) { _ in
                             Task {
                                 do {
-                                    let count = try await ServerCommands().countUnseenBidMessages(userId: 1)
+                                    let count = try await ServerCommands().countUnseenBidMessages(userId: LocalStorage().getUserId())
                                     unseenCount = count
                                     print("Unseen total: \(unseenCount)")
                                 } catch {
@@ -376,7 +376,7 @@ struct ContentView: View {
                         .onChange(of: showingImagePicker) { _ in
                             Task {
                                 do {
-                                    let count = try await ServerCommands().countUnseenBidMessages(userId: 1)
+                                    let count = try await ServerCommands().countUnseenBidMessages(userId: LocalStorage().getUserId())
                                     unseenCount = count
                                     print("Unseen total: \(unseenCount)")
                                 } catch {
@@ -455,15 +455,17 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 struct SplashScreen: View {
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+
     var body: some View {
         GeometryReader { geometry in
-            Image("QUTURE") // Replace "QUTURE" with your image name
+            Image((colorScheme == .dark) ? "QUTURE_DARK" : "QUTURE_LIGHT") // Replace "QUTURE" with your image name
                 .resizable()
                 .scaledToFill()
                 .frame(width: geometry.size.width, height: geometry.size.height * 0.8) // Make the logo smaller
                 .clipped()
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center) // Center the cropped image
-                .background(Color.white) // Set the background color to white
+                .background(Color(.systemBackground)) // Set the background color to white
                 .edgesIgnoringSafeArea(.all)
         }
     }
