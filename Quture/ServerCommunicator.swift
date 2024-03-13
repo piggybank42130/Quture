@@ -2,104 +2,35 @@ import Foundation
 
 class ServerCommunicator: ObservableObject {
     let serverURL = "http://137.184.116.12:5000"
-    
+    static var endpointIndex = 0 // To keep track of the current endpoint index
+
     // Function to request a method execution on the server with arbitrary parameters
     func sendMethod(parameters: [String: Any]) async throws -> Data {
-            guard let url = URL(string: "\(serverURL)/execute-method") else {
-                throw URLError(.badURL)
-            }
-
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-
-            do {
-                request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
-            } catch {
-                throw error // Propagate serialization error
-            }
-
-            let (data, response) = try await URLSession.shared.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                throw URLError(.badServerResponse)
-            }
-
-            return data
+        // Construct the endpoint URL by including the endpointIndex in the path
+        let methodEndpoint = "/execute-method-\(ServerCommunicator.endpointIndex + 1)" // Assuming your endpoints are named execute-method-1, execute-method-2, etc.
+        guard let url = URL(string: "\(serverURL)\(methodEndpoint)") else {
+            throw URLError(.badURL)
         }
-    
-    
-    
 
-//    
-//    // Function to execute a command on the server with arbitrary parameters
-//    func executeCommand(parameters: [String: Any], completion: @escaping (Result<Bool, Error>) -> Void) {
-//        guard let url = URL(string: "\(serverURL)/send-command") else { return }
-//        var request = URLRequest(url: url)
-//        request.httpMethod = "POST"
-//        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-//        
-//        do {
-//            let jsonData = try JSONSerialization.data(withJSONObject: parameters, options: [])
-//            request.httpBody = jsonData
-//            
-//            URLSession.shared.dataTask(with: request) { data, response, error in
-//                if let error = error {
-//                    completion(.failure(error))
-//                    return
-//                }
-//                
-//                guard data != nil else {
-//                    completion(.failure(NSError(domain: "DataError", code: -1001, userInfo: nil)))
-//                    return
-//                }
-//                
-//                DispatchQueue.main.async {
-//                    completion(.success(true))
-//                }
-//            }.resume()
-//        } catch {
-//            completion(.failure(error))
-//        }
-//    }
-        
-    // Function to receive a method and its parameters from the server, then execute accordingly
-//    func executeCommand() {
-//        guard let url = URL(string: "\(serverURL)/send-command") else { return }
-//        
-//        URLSession.shared.dataTask(with: url) { data, response, error in
-//            guard let data = data, error == nil else {
-//                print("Error fetching command: \(error?.localizedDescription ?? "Unknown error")")
-//                return
-//            }
-//            
-//            do {
-//                if let jsonObject = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-//                   let methodName = jsonObject["method_name"] as? String,
-//                   let parameters = jsonObject["parameters"] as? [String: Any] {
-//                    DispatchQueue.main.async {
-//                        // Based on methodName, call the respective function with parameters
-//                        self.runCommand(name: methodName, parameters: parameters)
-//                    }
-//                }
-//            } catch {
-//                print("Failed to parse JSON response: \(error.localizedDescription)")
-//            }
-//        }.resume()
-//    }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
-    /*
-    private func runCommand(name: String, parameters: [String: Any]) {
-        switch name {
-        case "function":
-            // Assuming 'updateUI' expects a 'message' and a 'value'
-            if let message = parameters["message"] as? String,
-               let value = parameters["value"] as? Int {
-                function(message: message, value: value)
-            }
-        default:
-            print("Received an unknown method name: \(name)")
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
+        } catch {
+            throw error // Propagate serialization error
         }
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw URLError(.badServerResponse)
+        }
+
+        // Cycle through the endpoints for subsequent requests
+        ServerCommunicator.endpointIndex = (ServerCommunicator.endpointIndex + 1) % 128 // Assuming you have 32 endpoints, cycle back to 0 after 32
+
+        return data
     }
-     */
 }
