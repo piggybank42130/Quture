@@ -26,7 +26,7 @@ struct SignUpView: View {
                         Image(uiImage: profileImage)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: 100, height: 100)
+                            .frame(width: 150, height: 150)
                             .clipShape(Circle())
                     } else {
                         Circle()
@@ -59,7 +59,10 @@ struct SignUpView: View {
                     // Perform sign-up action and set isUserLoggedIn to true upon success
                     Task {
                         do {
+                            
                             let newUserId = try await ServerCommands().addUser(username: signUpUsername, email: signUpEmail, passwordHash: signUpPassword)
+                            print("New User ID")
+                            print(newUserId)
                             if let profileImage = profileImage{
                                 try await ServerCommands().uploadProfilePicture(userId: newUserId, image: profileImage)
                             }else{
