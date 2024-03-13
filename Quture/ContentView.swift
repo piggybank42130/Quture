@@ -54,24 +54,24 @@ struct ContentView: View {
          activeScreen = .home
      }
      
-    func handleImageConfirmation(image: UIImage, caption: String, tags: Set<Tag>) {
-        if let index = rectangleContents.firstIndex(where: { $0.image == nil }) {
-            Task {
-                do {
-                    let newImageId = try await ServerCommands().postImage(userId: LocalStorage().getUserId(), image: image, caption: caption)
-                    DispatchQueue.main.async{
-                        rectangleContents[index] = RectangleContent(userId: LocalStorage().getUserId(), imageId: newImageId, image: image, caption: caption, tags: Array(tags))
-                    }
-                    try await ServerCommands().setTagsToImage(imageId: newImageId, tags: tags)
+    func handleImageConfirmation(image: UIImage, caption: String, tags: Set<Tag>, price: String) {
+        Task {
+            do {
+                let newImageId = try await ServerCommands().postImage(userId: LocalStorage().getUserId(), image: image, caption: caption, price: price)
+                print("handleImageConfirmationc called. New image id: \(newImageId)")
+                DispatchQueue.main.async{
+                    rectangleContents = [RectangleContent(userId: LocalStorage().getUserId(), imageId: newImageId, image: image, caption: caption, tags: Array(tags))]
                 }
-                catch {
-                    print(error)
-                }
+                try await ServerCommands().setTagsToImage(imageId: newImageId, tags: tags)
             }
-            
-            self.showingDetailScreen = false
-            self.inputImage = nil // Reset the inputImage to ensure it's ready for a new selection
+            catch {
+                print(error)
+            }
         }
+        
+        self.showingDetailScreen = false
+        self.inputImage = nil // Reset the inputImage to ensure it's ready for a new selection
+    
     }
     
     //#################################
@@ -130,7 +130,8 @@ struct ContentView: View {
                                 // Here, combine topTags and fashionTags into a single Set<Tag> as they're both sets of Tag objects.
                                 let combinedTags = topTags.union(fashionTags)
                                 // Call handleImageConfirmation with all the parameters including the combined tags
-                                self.handleImageConfirmation(image: image, caption: caption, tags: combinedTags)
+                                print("poopy")
+                                self.handleImageConfirmation(image: image, caption: caption, tags: combinedTags, price: price)
                             }), isActive: $showingDetailScreen) {
                                 EmptyView()
                             }

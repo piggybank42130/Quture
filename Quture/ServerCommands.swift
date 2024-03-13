@@ -38,7 +38,7 @@ class ServerCommands: ObservableObject {
         }
     }
 
-    func postImage(userId: Int, image: UIImage, caption: String) async throws -> Int {
+    func postImage(userId: Int, image: UIImage, caption: String, price: String) async throws -> Int {
         guard let imageData = image.jpegData(compressionQuality: 1) else {
             throw NSError(domain: "ImageError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Image compression failed."])
         }
@@ -48,7 +48,8 @@ class ServerCommands: ObservableObject {
             "params": [
                 "user_id": userId,
                 "image_data": base64ImageString,
-                "caption": caption
+                "caption": caption,
+                "price": price
             ]
         ]
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
