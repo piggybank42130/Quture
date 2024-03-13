@@ -1,10 +1,3 @@
-//
-//  SignUpView.swift
-//  Quture
-//
-//  Created by Peter Zhang on 2024/3/8.
-//
-
 import SwiftUI
 
 struct SignUpView: View {
@@ -15,12 +8,42 @@ struct SignUpView: View {
     @State private var signUpPassword: String = ""
     @Environment(\.colorScheme) var colorScheme
 
+    // States for image picker
+    @State private var showImagePicker: Bool = false
+    @State private var profileImage: UIImage? = nil
+
     var body: some View {
         ZStack {
             // Setting the background color based on the color scheme
             colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 10) {
+                // Profile image picker circle
+                Button(action: {
+                    showImagePicker.toggle()
+                }) {
+                    if let profileImage = profileImage {
+                        Image(uiImage: profileImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                    } else {
+                        Circle()
+                            .fill(Color.gray)
+                            .frame(width: 100, height: 100)
+                            .overlay(
+                                Image(systemName: "camera")
+                                    .foregroundColor(.white)
+                            )
+                    }
+                }
+                .padding(.bottom, 20)
+                .sheet(isPresented: $showImagePicker) {
+                    // Present the image picker
+                    ImagePicker(image: $profileImage)
+                }
+
                 Text("Sign Up")
                     .font(.title)
                 TextField("Username", text: $signUpUsername)
@@ -57,9 +80,4 @@ struct SignUpView: View {
             .padding()
         }
     }
-}
-
-
-#Preview {
-    ContentView()
 }
