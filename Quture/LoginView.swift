@@ -14,8 +14,62 @@ struct LoginView: View {
     @State private var loginEmail: String = ""
     @State private var loginPassword: String = ""
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
+    @State private var showAlert = false
+    @State private var alertMessage = ""
 
     let onLoginSuccess: () -> Void
+    
+    func isValidEmail(_ email: String) -> Bool {
+        let emailPattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let predicate = NSPredicate(format: "SELF MATCHES %@", emailPattern)
+        return predicate.evaluate(with: email)
+    }
+
+    func attemptLogin() {
+        guard !loginEmail.isEmpty else {
+            alertMessage = "Email cannot be empty."
+            showAlert = true
+            return
+        }
+        
+        guard isValidEmail(loginEmail) else {
+            alertMessage = "Please enter a valid email address."
+            showAlert = true
+            return
+        }
+        
+        guard !loginPassword.isEmpty else {
+            alertMessage = "Password cannot be empty."
+            showAlert = true
+            return
+        }
+
+        loginUser()
+    }
+
+    func loginUser() {
+        // Perform the login operation
+        Task {
+            do {
+                let userId = try await ServerCommands().verifyUser(email: loginEmail, passwordHash: loginPassword)
+                DispatchQueue.main.async {
+                    LocalStorage().saveUserId(number: userId)
+                    isUserLoggedIn = (userId != -1)
+                    if isUserLoggedIn {
+                        onLoginSuccess()
+                    } else {
+                        alertMessage = "Login failed. Please check your credentials."
+                        showAlert = true
+                    }
+                }
+            } catch {
+                print(error)
+                alertMessage = "An error occurred during login."
+                showAlert = true
+            }
+        }
+    }
+
 
     var body: some View {
         VStack(spacing: 20) {
@@ -59,28 +113,7 @@ struct LoginView: View {
 
             // Confirm Button
             Button("Confirm") {
-                Task {
-                    do {
-                        Task {
-                            do {
-                                let userId = try await ServerCommands().verifyUser(email: loginEmail, passwordHash: loginPassword)
-                                DispatchQueue.main.async {
-                                    LocalStorage().saveUserId(number: userId)
-                                    isUserLoggedIn = (userId != -1)
-                                    if (isUserLoggedIn) {
-                                        onLoginSuccess()
-                                    }
-                                }
-                            }
-                            catch {
-                                print(error)
-                            }
-                        }
-                    }
-                    catch {
-                        print(error)
-                    }
-                }
+                attemptLogin()
             }
             .padding()
             .frame(maxWidth: .infinity)
@@ -93,6 +126,9 @@ struct LoginView: View {
         .edgesIgnoringSafeArea(.bottom) // Allows the button to extend to the bottom edge
         .sheet(isPresented: $showingSignUpView) {
             SignUpView(isUserLoggedIn: $isUserLoggedIn)
+        }
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Login Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
         }
     }
 
