@@ -289,13 +289,14 @@ struct NotificationView: View {
                                  Task{
                                       do {
                                           try await ServerCommands().markBidSuccessful(bidId: bidId)
-                                          let newBuyerNotif = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidImageId, bidImageId: bidImageId, bidImageCaption: "", bidTitle: "", bidText: "", bidPrice: 1000.00, isNew: bidSeenBySeller, isSellerResponse: true, isBidSuccessful: true, onCheckmarkPressed: {
-                                              DispatchQueue.main.async {
-                                                  bidNotifications.removeAll { $0.bidId == bidId }
-                                              }
-                                          })
+//                                          let newBuyerNotif = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidImageId, bidImageId: bidImageId, bidImageCaption: "", bidTitle: "", bidText: "", bidPrice: 1000.00, isNew: bidSeenBySeller, isSellerResponse: true, isBidSuccessful: true, onCheckmarkPressed: {
+//                                              DispatchQueue.main.async {
+//                                                  bidNotifications.removeAll { $0.bidId == bidId }
+//                                              }
+//                                          })
                                           print("seller accepted, response sent to buyer")
-                                          bidNotifications.append(newBuyerNotif)
+                                          try await ServerCommands().addBid(sellerId: bidSellerId, buyerId: bidBuyerId, imageId: bidImageId, messageText: "Your purchase offer has been accepted!", isSellerResponse: true)
+//                                          bidNotifications.append(newBuyerNotif)
                                       }
                                       catch {
                                           print(error)

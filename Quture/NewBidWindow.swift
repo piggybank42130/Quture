@@ -26,7 +26,7 @@ struct NewBidWindow: View {
             // Top bar with title and close button
             HStack {
                 Spacer()
-                Text("Send a Purchase Request")
+                Text("  Send a Purchase Offer")
                     .font(.headline)
                     .bold()
                     .foregroundColor(.black)
@@ -112,10 +112,9 @@ struct NewBidWindow: View {
                     .cornerRadius(10)
             }
             .padding(.horizontal, 15)
-
-            Spacer()
         }
-        .frame(width: 350, height: 300)
+        .padding(.bottom, 20)
+//        .frame(maxHeight: 300)
         .background(Color.white)
         .cornerRadius(20)
         .shadow(radius: 10)
@@ -160,13 +159,19 @@ struct CustomAlertView: View {
             // Setting the background color based on the color scheme
             colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all)
             VStack {
-                Text("Price: \(price, specifier: "%.2f")")
+                Text("Send a Purchase Offer")
+                    .foregroundColor(Color.contrastColor(for: colorScheme)) // Ensure visibility against the white background
+                    .font(.largeTitle) // Optionally adjust the font
+                    .padding(12)
+                Text("Price: $\(price, specifier: "%.2f")")
                     .foregroundColor(Color.contrastColor(for: colorScheme)) // Ensure visibility against the white background
                     .font(.headline) // Optionally adjust the font
-                Text("Please enter your contact information:")
-                    .foregroundColor(.black) // Adjust as needed for visibility
-                TextField("Message to seller", text: $message)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                Text("Please enter your message to the seller:")
+                    .foregroundColor(Color.contrastColor(for: colorScheme)) // Adjust as needed for visibility
+                TextEditor(text: $message)
+                    .frame(height: 120) // Adjust the height as needed, for example, three times a typical TextField height
+                    .border(Color(UIColor.separator), width: 0.5) // Add a border similar to RoundedBorderTextFieldStyle
+                    .padding(4) //
                 TextField("Phone Number", text: $phoneNumber)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 Button("Submit") {
@@ -175,7 +180,7 @@ struct CustomAlertView: View {
                         let message = "\(message)\n\nMy phone number is \(phoneNumber)"//Bid of $\(String(format: "%.2f", price)) placed with message: \(message) and contact: \(phoneNumber)"
                         Task{
                             do {
-                                let newBidId = try await ServerCommands().addBid(sellerId: sellerId, buyerId: 1, imageId: imageId, messageText: message)
+                                let newBidId = try await ServerCommands().addBid(sellerId: sellerId, buyerId: 1, imageId: imageId, messageText: message, isSellerResponse: false)
                             }
                             catch {
                                 print(error)
