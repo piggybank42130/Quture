@@ -351,6 +351,39 @@ struct ContentView: View {
                                 }
                             }
                         }
+                        .onChange(of: activeScreen) { _ in
+                            Task {
+                                do {
+                                    let count = try await ServerCommands().countUnseenBidMessages(userId: 1)
+                                    unseenCount = count
+                                    print("Unseen total: \(unseenCount)")
+                                } catch {
+                                    print(error)
+                                }
+                            }
+                        }
+                        .onChange(of: showingImageDetail) { _ in
+                            Task {
+                                do {
+                                    let count = try await ServerCommands().countUnseenBidMessages(userId: 1)
+                                    unseenCount = count
+                                    print("Unseen total: \(unseenCount)")
+                                } catch {
+                                    print(error)
+                                }
+                            }
+                        }
+                        .onChange(of: showingImagePicker) { _ in
+                            Task {
+                                do {
+                                    let count = try await ServerCommands().countUnseenBidMessages(userId: 1)
+                                    unseenCount = count
+                                    print("Unseen total: \(unseenCount)")
+                                } catch {
+                                    print(error)
+                                }
+                            }
+                        }
 
                     // Only show the notification count if unseenCount is greater than 0
                     if unseenCount > 0 {
