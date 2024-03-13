@@ -209,33 +209,26 @@ class ServerCommands: ObservableObject {
         }
     }
     
-    func retrieveProfilePicture(userId: Int) async throws -> UIImage {
+    func retrieveProfilePicture(userId: Int) async -> UIImage {
         let parameters: [String: Any] = ["method_name": "retrieve_profile_picture", "params": ["user_id": userId]]
-        let data = try await serverCommunicator.sendMethod(parameters: parameters)
-        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
-            if let result = jsonResponse["result"] as? [String: Any],
-               let imageData = result["image_data"] as? [String: Any],
-               let imageDataString = imageData["image_data"] as? String{
-                if let imageData = Data(base64Encoded: imageDataString), let image = UIImage(data: imageData) {
+        do {
+            let data = try await serverCommunicator.sendMethod(parameters: parameters)
+            if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+               let result = jsonResponse["result"] as? [String: Any],
+               let imageDataString = result["image_data"] as? String,
+               let imageData = Data(base64Encoded: imageDataString),
+               let image = UIImage(data: imageData) {
                 return image
-                    
-                }
-                else{
-                    return UIImage(systemName: "person.crop.circle.fill")
-                    throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
-                }
+            } else {
+                // If the JSON is not in the expected format or the image data is invalid, return the default image
+                return UIImage(systemName: "person.crop.circle.fill") ?? UIImage() // Fallback to an empty UIImage if the system image is not found
             }
-            else{
-                return Image(systemName: "person.crop.circle.fill")
-
-                throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
-            }
-        } else {
-            return Image(systemName: "person.crop.circle.fill")
-
-            throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
+        } catch {
+            // If there is an error fetching the image, return the default image
+            return UIImage(systemName: "person.crop.circle.fill") ?? UIImage() // Fallback to an empty UIImage if the system image is not found
         }
     }
+
 
 
     func getImagesForUser(userId: Int) async throws -> ([Int], [UIImage], [String]) {
