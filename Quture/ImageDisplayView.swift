@@ -11,6 +11,7 @@ struct ImageDisplayView: View {
     @State private var isSaveTapped = false
     @State private var username: String = ""
     @State private var profileImage: UIImage? = nil
+    @State private var isFollowing = false
 
     let sellerPrice: Double = 1000.00 // Dummy seller price
     let customerPrice: Double = 950.00 // Dummy customer price
@@ -182,12 +183,15 @@ struct ImageDisplayView: View {
                     let hasLiked = try await ServerCommands().hasUserLikedImage(userId: LocalStorage().getUserId(), imageId: self.imageId)
                     let likeCount = try await ServerCommands().getLikesOnImage(imageId: self.imageId)
                     let hasSaved = try await ServerCommands().hasUserSavedImage(userId: LocalStorage().getUserId(), imageId: self.imageId)
+                    let userId = LocalStorage().getUserId()
+                    let doesUserFollow = try await ServerCommands().checkIfUserFollows(followerId: userId, followedId: posterId)
                     DispatchQueue.main.async {
                         self.username = username
                         self.profileImage = profileImage
                         self.isHeartTapped = hasLiked
                         self.isSaveTapped = hasSaved
                         self.heartCount = likeCount
+                        self.isFollowing = doesUserFollow
                     }
                 } catch {
                     print(error)
@@ -222,17 +226,22 @@ struct ImageDisplayView: View {
                 print("Follow tapped")
                 Task{
                     do{
-                        try await ServerCommands().toggleFollow(followerId: LocalStorage().getUserId(), followedId: posterId)
+                        let userId = LocalStorage().getUserId()
+                        try await ServerCommands().toggleFollow(followerId: userId, followedId: posterId)
+                        DispatchQueue.main.async {
+                            self.isFollowing.toggle()
+                        }
+                        
                     }
                     catch{
                         print(error)
                     }
                 }
             }) {
-                Text("Follow")
-                    .font(.headline)
-                    .bold()
-                    .foregroundColor(Color.contrastColor(for: colorScheme))
+                Text(isFollowing ? "Unfollow" : "Follow") // Change button text based on follow state
+                .font(.headline)
+                .bold()
+                .foregroundColor(Color.contrastColor(for: colorScheme))
             }
             .padding(.trailing, 20) // Add padding to move the text further from the right edge
         }
