@@ -67,7 +67,7 @@ class ServerCommands: ObservableObject {
         }
         let base64ImageString = imageData.base64EncodedString()
         let parameters: [String: Any] = [
-            "method_name": "post_image",
+            "method_name": "upload_profile_picture",
             "params": [
                 "user_id": userId,
                 "image_data": base64ImageString
@@ -209,7 +209,7 @@ class ServerCommands: ObservableObject {
     }
     
     func retrieveProfilePicture(userId: Int) async throws -> UIImage {
-        let parameters: [String: Any] = ["method_name": "retrieve_image", "params": ["user_id": userId]]
+        let parameters: [String: Any] = ["method_name": "retrieve_profile_picture", "params": ["user_id": userId]]
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
             if let result = jsonResponse["result"] as? [String: Any],
