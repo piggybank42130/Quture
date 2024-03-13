@@ -1,5 +1,10 @@
 import SwiftUI
-
+extension String {
+    func DecimalPoint() -> Bool {
+        let components = self.components(separatedBy: ".")
+        return components.count <= 2
+    }
+}
 struct NewBidWindow: View {
     @Binding var isVisible: Bool
     @State var sellerId: Int
@@ -132,15 +137,43 @@ struct NewBidWindow: View {
     }
 
     private func updatePrice() {
-        let newPrice = Double(bidAmount) ?? -1
-        customerPrice = isCustomerPriceActive ? newPrice : sellerPrice
-        if (customerPrice > 0){
-            priceToShowInAlert = customerPrice
-            bidAmount = "" // Clear input field after updating
-            showTesterAlert = true // Prepare to show the alert
-            let notificationMessage = "New bid of $\(customerPrice) placed."
-            print(notificationMessage)
+        // Check if bidding is active and perform validations
+        if isCustomerPriceActive {
+            guard !bidAmount.isEmpty else {
+                alertMessage = "Bid amount cannot be empty."
+                showAlert = true
+                return
+            }
+            
+            guard bidAmount.DecimalPoint() else {
+                alertMessage = "Bid amount cannot contain multiple decimal points."
+                showAlert = true
+                return
+            }
+            
+            guard let newPrice = Double(bidAmount) else {
+                alertMessage = "Invalid bid amount entered."
+                showAlert = true
+                return
+            }
+
+            guard newPrice <= 10_000 else {
+                alertMessage = "Bid amount cannot exceed 10,000."
+                showAlert = true
+                return
+            }
+            
+            customerPrice = newPrice
+        } else {
+            customerPrice = sellerPrice
         }
+        
+        // Proceed with showing the alert for a successful bid
+        priceToShowInAlert = customerPrice
+        bidAmount = "" // Clear input field after updating
+        showTesterAlert = true // Indicate successful bid preparation
+        let notificationMessage = "New bid of $\(customerPrice) placed."
+        print(notificationMessage)
     }
 }
 
