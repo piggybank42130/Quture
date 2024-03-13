@@ -63,7 +63,7 @@ struct LoginView: View {
                     do {
                         Task {
                             do {
-                                let userId = try await ServerCommands().verifyUser(username: loginEmail, passwordHash: loginPassword)
+                                let userId = try await ServerCommands().verifyUser(email: loginEmail, passwordHash: loginPassword)
                                 DispatchQueue.main.async {
                                     LocalStorage().saveUserId(number: userId)
                                     isUserLoggedIn = (userId != -1)

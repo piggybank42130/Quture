@@ -26,8 +26,8 @@ class ServerCommands: ObservableObject {
         }
     }
     
-    func verifyUser(username: String, passwordHash: String) async throws -> Int {
-        let parameters: [String: Any] = ["method_name": "verify_user", "params": ["username": username, "password_hash": passwordHash]]
+    func verifyUser(email: String, passwordHash: String) async throws -> Int {
+        let parameters: [String: Any] = ["method_name": "verify_user", "params": ["email": email, "password_hash": passwordHash]]
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
            let result = jsonResponse["result"] as? [String: Any],
@@ -65,6 +65,7 @@ class ServerCommands: ObservableObject {
         guard let imageData = image.jpegData(compressionQuality: 1) else {
             throw NSError(domain: "ImageError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Image compression failed."])
         }
+        
         let base64ImageString = imageData.base64EncodedString()
         let parameters: [String: Any] = [
             "method_name": "upload_profile_picture",

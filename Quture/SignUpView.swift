@@ -60,6 +60,11 @@ struct SignUpView: View {
                     Task {
                         do {
                             let newUserId = try await ServerCommands().addUser(username: signUpUsername, email: signUpEmail, passwordHash: signUpPassword)
+                            if let profileImage = profileImage{
+                                try await ServerCommands().uploadProfilePicture(userId: newUserId, image: profileImage)
+                            }else{
+                                print("Profile image is nil, skipping upload.")
+                            }
                             DispatchQueue.main.async {
                                 LocalStorage().saveUserId(number: newUserId)
                                 isUserLoggedIn = true

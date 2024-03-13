@@ -10,12 +10,11 @@ struct LoginSettingsView: View {
     @State private var showingLogoutAlert = false // State to control the logout alert
     @State private var isNavigationActive = false
     @State private var showingImageDetailView = true
-    
+    @State private var profileImage: UIImage? = nil
     
     @State private var isLoading = true
     
     @Binding var isUserLoggedIn: Bool // Now it's a binding
-
     
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
     
@@ -28,11 +27,20 @@ struct LoginSettingsView: View {
                     Circle()
                         .frame(width: geometry.size.width * 0.3, height: geometry.size.width * 0.3)
                         .overlay(
-                            Image(systemName: "person.crop.circle.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .padding()
+                            Group {
+                                if let profileUIImage = profileImage {
+                                    Image(uiImage: profileUIImage) // Use the retrieved profileImage
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill) // Fill the circle with the image
+                                } else {
+                                    Image(systemName: "person.crop.circle.fill") // Default placeholder
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .padding()
+                                }
+                            }
                         )
+                        .clipShape(Circle()) //Clip image to circle
                         .padding()
                         .frame(height: geometry.size.height * 0.45)
                     
@@ -58,8 +66,17 @@ struct LoginSettingsView: View {
                         .onAppear {
                             Task {
                                 do {
+                                    guard let userId = LocalStorage().getUserId() else {
+                                        print("No user ID found.")
+                                        return
+                                    }
+                                    print(userId)
+                                    let fetchedProfileImage = try await ServerCommands().retrieveProfilePicture(userId: userId)
+                                    DispatchQueue.main.async { // Update UI on the main thread
+                                        self.profileImage = fetchedProfileImage // Assign the fetched image to the profileImage state variable
+                                    }
                                     isLoadingImages = true
-                                    let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: 1)
+                                    let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: userId)
                                     DispatchQueue.main.async { // Ensure UI operations are on the main thread
                                         
                                         for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
@@ -111,8 +128,12 @@ struct LoginSettingsView: View {
                     .onAppear {
                         Task {
                             do {
+                                guard let userId = LocalStorage().getUserId() else {
+                                    print("No user ID found.")
+                                    return
+                                }
                                 // Directly assign the result without using parentheses
-                                let imageIds = try await ServerCommands().getUserImageIds(userId: 1).prefix(rectangleContents.count)
+                                let imageIds = try await ServerCommands().getUserImageIds(userId: userId).prefix(rectangleContents.count)
                                 self.rectangleContents = []
                                 for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
                                     
