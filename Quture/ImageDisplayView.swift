@@ -220,6 +220,14 @@ struct ImageDisplayView: View {
             Button(action: {
                 // Action for "Follow" button
                 print("Follow tapped")
+                Task{
+                    do{
+                        try await ServerCommands().toggleFollow(followerId: LocalStorage().getUserId(), followedId: posterId)
+                    }
+                    catch{
+                        print(error)
+                    }
+                }
             }) {
                 Text("Follow")
                     .font(.headline)

@@ -459,4 +459,40 @@ class ServerCommands: ObservableObject {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
     }
+    
+    func getFollowersCount(userId: Int) async throws -> Int {
+        let parameters: [String: Any] = [
+            "method_name": "get_followers_count",
+            "params": ["user_id": userId]
+        ]
+
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let result = jsonResponse["result"] as? [String: Any],
+           let followersCount = result["followers_count"] as? Int {
+            return followersCount
+        } else {
+            throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
+        }
+    }
+    
+    func toggleFollow(followerId: Int, followedId: Int) async throws -> Void {
+        let parameters: [String: Any] = ["method_name": "toggle_follow", "params": ["follower_id": followerId, "followed_id": followedId]]
+        _ = try await serverCommunicator.sendMethod(parameters: parameters)
+        // No need for further processing if no return value is expected
+    }
+    
+    func checkIfUserFollows(followerId: Int, followedId: Int) async throws -> Bool {
+        let parameters: [String: Any] = ["method_name": "toggle_follow", "params": ["follower_id": followerId, "followed_id": followedId]]
+        
+
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let result = jsonResponse["result"] as? [String: Any],
+           let follows = result["follows"] as? Bool {
+            return follows
+        } else {
+            throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
+        }
+    }
 }

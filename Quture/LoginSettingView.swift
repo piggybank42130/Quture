@@ -36,18 +36,15 @@ struct LoginSettingsView: View {
                                     Image(systemName: "person.crop.circle.fill") // Default placeholder
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
-                                        .padding()
                                 }
                             }
                         )
                         .clipShape(Circle()) //Clip image to circle
-                        .padding()
-                        .frame(height: geometry.size.height * 0.45)
+                        .frame(height: geometry.size.height * 0.2)
                     
                     
-                    Text("User Profile")
-                        .font(.title)
-                        .padding()
+                    Text("Your Profile")
+                        .font(.headline)
                     
                         .alert(isPresented: $showingLogoutAlert) {
                             Alert(

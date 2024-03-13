@@ -71,7 +71,7 @@ struct ContentView: View {
         
         self.showingDetailScreen = false
         self.inputImage = nil // Reset the inputImage to ensure it's ready for a new selection
-    
+        activeScreen = .home
     }
     
     //#################################
