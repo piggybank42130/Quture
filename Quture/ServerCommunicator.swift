@@ -6,9 +6,9 @@ class ServerCommunicator: ObservableObject {
 
     // Function to request a method execution on the server with arbitrary parameters
     func sendMethod(parameters: [String: Any]) async throws -> Data {
-        print(parameters["method_name"])
         // Construct the endpoint URL by including the endpointIndex in the path
         let methodEndpoint = "/execute-method-\(ServerCommunicator.endpointIndex + 1)" // Assuming your endpoints are named execute-method-1, execute-method-2, etc.
+        print(parameters, parameters["method_name"], methodEndpoint)
         guard let url = URL(string: "\(serverURL)\(methodEndpoint)") else {
             throw URLError(.badURL)
         }
