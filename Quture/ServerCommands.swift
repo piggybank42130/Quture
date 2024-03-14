@@ -310,6 +310,18 @@ class ServerCommands: ObservableObject {
         }
     }
     
+    func doesBidExist(buyerId: Int, imageId: Int) async throws -> Bool {
+        let parameters: [String: Any] = ["method_name": "does_bid_exist", "params": ["buyer_id": buyerId, "image_id": imageId]]
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let result = jsonResponse["result"] as? [String: Any],
+           let doesExist = result["does_exist"] as? String {
+            return (doesExist == "True")
+        } else {
+            throw NSError(domain: "CustomError poopy", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
+        }
+    }
+    
     func getBidInfo(bidId: Int) async throws -> (Int, Int, Int, String, Bool, Bool, Bool) {
         let parameters: [String: Any] = [
             "method_name": "get_bid_info",

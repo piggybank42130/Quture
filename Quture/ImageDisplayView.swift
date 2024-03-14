@@ -12,10 +12,9 @@ struct ImageDisplayView: View {
     @State private var username: String = ""
     @State private var profileImage: UIImage? = nil
     @State private var isFollowing = false
+    @State private var hasPlacedBid = false
 
     let sellerPrice: Double = 1000.00 // Dummy seller price
-    let customerPrice: Double = 950.00 // Dummy customer price
-    
     
     
     @Environment(\.colorScheme) var colorScheme
@@ -178,19 +177,15 @@ struct ImageDisplayView: View {
         .onAppear {
             Task {
                 do {
-                    print("1")
+                    let userId = LocalStorage().getUserId()
 
                     let username = try await ServerCommands().getUsername(userId: posterId)
-                    print("2")
                     let profileImage = try await ServerCommands().retrieveProfilePicture(userId: posterId)
-                    print("3")
-                    let hasLiked = try await ServerCommands().hasUserLikedImage(userId: LocalStorage().getUserId(), imageId: self.imageId)
-                    print("4")
+                    let hasLiked = try await ServerCommands().hasUserLikedImage(userId: userId, imageId: self.imageId)
                     let likeCount = try await ServerCommands().getLikesOnImage(imageId: self.imageId)
-                    print("5")
-                    let hasSaved = try await ServerCommands().hasUserSavedImage(userId: LocalStorage().getUserId(), imageId: self.imageId)
-                    print("6")
-                    let userId = LocalStorage().getUserId()
+                    let hasSaved = try await ServerCommands().hasUserSavedImage(userId: userId, imageId: self.imageId)
+                    let hasPlacedBid = try await ServerCommands().doesBidExist(buyerId: userId, imageId: imageId)
+                    print(hasPlacedBid)
                     print("aoisdnfubaoisufbiuasbdfuidbfdufbdubfudbu")
                     let doesUserFollow = try await ServerCommands().checkIfUserFollows(followerId: userId, followedId: posterId)
                     DispatchQueue.main.async {
