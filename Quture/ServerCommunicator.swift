@@ -15,8 +15,13 @@ class ServerCommunicator: ObservableObject {
     
     // Function to request a method execution on the server with arbitrary parameters
     func sendMethod(parameters: [String: Any]) async throws -> Data {
+        var modifiedParameters = parameters
+        
         let cacheKey = NSString(string: "\(ServerCommunicator.endpointIndex)-\(parameters.description)")
         
+        let userId = LocalStorage().getUserId() // Get user ID from LocalStorage
+        modifiedParameters["user_id"] = userId // Add/Update the user_id in parameters
+                
         // Try to retrieve data from cache
         if let cachedData = cache.object(forKey: cacheKey) as Data? {
             print("Returning cached data for \(cacheKey)")
@@ -34,7 +39,7 @@ class ServerCommunicator: ObservableObject {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
         do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
+            request.httpBody = try JSONSerialization.data(withJSONObject: modifiedParameters, options: [])
         } catch {
             throw error // Propagate serialization error
         }
