@@ -25,6 +25,7 @@ struct LoginSettingsView: View {
         NavigationView {
             GeometryReader { geometry in
                 VStack {
+                    
                     Circle()
                         .frame(width: geometry.size.width * 0.3, height: geometry.size.width * 0.3)
                         .overlay(
@@ -46,6 +47,7 @@ struct LoginSettingsView: View {
                     
                     Text("Your Profile")
                         .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .center)
                     
                         .alert(isPresented: $showingLogoutAlert) {
                             Alert(
@@ -63,6 +65,8 @@ struct LoginSettingsView: View {
                         }
                     Text("Followers: \(followerCount)")
                         .font(.subheadline)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    
                         .onAppear {
                             Task {
                                 do {
@@ -99,6 +103,7 @@ struct LoginSettingsView: View {
                                 }
                             }
                         }
+                    
                         .navigationBarItems(trailing: Button(action: {
                             // Handle gear icon action
                             print("Gear icon tapped")
@@ -153,6 +158,8 @@ struct LoginSettingsView: View {
                             }
                         }
                     }
+                    Spacer()
+
                 }
             }
         }
