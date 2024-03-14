@@ -11,6 +11,7 @@ struct LoginSettingsView: View {
     @State private var isNavigationActive = false
     @State private var showingImageDetailView = true
     @State private var profileImage: UIImage? = nil
+    @State private var followerCount: Int = 0
     
     @State private var isLoading = true
     
@@ -60,6 +61,8 @@ struct LoginSettingsView: View {
                                 secondaryButton: .cancel()
                             )
                         }
+                    Text("Followers: \(followerCount)")
+                        .font(.subheadline)
                         .onAppear {
                             Task {
                                 do {
@@ -68,6 +71,10 @@ struct LoginSettingsView: View {
                                     let fetchedProfileImage = try await ServerCommands().retrieveProfilePicture(userId: userId)
                                     DispatchQueue.main.async { // Update UI on the main thread
                                         self.profileImage = fetchedProfileImage // Assign the fetched image to the profileImage state variable
+                                    }
+                                    let fetchedFollowerCount = try await ServerCommands().getFollowersCount(userId: userId)
+                                    DispatchQueue.main.async { // Ensure UI operations are on the main thread
+                                        self.followerCount = fetchedFollowerCount
                                     }
                                     isLoadingImages = true
                                     let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: userId)

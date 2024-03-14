@@ -228,8 +228,10 @@ struct ImageDisplayView: View {
                     do{
                         let userId = LocalStorage().getUserId()
                         try await ServerCommands().toggleFollow(followerId: userId, followedId: posterId)
+                        print("Before toggling, isFollowing: \(isFollowing)")
                         DispatchQueue.main.async {
                             self.isFollowing.toggle()
+                            print("After toggling, isFollowing: \(isFollowing)")
                         }
                         
                     }
