@@ -113,7 +113,7 @@ struct SearchedView: View {
                                 
                     self.rectangleContents = []
                     for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
-                        let (userId, image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                        let (userId, image, price, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                         let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
                         DispatchQueue.main.async {
                             let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)

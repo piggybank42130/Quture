@@ -64,6 +64,16 @@ struct NewBidWindow: View {
                 .onTapGesture {
                     self.isCustomerPriceActive = false
                 }
+                .onAppear{
+                    Task{
+                        do{
+                            let (_, _, imagePrice, _) = try await ServerCommands().retrieveImage(imageId: imageId)
+                            sellerPrice = imagePrice
+                        } catch {
+                            print(error)
+                        }
+                    }
+                }
 
                 // "Highest Bet" box
                 VStack {

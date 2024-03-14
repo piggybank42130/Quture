@@ -299,7 +299,7 @@ struct VisualStudioView: View {
                             }
                             let imageIds = try await ServerCommands().getUserSavedImageIdsByTag                        (userId: LocalStorage().getUserId(), tag: tag)
                             for imageId in imageIds {
-                                let (userId, image, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                                let (userId, image, price, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                                 let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
                                 DispatchQueue.main.async {
                                     // Initialize tag key with an empty array if it doesn't already exist

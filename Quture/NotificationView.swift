@@ -291,14 +291,14 @@ struct NotificationView: View {
                             let bidBuyerId = buyerIds[index]
                             let bidSellerId = sellerIds[index]
                             let bidImageId = imageIds[index]
-                            let (_, bidImage, bidImageCaption) = try await ServerCommands().retrieveImage(imageId: bidImageId)
+                            let (_, bidImage, bidPrice, bidImageCaption) = try await ServerCommands().retrieveImage(imageId: bidImageId)
                             let bidImageTags = try await ServerCommands().getTagsFromImage(imageId: bidImageId)
                             let bidMessageText = messageTexts[index]
                             let bidSeenBySeller = seenBySellers[index]
                             let buyerUsername = try await ServerCommands().getUsername(userId: bidBuyerId)
                             let isBidSuccessful = successfulBids[index]
                             let isSellerResponse = isSellerResponses[index]
-                            let newBid = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidSellerId, bidImageId: bidImageId, bidImageCaption: bidImageCaption, bidTitle: (n == 0 ? "Purchase Request from \(buyerUsername):" : "Purchase Response from \(buyerUsername):"), bidText: "\(bidMessageText)", bidPrice: 1000.00, isNew: !bidSeenBySeller, isSellerResponse: isSellerResponse, isBidSuccessful: isBidSuccessful, onAccept: {
+                            let newBid = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidSellerId, bidImageId: bidImageId, bidImageCaption: bidImageCaption, bidTitle: (n == 0 ? "Purchase Request from \(buyerUsername):" : "Purchase Response from \(buyerUsername):"), bidText: "\(bidMessageText)", bidPrice: bidPrice, isNew: !bidSeenBySeller, isSellerResponse: isSellerResponse, isBidSuccessful: isBidSuccessful, onAccept: {
                                 alertTitle = "Confirm Bid"
                                 alertMessage = "You are about to confirm the bid."
                                 actionToConfirm = {

@@ -187,15 +187,15 @@ class ServerCommands: ObservableObject {
         }
     }
 
-    func retrieveImage(imageId: Int) async throws -> (Int, UIImage, String) {
+    func retrieveImage(imageId: Int) async throws -> (Int, UIImage, Double, String) {
         let parameters: [String: Any] = ["method_name": "retrieve_image", "params": ["image_id": imageId]]
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
             if let result = jsonResponse["result"] as? [String: Any],
                let imageData = result["image_data"] as? [String: Any],
-               let imageDataString = imageData["image_data"] as? String, let imageCaption = imageData["caption"] as? String, let userId = imageData["user_id"] as? Int{
+               let imageDataString = imageData["image_data"] as? String, let imageCaption = imageData["caption"] as? String, let userId = imageData["user_id"] as? Int, let imagePrice = imageData["price"] as? Double, let userId = imageData["user_id"] as? Int{
                 if let imageData = Data(base64Encoded: imageDataString), let image = UIImage(data: imageData) {
-                return (userId, image, imageCaption)
+                return (userId, image, imagePrice, imageCaption)
                     
                 }
                 else{
@@ -240,7 +240,7 @@ class ServerCommands: ObservableObject {
         var captions = [String]()
 
         for imageId in imageIds {
-            let (userId, image, caption) = try await retrieveImage(imageId: imageId)
+            let (userId, image, price, caption) = try await retrieveImage(imageId: imageId)
             images.append(image)
             captions.append(caption)
         }
@@ -254,7 +254,7 @@ class ServerCommands: ObservableObject {
         var captions = [String]()
 
         for imageId in imageIds {
-            let (userId, image, caption) = try await retrieveImage(imageId: imageId)
+            let (userId, image, price, caption) = try await retrieveImage(imageId: imageId)
             images.append(image)
             captions.append(caption)
         }
