@@ -7,6 +7,9 @@ enum ActiveScreen {
     // Add other cases as needed
 }
 
+
+
+
 struct ContentView: View {
     //overall tabs and layout
     @State private var selectedTopTab = 0
@@ -38,6 +41,9 @@ struct ContentView: View {
     @State private var isNavigationActive = false
     @State private var hasNotifications = false
     @State private var unseenCount: Int = 0
+    @State private var showingPopup = true
+    @State private var showingPopupOverlay = false // Add this state variable
+
 
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
 
@@ -102,6 +108,7 @@ struct ContentView: View {
     
     //MARK: Body: some view
     var body: some View {
+        ZStack{
         Group {
             if isActive {
                 if isUserLoggedIn {
@@ -135,7 +142,7 @@ struct ContentView: View {
                             }), isActive: $showingDetailScreen) {
                                 EmptyView()
                             }
-
+                            
                             
                             // Additional navigation links if needed
                             // ...
@@ -159,15 +166,48 @@ struct ContentView: View {
             } else {
                 SplashScreen()
             }
+            
         }
-        .onAppear {            
+//        .blur(radius: showingPopupOverlay ? 3 : 0) // Optional: blur the content when the popup is visible
+
+            if showingPopupOverlay {
+                // Dimmed background
+                Color.black.opacity(0.4)
+                    .edgesIgnoringSafeArea(.all)
+                    .onTapGesture {
+                        // Optionally allow tapping the dimmed background to dismiss the popup
+                        showingPopupOverlay = false
+                    }
+                
+                WelcomeView {
+                    // This closure is called when the dismiss button in PopupView is tapped
+                    showingPopupOverlay = false
+                }
+                .transition(.opacity) // Use a transition for the overlay appearance/disappearance
+                .zIndex(1) // Ensure the overlay is above other content
+            }
+
+        }
+
+        .onAppear {
+            // Assuming the splash screen should show for a bit and then transition to the main content
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 withAnimation {
                     self.isActive = true
                 }
+                
+                // Delay showing the popup slightly after the splash screen transition and ContentView is fully active.
+                // Consider delaying this further if it interferes with other animations or transitions.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.showingPopupOverlay = true // Ensure you're using the correct variable here
+                }
             }
         }
+
+
+        
     }
+    
     
     
     
