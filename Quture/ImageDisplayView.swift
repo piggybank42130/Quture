@@ -34,6 +34,10 @@ struct ImageDisplayView: View {
     @State private var alertMessage = "A bid has already been placed." //alert
     @State private var showSuccessAlert = false
 
+    @State private var selectedTopBottomShoesAccessoriesTag: Tag? = nil
+    @State private var selectedFashionTag: Tag? = nil
+    @State private var showCaptionAndTagsAlert = false
+
 
     let sellerPrice: Double = 1000.00 // Dummy seller price
     
@@ -194,8 +198,6 @@ struct ImageDisplayView: View {
                 .transition(.scale)
             }
 
-
-            
             VStack {
                 topBar
                     .padding(.top, 30)

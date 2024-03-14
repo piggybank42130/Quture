@@ -90,6 +90,8 @@ struct DetailScreen: View {
     @State private var showAlert = false
     @State private var showAlertForPrice = false
     @State private var alertMessage = ""
+    @State private var hasSelectedRequiredTags = false
+
 
   
     
@@ -159,22 +161,23 @@ struct DetailScreen: View {
                 
                 Button("Confirm") {
                     if caption.isEmpty {
-                            alertMessage = "Please describe your post with what you are selling."
-                            showAlert = true
-                        } else if let priceValue = Double(price), priceValue > 10_000 {
-                            alertMessage = "Price cannot exceed 10,000."
-                            showAlert = true
-                        } else if price.containsMultipleDecimalPoints() {
-                            alertMessage = "Price cannot contain multiple decimal points."
-                            showAlert = true
-                        } else if price.isEmpty {
-                            alertMessage = "Price cannot be empty."
-                            showAlert = true
-                        } else {
-                            onConfirm?(image, caption, price, selectedTags, selectedFashionTags)
-                            presentationMode.wrappedValue.dismiss()
-                        }
+                        alertMessage = "Please describe your post with what you are selling."
+                        showAlert = true
+                    } else if let priceValue = Double(price), priceValue > 10_000 {
+                        alertMessage = "Price cannot exceed 10,000."
+                        showAlert = true
+                    } else if price.containsMultipleDecimalPoints() {
+                        alertMessage = "Price cannot contain multiple decimal points."
+                        showAlert = true
+                    } else if selectedTags.isEmpty || selectedFashionTags.isEmpty {
+                        alertMessage = "Please select at least one tag from each required category."
+                        showAlert = true
+                    } else {
+                        onConfirm?(image, caption, price, selectedTags, selectedFashionTags)
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }
+
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background(Color.sameColor(forScheme: colorScheme))
@@ -220,29 +223,46 @@ struct DetailScreen: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
                 ForEach(tags, id: \.self) { tag in
+                    let isSelected = selectedTags.wrappedValue.contains(tag)
+                    let backgroundColor = isSelected ? Color.DarkGray : Color.gray.opacity(0.2)
+
                     Text(tag.name)
                         .padding(.vertical, 6)
                         .padding(.horizontal, 12)
-                        .background(selectedTags.wrappedValue.contains(tag) ? Color.DarkGray : Color.gray.opacity(0.2))
+                        .background(backgroundColor)
                         .foregroundColor(Color.contrastColor(for: colorScheme))
                         .clipShape(Capsule())
                         .font(.caption)
                         .onTapGesture {
-                            if let tagCategory = Tag.Category(rawValue: tag.name.lowercased()), categories.contains(tagCategory) {
-                                self.selectedCategory = tagCategory
-                            } else {
-                                if selectedTags.wrappedValue.contains(tag) {
-                                    selectedTags.wrappedValue.remove(tag)
-                                } else {
-                                    selectedTags.wrappedValue.insert(tag)
-                                }
-                            }
+                            updateSelectedTags(tag: tag, selectedTags: selectedTags)
                         }
                 }
             }
         }
         .padding()
     }
+
+    func updateSelectedRequiredTags(selectedTags: Set<Tag>, selectedFashionTags: Set<Tag>) {
+        let categoriesToCheck: [Tag.Category] = [.top, .bottom, .shoe, .accessories]
+        let hasRequiredCategoryTag = categoriesToCheck.contains { category in
+            selectedTags.contains { tag in
+                tag.category == category
+            }
+        }
+        hasSelectedRequiredTags = hasRequiredCategoryTag && !selectedFashionTags.isEmpty
+    }
+
+
+    func updateSelectedTags(tag: Tag, selectedTags: Binding<Set<Tag>>) {
+        if selectedTags.wrappedValue.contains(tag) {
+            selectedTags.wrappedValue.remove(tag)
+        } else {
+            selectedTags.wrappedValue.insert(tag)
+        }
+        // Update hasSelectedRequiredTags based on the current selection
+        updateSelectedRequiredTags(selectedTags: selectedTags.wrappedValue, selectedFashionTags: selectedFashionTags)
+    }
+
 }
 
 // Assuming TagManager and Tag definitions are as previously defined
