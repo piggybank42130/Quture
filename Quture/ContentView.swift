@@ -45,10 +45,7 @@ struct ContentView: View {
     @State private var showingPopupOverlay = false // Add this state variable
 
 
-    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
-
-    
-    
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors    
     
     
     let topTabs = ["Explore", "Curate", "Nearby"]
@@ -471,7 +468,7 @@ struct ContentView: View {
             .hidden() // Hide the NavigationLink since it's used programmatically
         )
         .background(
-            NavigationLink(destination: NotificationView(sellerId: 1), isActive: $showingNotificationView) {
+            NavigationLink(destination: NotificationView(), isActive: $showingNotificationView) {
                 EmptyView()
             }
             .hidden() // Hide the NavigationLink since it's used programmatically

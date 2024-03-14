@@ -106,14 +106,11 @@ class ServerCommands: ObservableObject {
         // No need for further processing if no return value is expected
     }
     
-    func addBid(sellerId: Int, buyerId: Int, imageId: Int, messageText: String, isSellerResponse: Bool) async throws -> Int {
+    func addBid(sellerId: Int, buyerId: Int, imageId: Int, messageText: String, successful: Bool, isSellerResponse: Bool) async throws -> Int {
         let parameters: [String: Any] = [
             "method_name": "add_bid",
-            "params": ["seller_id": sellerId, "buyer_id": buyerId, "image_id": imageId, "message_text": messageText, "is_seller_response": (isSellerResponse ? "True" : "False")]
+            "params": ["seller_id": sellerId, "buyer_id": buyerId, "image_id": imageId, "message_text": messageText, "successful": (successful ? "True" : "False"), "is_seller_response": (isSellerResponse ? "True" : "False")]
         ]
-        print(parameters)
-        print("sadfjbaskfubasiubfiasudbfaiusbfiu")
-
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
            let result = jsonResponse["result"] as? [String: Any],
@@ -313,7 +310,7 @@ class ServerCommands: ObservableObject {
         }
     }
     
-    func getBidInfo(bidId: Int) async throws -> (Int, Int, Int, String, Bool, Bool) {
+    func getBidInfo(bidId: Int) async throws -> (Int, Int, Int, String, Bool, Bool, Bool) {
         let parameters: [String: Any] = [
             "method_name": "get_bid_info",
             "params": ["bid_id": bidId]
@@ -323,8 +320,8 @@ class ServerCommands: ObservableObject {
         print(try JSONSerialization.jsonObject(with: data, options: []))
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
            let result = jsonResponse["result"] as? [String: Any],
-           let bidInfo = result["bid_info"] as? [String: Any], let buyerId = bidInfo["buyer_id"] as? Int, let sellerId = bidInfo["seller_id"] as? Int, let imageId = bidInfo["image_id"] as? Int, let messageText = bidInfo["message_text"] as? String, let seenBySeller = bidInfo["seen_by_seller"] as? Int, let bidSuccessful = bidInfo["successful"] as? Bool{
-            return (buyerId, sellerId, imageId, messageText, seenBySeller == 1, bidSuccessful)
+           let bidInfo = result["bid_info"] as? [String: Any], let buyerId = bidInfo["buyer_id"] as? Int, let sellerId = bidInfo["seller_id"] as? Int, let imageId = bidInfo["image_id"] as? Int, let messageText = bidInfo["message_text"] as? String, let seenBySeller = bidInfo["seen_by_seller"] as? Int, let bidSuccessful = bidInfo["successful"] as? Int, let bidIsSellerResponse = bidInfo["is_seller_repsonse"] as? Int{
+            return (buyerId, sellerId, imageId, messageText, seenBySeller == 1, bidSuccessful == 1, bidIsSellerResponse == 1)
             
         } else {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
@@ -383,7 +380,7 @@ class ServerCommands: ObservableObject {
         }
     }
     
-    func getBuyerBidInfo(buyerId: Int) async throws -> ([Int], [Int], [Int], [Int], [String], [Bool], [Bool]) {
+    func getBuyerBidInfo(buyerId: Int) async throws -> ([Int], [Int], [Int], [Int], [String], [Bool], [Bool], [Bool]) {
         let bidIds = try await getBuyerBidIds(buyerId: buyerId)
         var buyerIds = [] as [Int]
         var sellerIds = [] as [Int]
@@ -391,19 +388,22 @@ class ServerCommands: ObservableObject {
         var messageTexts = [] as [String]
         var seenBySellers = [] as [Bool]
         var successfulBids = [] as [Bool]
+        var isSellerResponses = [] as [Bool]
         for bidId in bidIds{
-            let (newBuyerId, newSellerId, newImageId, newMessageText, newSeenBySeller, newIsSuccessful) = try await ServerCommands().getBidInfo(bidId: bidId)
+            let (newBuyerId, newSellerId, newImageId, newMessageText, newSeenBySeller, newIsSuccessful, newIsSellerResponse) = try await ServerCommands().getBidInfo(bidId: bidId)
+            print("gbajbgjbdsjbfjabsjfbdsjfjsbdjsbdjf")
             buyerIds.append(newBuyerId)
             sellerIds.append(newSellerId)
             imageIds.append(newImageId)
             messageTexts.append(newMessageText)
             seenBySellers.append(newSeenBySeller)
             successfulBids.append(newIsSuccessful)
+            isSellerResponses.append(newIsSellerResponse)
         }
-        return (bidIds, buyerIds, sellerIds, imageIds, messageTexts, seenBySellers, successfulBids)
+        return (bidIds, buyerIds, sellerIds, imageIds, messageTexts, seenBySellers, successfulBids, isSellerResponses)
     }
     
-    func getSellerBidInfo(sellerId: Int) async throws -> ([Int], [Int], [Int], [Int], [String], [Bool], [Bool]) {
+    func getSellerBidInfo(sellerId: Int) async throws -> ([Int], [Int], [Int], [Int], [String], [Bool], [Bool], [Bool]) {
         let bidIds = try await getSellerBidIds(sellerId: sellerId)
         var buyerIds = [] as [Int]
         var sellerIds = [] as [Int]
@@ -411,16 +411,18 @@ class ServerCommands: ObservableObject {
         var messageTexts = [] as [String]
         var seenBySellers = [] as [Bool]
         var successfulBids = [] as [Bool]
+        var isSellerResponses = [] as [Bool]
         for bidId in bidIds{
-            let (newBuyerId, newSellerId, newImageId, newMessageText, newSeenBySeller, newIsSuccessful) = try await ServerCommands().getBidInfo(bidId: bidId)
+            let (newBuyerId, newSellerId, newImageId, newMessageText, newSeenBySeller, newIsSuccessful, newIsSellerResponse) = try await ServerCommands().getBidInfo(bidId: bidId)
             buyerIds.append(newBuyerId)
             sellerIds.append(newSellerId)
             imageIds.append(newImageId)
             messageTexts.append(newMessageText)
             seenBySellers.append(newSeenBySeller)
             successfulBids.append(newIsSuccessful)
+            isSellerResponses.append(newIsSellerResponse)
         }
-        return (bidIds, buyerIds, sellerIds, imageIds, messageTexts, seenBySellers, successfulBids)
+        return (bidIds, buyerIds, sellerIds, imageIds, messageTexts, seenBySellers, successfulBids, isSellerResponses)
     }
     
     func countUnseenBidMessages(userId: Int) async throws -> Int {

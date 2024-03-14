@@ -23,6 +23,7 @@ struct BidNotification: View, Identifiable {
     
     var onAccept: () -> Void = {}
     var onReject: () -> Void = {}
+    var onDismiss: () -> Void = {}
     var showImageDisplayView: ImageDisplayView?
     @Environment(\.colorScheme) var colorScheme
     
@@ -42,40 +43,56 @@ struct BidNotification: View, Identifiable {
     private var buyerView: some View{
         ZStack(alignment: .topTrailing) {
             VStack {
-                // Red circle indicator for new notifications
-                
-                let statusMessage = isBidSuccessful ? "Your bid of $\(String(format: "%.2f", bidPrice)) has been accepted." : "Your bid of $\(String(format: "%.2f", bidPrice)) has been rejected."
-                Text(statusMessage)
+                // Status message about the bid
+                Text(isBidSuccessful ? "Your bid of $\(String(format: "%.2f", bidPrice)) has been accepted! Look out for a text/call." : "Your bid of $\(String(format: "%.2f", bidPrice)) has been rejected, sorry.")
                     .font(.headline)
                     .padding()
                     .frame(maxWidth: .infinity)
                     .multilineTextAlignment(.center)
                 
-                HStack(spacing: 10) { // Added spacing between buttons
-                    Button(action: onCheckmarkPressed) {
-                        Rectangle()
-                            .foregroundColor(.green)
-                            .frame(height: 50)
-                            .cornerRadius(10)
-                            .overlay(
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.white)
-                            )
-                    }
-                    .padding(.horizontal, 2) // Minor horizontal padding for button
-                    .padding(.vertical, 10)
-                    
+                // Dismiss button
+                Button(action: onDismiss) {
+                    Text("Dismiss")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(isBidSuccessful ? Color.green : Color.red)
+                        .cornerRadius(10)
                 }
-                .frame(maxWidth: .infinity) // Makes HStack cover the full width
-                .padding(.horizontal) // Pads the horizontal sides of the HStack to align with the text
-                
+                .padding(.horizontal, 10) // Add horizontal padding here, outside of the frame
+                .padding(.top) // Add some top padding to separate from the status message
+
+                // "See Image" section
+                Button(action: {
+                    isNavigationActive = true
+                }) {
+                    VStack {
+                        Text("See Image")
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                        
+                        Text("Caption: \(bidImageCaption)")
+                            .foregroundColor(.black)
+                            .font(.system(size: 10))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
+                    
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.white)
+                    .cornerRadius(10)
+                }
+                .padding(.horizontal, 10) // Add horizontal padding here, outside of the frame
+                .padding(.top) // Add some top padding to separate from the Dismiss button
+
             }
             .frame(maxWidth: .infinity)
             .background(Color.gray.opacity(0.3))
             .cornerRadius(20)
-            .padding(.vertical, 2)
-            
-            
+            .padding() // This adds padding around the entire VStack within the ZStack for spacing from the edges.
+
         }
         .background(
             NavigationLink(
@@ -156,9 +173,8 @@ struct BidNotification: View, Identifiable {
                     )
             
                 .frame(maxWidth: .infinity) // Makes HStack cover the full width
-                .padding(.horizontal) // Pads the horizontal sides of the HStack to align with the text
+                .padding() // Pads the horizontal sides of the HStack to align with the text
                 .onTapGesture {
-                    //DAIFISDHFASHDFIADSIFHASIDFHDAHISFDISFAISDHFAISDHFHASDIF
                     isNavigationActive = true
                 }
 
@@ -174,7 +190,7 @@ struct BidNotification: View, Identifiable {
                             .font(.caption)
                             .foregroundColor(.white)
                     )
-                    .offset(x: -0, y: 0) // Adjusts the position relative to the top right corner
+                    .offset(x: 10, y: -10) // Adjusts the position relative to the top right corner
             }
             else {
                 RoundedRectangle(cornerRadius: 25)
@@ -185,7 +201,7 @@ struct BidNotification: View, Identifiable {
                             .font(.caption)
                             .foregroundColor(.white)
                     )
-                    .offset(x: -0, y: 0) // Adjusts the position relative to the top right corner
+                    .offset(x: 10, y: -10) // Adjusts the position relative to the top right corner
                     .onTapGesture {
                         Task{
                             do {
@@ -201,9 +217,11 @@ struct BidNotification: View, Identifiable {
                     }
             }
         }
+        .padding()
         .background(Color.gray.opacity(0.3)) // Ensure background is applied to VStack
         .cornerRadius(20)
-        .padding(.vertical, 2)
+        .padding([.top, .trailing], 0)
+
         .background(
             NavigationLink(
                 destination: showImageDisplayView,
@@ -226,8 +244,6 @@ struct NotificationView: View {
 
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
     
-    @State var sellerId: Int
-
     var body: some View {
         ScrollView {
             LazyVStack {
@@ -266,74 +282,80 @@ struct NotificationView: View {
             Task {
                 do{
                     self.bidNotifications.removeAll()
-                    let (bidIds, buyerIds, sellerIds, imageIds, messageTexts, seenBySellers, successfulBids) = try await ServerCommands().getSellerBidInfo(sellerId: sellerId)
-                    
-                    for index in 0..<bidIds.count {
-                        let bidId = bidIds[index]
-                        let bidBuyerId = buyerIds[index]
-                        let bidSellerId = sellerIds[index]
-                        let bidImageId = imageIds[index]
-                        let (_, bidImage, bidImageCaption) = try await ServerCommands().retrieveImage(imageId: bidImageId)
-                        let bidImageTags = try await ServerCommands().getTagsFromImage(imageId: bidImageId)
-                        let bidMessageText = messageTexts[index]
-                        let bidSeenBySeller = seenBySellers[index]
-                        let buyerUsername = try await ServerCommands().getUsername(userId: bidBuyerId)
-                        let isBidSuccessful = successfulBids[index]
-                        print(bidSeenBySeller)
-                        let newBid = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidSellerId, bidImageId: bidImageId, bidImageCaption: bidImageCaption, bidTitle: "New Purchase Request from \(buyerUsername):", bidText: "\(bidMessageText)", bidPrice: 1000.00, isNew: !bidSeenBySeller, isSellerResponse: false, isBidSuccessful: isBidSuccessful, onAccept: {
-                            alertTitle = "Confirm Bid"
-                            alertMessage = "You are about to confirm the bid."
-                            actionToConfirm = {
-                                // Logic to accept the bid
-                                bidNotifications.removeAll { $0.bidId == bidId }
-                                 Task{
-                                      do {
-                                          try await ServerCommands().markBidSuccessful(bidId: bidId)
-//                                          let newBuyerNotif = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidImageId, bidImageId: bidImageId, bidImageCaption: "", bidTitle: "", bidText: "", bidPrice: 1000.00, isNew: bidSeenBySeller, isSellerResponse: true, isBidSuccessful: true, onCheckmarkPressed: {
-//                                              DispatchQueue.main.async {
-//                                                  bidNotifications.removeAll { $0.bidId == bidId }
-//                                              }
-//                                          })
-                                          print("seller accepted, response sent to buyer")
-                                          try await ServerCommands().addBid(sellerId: bidSellerId, buyerId: bidBuyerId, imageId: bidImageId, messageText: "Your purchase offer has been accepted!", isSellerResponse: true)
-//                                          bidNotifications.append(newBuyerNotif)
-                                      }
-                                      catch {
-                                          print(error)
-                                      }
-                                 }
+                    for n in 0..<2 {
+                        let (bidIds, buyerIds, sellerIds, imageIds, messageTexts, seenBySellers, successfulBids, isSellerResponses) = try await (n == 0 ? ServerCommands().getBuyerBidInfo(buyerId: LocalStorage().getUserId()) : ServerCommands().getSellerBidInfo(sellerId: LocalStorage().getUserId()))
+                        
+                        for index in 0..<bidIds.count {
+                            print(n, index)
+                            let bidId = bidIds[index]
+                            let bidBuyerId = buyerIds[index]
+                            let bidSellerId = sellerIds[index]
+                            let bidImageId = imageIds[index]
+                            let (_, bidImage, bidImageCaption) = try await ServerCommands().retrieveImage(imageId: bidImageId)
+                            let bidImageTags = try await ServerCommands().getTagsFromImage(imageId: bidImageId)
+                            let bidMessageText = messageTexts[index]
+                            let bidSeenBySeller = seenBySellers[index]
+                            let buyerUsername = try await ServerCommands().getUsername(userId: bidBuyerId)
+                            let isBidSuccessful = successfulBids[index]
+                            let isSellerResponse = isSellerResponses[index]
+                            let newBid = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidSellerId, bidImageId: bidImageId, bidImageCaption: bidImageCaption, bidTitle: (n == 0 ? "Purchase Request from \(buyerUsername):" : "Purchase Response from \(buyerUsername):"), bidText: "\(bidMessageText)", bidPrice: 1000.00, isNew: !bidSeenBySeller, isSellerResponse: isSellerResponse, isBidSuccessful: isBidSuccessful, onAccept: {
+                                alertTitle = "Confirm Bid"
+                                alertMessage = "You are about to confirm the bid."
+                                actionToConfirm = {
+                                    // Logic to accept the bid
+                                    bidNotifications.removeAll { $0.bidId == bidId }
+                                    Task{
+                                        do {
+                                            try await ServerCommands().markBidSuccessful(bidId: bidId)
+                                            print("seller accepted, response sent to buyer")
+                                            try await ServerCommands().addBid(sellerId: bidSellerId, buyerId: bidBuyerId, imageId: bidImageId, messageText: "Your purchase offer has been accepted!", successful: true, isSellerResponse: true)
+                                            //                                          bidNotifications.append(newBuyerNotif)
+                                        }
+                                        catch {
+                                            print(error)
+                                        }
+                                    }
+                                }
+                                showAlert = true
+                            }, onReject: {
+                                alertTitle = "Decline Bid"
+                                alertMessage = "You are about to decline the bid."
+                                actionToConfirm = {
+                                    // Logic to reject the bid
+                                    bidNotifications.removeAll { $0.bidId == bidId }
+                                    Task{
+                                        do {
+                                            try await ServerCommands().markBidSuccessful(bidId: bidId)
+                                            print("seller accepted, response sent to buyer")
+                                            try await ServerCommands().addBid(sellerId: bidSellerId, buyerId: bidBuyerId, imageId: bidImageId, messageText: "Your purchase offer has been rejected, sorry", successful: false, isSellerResponse: true)
+                                            //                                          bidNotifications.append(newBuyerNotif)
+                                        }
+                                        catch {
+                                            print(error)
+                                        }
+                                    }
+                                }
+                                showAlert = true
+                            }, onDismiss: {
+                                    bidNotifications.removeAll { $0.bidId == bidId }
+                                    Task{
+                                        do {
+                                            
+                                            try await ServerCommands().deleteBid(bidId: bidId)
+                                        }
+                                        catch {
+                                            print(error)
+                                        }
+                                    }
+                                
+                            } , showImageDisplayView:
+                                ImageDisplayView(posterId: bidSellerId, imageId: bidImageId, image: bidImage, caption: bidImageCaption, tags: bidImageTags)
+                            )
+                            print(newBid)
+                            bidNotifications.append(newBid as! BidNotification)
+                            if (!bidSeenBySeller) {
+                                try await ServerCommands().markBidAsSeen(bidId: bidId, sellerId: LocalStorage().getUserId())
                             }
-                            showAlert = true
-                        }, onReject: {
-                            alertTitle = "Decline Bid"
-                            alertMessage = "You are about to decline the bid."
-                            actionToConfirm = {
-                                // Logic to reject the bid
-                                bidNotifications.removeAll { $0.bidId == bidId }
-                                 Task{
-                                      do {
-                                          let newBuyerNotif = BidNotification(bidId: bidId, bidBuyerId: bidBuyerId, bidSellerId: bidImageId, bidImageId: bidImageId, bidImageCaption: "", bidTitle: "", bidText: "", bidPrice: 1000.00, isNew: bidSeenBySeller, isSellerResponse: true, isBidSuccessful: false, onCheckmarkPressed: {
-                                              DispatchQueue.main.async {
-                                                  bidNotifications.removeAll { $0.bidId == bidId }
-                                              }
-                                          })
-                                          try await ServerCommands().deleteBid(bidId: bidId)
-                                          print("seller rejected, response sent to buyer")
-                                          bidNotifications.append(newBuyerNotif)
-                                      }
-                                      catch {
-                                           print(error)
-                                      }
-                                 }
-                            }
-                            showAlert = true
-                        }, showImageDisplayView:
-                            ImageDisplayView(posterId: bidSellerId, imageId: bidImageId, image: bidImage, caption: bidImageCaption, tags: bidImageTags)
-                        )
-                        print(newBid)
-                        bidNotifications.append(newBid as! BidNotification)
-                        if (!bidSeenBySeller) {
-                            try await ServerCommands().markBidAsSeen(bidId: bidId, sellerId: sellerId)
                         }
                     }
                 }

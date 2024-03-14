@@ -213,7 +213,7 @@ struct CustomAlertView: View {
                         let message = "\(message)\n\nMy phone number is \(phoneNumber)"//Bid of $\(String(format: "%.2f", price)) placed with message: \(message) and contact: \(phoneNumber)"
                         Task{
                             do {
-                                let newBidId = try await ServerCommands().addBid(sellerId: sellerId, buyerId: 1, imageId: imageId, messageText: message, isSellerResponse: false)
+                                let newBidId = try await ServerCommands().addBid(sellerId: sellerId, buyerId: LocalStorage().getUserId(), imageId: imageId, messageText: message, successful: false, isSellerResponse: false)
                             }
                             catch {
                                 print(error)
