@@ -28,7 +28,7 @@ struct ImageDisplayView: View {
     @State private var username: String = ""
     @State private var profileImage: UIImage? = nil
     @State private var isFollowing = false
-    @State private var hasPlacedBid = false
+    @State private var hasPlacedBid = true
     
     @State private var showAlert = false
     @State private var alertMessage = "A bid has already been placed." //alert
@@ -63,16 +63,33 @@ struct ImageDisplayView: View {
                     .gesture(
                         DragGesture(minimumDistance: 50, coordinateSpace: .local)
                             .onEnded { gesture in
-                                if gesture.translation.height < 0 {
-                                    print(hasPlacedBid, " SUSSY BAKA")
-                                    if hasPlacedBid {
-                                        // A bid has been placed, show an alert
-                                        self.showAlert = true
-                                    } else {
-                                        // No bid has been placed, show the bid window
-                                        isNewBidWindowVisible = true
+                                Task {
+                                    do {
+                                        let userId = LocalStorage().getUserId()
+                                        hasPlacedBid = try await ServerCommands().doesBidExist(buyerId: userId, imageId: imageId)
+                                        
+                                        // Perform the check after the task has completed
+                                        if gesture.translation.height < 0 {
+                                            print(hasPlacedBid, " SUSSY BAKA")
+                                            if hasPlacedBid {
+                                                // Main thread operation, use DispatchQueue if needed
+                                                DispatchQueue.main.async {
+                                                    // A bid has been placed, show an alert
+                                                    self.showAlert = true
+                                                }
+                                            } else {
+                                                // Main thread operation, use DispatchQueue if needed
+                                                DispatchQueue.main.async {
+                                                    // No bid has been placed, show the bid window
+                                                    isNewBidWindowVisible = true
+                                                }
+                                            }
+                                        }
+                                    } catch {
+                                        print(error)
                                     }
                                 }
+
                             }
                     )
 

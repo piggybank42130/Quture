@@ -290,7 +290,7 @@ struct CustomAlertView: View {
                         onBidPlaced?()
                     }
                 } message: {
-                    Text("You have made a successful bet.")
+                    Text("You have made a successful bid.")
                 }
             }
             .padding()
@@ -303,10 +303,22 @@ struct CustomAlertView: View {
 
     func isValidPhoneNumber(_ phoneNumber: String) -> Bool {
         let phoneNumberRegex = "^[+]?[0-9]{1,3}[-\\s]?\\(?[0-9]{1,4}\\)?[-\\s]?[0-9]{1,4}[-\\s]?[0-9]{1,4}([-\\s]?[0-9]{1,4})?$"
-        return NSPredicate(format: "SELF MATCHES %@", phoneNumberRegex).evaluate(with: phoneNumber)
+        let regexPredicate = NSPredicate(format:"SELF MATCHES %@", phoneNumberRegex)
+        let isValidStructure = regexPredicate.evaluate(with: phoneNumber)
+        let isValidLength = phoneNumber.count <= 15 // Enforce maximum length
+        
+        return isValidStructure && isValidLength
     }
 
+
     func placeBid() {
+        
+        guard isValidPhoneNumber(phoneNumber) else {
+                alertMessage = "Please enter a valid phone number."
+                showAlert = true
+                return // Exit the function early if validation fails
+            }
+        
         let completeMessage = "\(message)\n\nMy phone number is \(phoneNumber)"
         Task {
             do {
