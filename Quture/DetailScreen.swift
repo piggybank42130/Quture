@@ -127,13 +127,23 @@ struct DetailScreen: View {
                     .font(.headline)
                     .padding(.bottom, 10)
                 
-                Picker("Select Category", selection: $selectedCategory) {
+                HStack {
                     ForEach(categories, id: \.self) { category in
-                        Text(category.rawValue).tag(category as Tag.Category?)
+                        Button(action: {
+                            self.selectedCategory = category
+                        }) {
+                            Text(category.rawValue)
+                                .font(.system(size: 14)) // Adjust the font size as needed to prevent wrapping
+                                .foregroundColor(selectedCategory == category ? .white : (colorScheme == .dark ? .white : .black))
+                                .lineLimit(1) // Ensure text does not wrap
+                                .fixedSize(horizontal: true, vertical: false) // Keep the text in a fixed horizontal size
+                        }
+                        
                     }
                 }
-                .pickerStyle(SegmentedPickerStyle())
                 .padding()
+                .background(Color.sameColor(forScheme: colorScheme)) // Adjust this method to match your color scheme logic
+                .cornerRadius(8)
                 
                 if let category = selectedCategory, category != .fashion {
                     tagsScrollView(tags: TagManager.shared.getTagsByCategory(forCategory: category), selectedTags: $selectedTags)
