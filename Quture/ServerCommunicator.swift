@@ -24,7 +24,6 @@ class ServerCommunicator: ObservableObject {
         
         // Try to retrieve data from cache
         if let cachedData = cache.object(forKey: cacheKey) as Data? {
-            print("Returning cached data for \(cacheKey)")
             return cachedData
         }
         
@@ -39,7 +38,6 @@ class ServerCommunicator: ObservableObject {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
         do {
-            print(modifiedParameters)
             request.httpBody = try JSONSerialization.data(withJSONObject: modifiedParameters, options: [])
         } catch {
             throw error // Propagate serialization error

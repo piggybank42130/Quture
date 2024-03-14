@@ -294,7 +294,6 @@ struct VisualStudioView: View {
                             // Ensure you have a suitable method to handle fetching by tag name or adapt this code to work with your current setup
                             guard let tag = TagManager.shared.getTagById(tagId: tagId)
                             else {
-                                print("Tag not found for ID: \(tagId)")
                                 continue
                             }
                             let imageIds = try await ServerCommands().getUserSavedImageIdsByTag                        (userId: LocalStorage().getUserId(), tag: tag)
@@ -315,7 +314,6 @@ struct VisualStudioView: View {
                                 }
                             }
                         } catch {
-                            print("Error fetching images for tagId \(tagId): \(error)")
                         }
                     }
                 }

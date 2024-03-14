@@ -101,7 +101,6 @@ struct SearchedView: View {
             Task {
                 isLoading = true
                 guard let tagId = TagManager.shared.getTagByName(byName: searchText)?.tagId else {
-                    print("Tag ID not found for searchText: \(searchText)")
                     isLoading = false // Update isLoading when done
                     return
                 }
@@ -124,7 +123,6 @@ struct SearchedView: View {
                     self.isLoading = false
                 
                 } catch {
-                    print(error)
                     self.isLoading = false
                 }
             }

@@ -235,7 +235,6 @@ class ServerCommands: ObservableObject {
     
     func retrieveProfilePicture(userId: Int) async throws -> UIImage {
         let parameters: [String: Any] = ["method_name": "retrieve_profile_picture", "params": ["user_id": userId]]
-        print(parameters)
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
             if let result = jsonResponse["result"] as? [String: Any],
@@ -352,7 +351,6 @@ class ServerCommands: ObservableObject {
         ]
         
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
-        print(try JSONSerialization.jsonObject(with: data, options: []))
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
            let result = jsonResponse["result"] as? [String: Any],
            let bidInfo = result["bid_info"] as? [String: Any], let buyerId = bidInfo["buyer_id"] as? Int, let sellerId = bidInfo["seller_id"] as? Int, let imageId = bidInfo["image_id"] as? Int, let messageText = bidInfo["message_text"] as? String, let seenBySeller = bidInfo["seen_by_seller"] as? Int, let bidSuccessful = bidInfo["successful"] as? Int, let bidIsSellerResponse = bidInfo["is_seller_repsonse"] as? Int{
@@ -374,7 +372,6 @@ class ServerCommands: ObservableObject {
            let result = jsonResponse["result"] as? [String:Any],
            let messageIds = result["message_ids"] as? [Int] {
             for messageId in messageIds{
-                print(messageId)
             }
             return []
         } else {
@@ -392,7 +389,6 @@ class ServerCommands: ObservableObject {
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
            let result = jsonResponse["result"] as? [String: Any],
            let bidIds = result["bid_ids"] as? [Int] {
-            print(bidIds)
             return bidIds
         } else {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
@@ -426,7 +422,6 @@ class ServerCommands: ObservableObject {
         var isSellerResponses = [] as [Bool]
         for bidId in bidIds{
             let (newBuyerId, newSellerId, newImageId, newMessageText, newSeenBySeller, newIsSuccessful, newIsSellerResponse) = try await ServerCommands().getBidInfo(bidId: bidId)
-            print("gbajbgjbdsjbfjabsjfbdsjfjsbdjsbdjf")
             buyerIds.append(newBuyerId)
             sellerIds.append(newSellerId)
             imageIds.append(newImageId)
@@ -473,13 +468,11 @@ class ServerCommands: ObservableObject {
     }
     
     func markBidSuccessful(bidId: Int) async throws -> Void {
-        print("running")
         let parameters: [String: Any] = [
             "method_name": "mark_bid_successful",
             "params": ["bid_id": bidId]
         ]
         _ = try await serverCommunicator.sendMethod(parameters: parameters)
-        print("run successful")
     }
     
     func markBidAsSeen(bidId: Int, sellerId: Int) async throws -> Void {
@@ -488,7 +481,6 @@ class ServerCommands: ObservableObject {
             "params": ["bid_id": bidId, "seller_id": sellerId]
         ]
         _ = try await serverCommunicator.sendMethod(parameters: parameters)
-        print("markBidasSeen ran")
     }
     
     func markBidAsUnseen(bidId: Int, sellerId: Int) async throws -> Void {
@@ -540,7 +532,6 @@ class ServerCommands: ObservableObject {
     }
     
     func getFollowersCount(userId: Int) async throws -> Int {
-        print("dasFIDSIFBHSADIFBDSABFAIDSBFDSIBFID")
             let parameters: [String: Any] = [
                 "method_name": "get_followers_count",
                 "params": ["user_id": userId]

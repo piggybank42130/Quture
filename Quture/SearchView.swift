@@ -98,19 +98,14 @@ struct SearchView: View {
     }
     
     private func searchForTags() async {
-        print("Searching for tags with searchTerm: \(searchText)")
         do {
-            print("Fetching tags")
             let tagIds = try await ServerCommands().searchTags(searchTerm: searchText)
-            print(tagIds)
             let tagNames = tagIds.compactMap { TagManager.shared.getTagById(tagId: $0)?.name }
-            print(tagNames)
             DispatchQueue.main.async {
                 self.matchingTagNames = tagNames
                 self.isMatchFound = !tagNames.isEmpty
             }
         } catch {
-            print("")
             DispatchQueue.main.async {
                 self.isMatchFound = false
                 self.matchingTagNames = []
