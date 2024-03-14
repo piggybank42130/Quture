@@ -6,22 +6,22 @@ class ServerCommunicator: ObservableObject {
     private let cache = NSCache<NSString, NSData>()
     
     private var session: URLSession {
-            let config = URLSessionConfiguration.default
-            config.timeoutIntervalForRequest = 15 // seconds
-            config.timeoutIntervalForResource = 15 // seconds
-            config.httpAdditionalHeaders = ["Accept-Encoding": "gzip, deflate"] // Select one of these efficient lossless compression algorithms
-            return URLSession(configuration: config)
-        }
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 15 // seconds
+        config.timeoutIntervalForResource = 15 // seconds
+        config.httpAdditionalHeaders = ["Accept-Encoding": "gzip, deflate"] // Efficient lossless compression algorithms
+        return URLSession(configuration: config)
+    }
     
     // Function to request a method execution on the server with arbitrary parameters
     func sendMethod(parameters: [String: Any]) async throws -> Data {
         var modifiedParameters = parameters
-        
-        let cacheKey = NSString(string: "\(ServerCommunicator.endpointIndex)-\(parameters.description)")
-        
+        // Assuming LocalStorage.getUserId() returns an Int and can be called statically. Adjust if needed.
         let userId = LocalStorage().getUserId() // Get user ID from LocalStorage
-        modifiedParameters["user_id"] = userId // Add/Update the user_id in parameters
-                
+        modifiedParameters["local_user_id"] = userId // Add/Update the user_id in parameters
+        
+        let cacheKey = NSString(string: "\(ServerCommunicator.endpointIndex)-\(modifiedParameters.description)")
+        
         // Try to retrieve data from cache
         if let cachedData = cache.object(forKey: cacheKey) as Data? {
             print("Returning cached data for \(cacheKey)")
@@ -39,6 +39,7 @@ class ServerCommunicator: ObservableObject {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
         do {
+            print(modifiedParameters)
             request.httpBody = try JSONSerialization.data(withJSONObject: modifiedParameters, options: [])
         } catch {
             throw error // Propagate serialization error
@@ -54,10 +55,8 @@ class ServerCommunicator: ObservableObject {
         cache.setObject(data as NSData, forKey: cacheKey)
         
         // Cycle through the endpoints for subsequent requests
-        ServerCommunicator.endpointIndex = (ServerCommunicator.endpointIndex + 1) % 128
+        ServerCommunicator.endpointIndex = (ServerCommunicator.endpointIndex + 1) % 128 // Adjust the modulus according to the actual number of endpoints
 
         return data
     }
-    
-    
 }
