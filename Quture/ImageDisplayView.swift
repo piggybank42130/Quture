@@ -217,18 +217,19 @@ struct ImageDisplayView: View {
             Button(action: {
                 self.presentationMode.wrappedValue.dismiss()
                 self.onReturn?()
-
+                
             }) {
                 Image(systemName: "arrowtriangle.left.fill")
                     .font(.system(size: 24))
                     .foregroundColor(Color.contrastColor(for: colorScheme))
                     .bold()
-
+                
             }
             .padding(.leading, 20) // Add padding to move the icon further from the left edge
             
             Spacer()
-            
+            if posterId != LocalStorage().getUserId(){
+
             Button(action: {
                 // Action for "Follow" button
                 print("Follow tapped")
@@ -249,14 +250,13 @@ struct ImageDisplayView: View {
                     }
                 }
             }) {
-                if posterId != LocalStorage().getUserId(){
-                    Text(isFollowing ? "Unfollow" : "Follow") // Change button text based on follow state
-                        .font(.headline)
-                        .bold()
-                        .foregroundColor(Color.contrastColor(for: colorScheme))
-                }
+                Text(isFollowing ? "Unfollow" : "Follow") // Change button text based on follow state
+                    .font(.headline)
+                    .bold()
+                    .foregroundColor(Color.contrastColor(for: colorScheme))
             }
             .padding(.trailing, 20) // Add padding to move the text further from the right edge
+        }
         }
         .padding(.vertical, 10)
         .background(Color(UIColor.systemBackground))
