@@ -73,8 +73,10 @@ struct LoginSettingsView: View {
                                         self.profileImage = fetchedProfileImage // Assign the fetched image to the profileImage state variable
                                     }
                                     let fetchedFollowerCount = try await ServerCommands().getFollowersCount(userId: userId)
+                                    print("follower count\(fetchedFollowerCount)")
                                     DispatchQueue.main.async { // Ensure UI operations are on the main thread
                                         self.followerCount = fetchedFollowerCount
+                                        
                                     }
                                     isLoadingImages = true
                                     let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: userId)

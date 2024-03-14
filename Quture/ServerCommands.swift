@@ -212,8 +212,10 @@ class ServerCommands: ObservableObject {
             throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
         }
     }
+    
     func retrieveProfilePicture(userId: Int) async throws -> UIImage {
         let parameters: [String: Any] = ["method_name": "retrieve_profile_picture", "params": ["user_id": userId]]
+        print(parameters)
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
             if let result = jsonResponse["result"] as? [String: Any],
@@ -515,24 +517,24 @@ class ServerCommands: ObservableObject {
                 throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
             }
         }
+    
+    func toggleFollow(followerId: Int, followedId: Int) async throws -> Void {
+        let parameters: [String: Any] = ["method_name": "toggle_follow", "params": ["follower_id": followerId, "followed_id": followedId]]
+        try await serverCommunicator.sendMethod(parameters: parameters)
+        // No need for further processing if no return value is expected
+    }
 
-        func toggleFollow(followerId: Int, followedId: Int) async throws -> Void {
-            let parameters: [String: Any] = ["method_name": "toggle_follow", "params": ["follower_id": followerId, "followed_id": followedId]]
-            try await serverCommunicator.sendMethod(parameters: parameters)
-            // No need for further processing if no return value is expected
+    func checkIfUserFollows(followerId: Int, followedId: Int) async throws -> Bool {
+        let parameters: [String: Any] = ["method_name": "check_if_user_follows", "params": ["follower_id": followerId, "followed_id": followedId]]
+
+
+        let data = try await serverCommunicator.sendMethod(parameters: parameters)
+        if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let result = jsonResponse["result"] as? [String: Any],
+           let follows = result["follows"] as? String {
+            return follows == "True"
+        } else {
+            throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
-
-        func checkIfUserFollows(followerId: Int, followedId: Int) async throws -> Bool {
-            let parameters: [String: Any] = ["method_name": "toggle_follow", "params": ["follower_id": followerId, "followed_id": followedId]]
-
-
-            let data = try await serverCommunicator.sendMethod(parameters: parameters)
-            if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-               let result = jsonResponse["result"] as? [String: Any],
-               let follows = result["follows"] as? Bool {
-                return follows
-            } else {
-                throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
-            }
-        }
+    }
 }

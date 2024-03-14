@@ -178,12 +178,20 @@ struct ImageDisplayView: View {
         .onAppear {
             Task {
                 do {
+                    print("1")
+
                     let username = try await ServerCommands().getUsername(userId: posterId)
+                    print("2")
                     let profileImage = try await ServerCommands().retrieveProfilePicture(userId: posterId)
+                    print("3")
                     let hasLiked = try await ServerCommands().hasUserLikedImage(userId: LocalStorage().getUserId(), imageId: self.imageId)
+                    print("4")
                     let likeCount = try await ServerCommands().getLikesOnImage(imageId: self.imageId)
+                    print("5")
                     let hasSaved = try await ServerCommands().hasUserSavedImage(userId: LocalStorage().getUserId(), imageId: self.imageId)
+                    print("6")
                     let userId = LocalStorage().getUserId()
+                    print("aoisdnfubaoisufbiuasbdfuidbfdufbdubfudbu")
                     let doesUserFollow = try await ServerCommands().checkIfUserFollows(followerId: userId, followedId: posterId)
                     DispatchQueue.main.async {
                         self.username = username
@@ -191,7 +199,7 @@ struct ImageDisplayView: View {
                         self.isHeartTapped = hasLiked
                         self.isSaveTapped = hasSaved
                         self.heartCount = likeCount
-                        self.isFollowing = doesUserFollow
+                        self.isFollowing = UserDefaults.standard.bool(forKey: "isFollowing_\(posterId)")
                     }
                 } catch {
                     print(error)
@@ -231,6 +239,7 @@ struct ImageDisplayView: View {
                         print("Before toggling, isFollowing: \(isFollowing)")
                         DispatchQueue.main.async {
                             self.isFollowing.toggle()
+                            UserDefaults.standard.set(self.isFollowing, forKey: "isFollowing_\(posterId)")
                             print("After toggling, isFollowing: \(isFollowing)")
                         }
                         
