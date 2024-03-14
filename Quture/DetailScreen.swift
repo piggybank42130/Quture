@@ -218,7 +218,6 @@ struct DetailScreen: View {
 
     
     
-    
     func tagsScrollView(tags: [Tag], selectedTags: Binding<Set<Tag>>) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
