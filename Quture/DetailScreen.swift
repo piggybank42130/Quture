@@ -133,16 +133,18 @@ struct DetailScreen: View {
                             self.selectedCategory = category
                         }) {
                             Text(category.rawValue)
-                                .font(.system(size: 14)) // Adjust the font size as needed to prevent wrapping
+                                .font(.system(size: 16)) // Adjust the font size as needed to prevent wrapping
                                 .foregroundColor(selectedCategory == category ? .white : (colorScheme == .dark ? .white : .black))
-                                .lineLimit(1) // Ensure text does not wrap
-                                .fixedSize(horizontal: true, vertical: false) // Keep the text in a fixed horizontal size
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 12) // Adjust padding to ensure buttons have enough space
+                                .background(selectedCategory == category ? (colorScheme == .dark ? Color.gray : Color.black) : Color.gray.opacity(0.2)) // Adjust highlight color based on theme
+                                .cornerRadius(8)
                         }
-                        
+                        .buttonStyle(PlainButtonStyle()) // Use PlainButtonStyle to avoid button's default styling effects
                     }
                 }
                 .padding()
-                .background(Color.sameColor(forScheme: colorScheme)) // Adjust this method to match your color scheme logic
+                .background(Color.sameColor(forScheme: colorScheme)) // This sets the background of the HStack container
                 .cornerRadius(8)
                 
                 if let category = selectedCategory, category != .fashion {
