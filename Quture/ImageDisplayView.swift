@@ -1,6 +1,22 @@
 import SwiftUI
 import Foundation
 
+extension Binding {
+    /// Executes a closure when the binding's value changes.
+    /// - Parameter handler: The closure to execute when the value changes.
+    /// - Returns: A new binding with the change handler attached.
+    func onChange(_ handler: @escaping (Value) -> Void) -> Binding<Value> {
+        Binding(
+            get: { self.wrappedValue },
+            set: { newValue in
+                self.wrappedValue = newValue
+                handler(newValue)
+            }
+        )
+    }
+}
+
+
 struct ImageDisplayView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @State private var showBidWindow = false // State variable for navigation
@@ -16,6 +32,7 @@ struct ImageDisplayView: View {
     
     @State private var showAlert = false
     @State private var alertMessage = "A bid has already been placed." //alert
+    @State private var showSuccessAlert = false
 
 
     let sellerPrice: Double = 1000.00 // Dummy seller price
@@ -171,9 +188,13 @@ struct ImageDisplayView: View {
             }
             
             if isNewBidWindowVisible {
-                NewBidWindow(isVisible: $isNewBidWindowVisible, sellerId: posterId, imageId: imageId)
-                    .transition(.scale)
+                NewBidWindow(isVisible: $isNewBidWindowVisible, sellerId: posterId, imageId: imageId, onBidPlaced: {
+                    showSuccessAlert = true
+                })
+                .transition(.scale)
             }
+
+
             
             VStack {
                 topBar
@@ -187,8 +208,6 @@ struct ImageDisplayView: View {
         .onAppear {
             Task {
                 do {
-                    hasPlacedBid = true//REMOV ME LATEr
-                    print("AMBADAKUM")
 
                     let userId = LocalStorage().getUserId()
 
@@ -197,9 +216,8 @@ struct ImageDisplayView: View {
                     let hasLiked = try await ServerCommands().hasUserLikedImage(userId: userId, imageId: self.imageId)
                     let likeCount = try await ServerCommands().getLikesOnImage(imageId: self.imageId)
                     let hasSaved = try await ServerCommands().hasUserSavedImage(userId: userId, imageId: self.imageId)
-                    //hasPlacedBid = try await ServerCommands().doesBidExist(buyerId: userId, imageId: imageId)
-                    print(hasPlacedBid)
-                    print("aoisdnfubaoisufbiuasbdfuidbfdufbdubfudbu")
+                    hasPlacedBid = try await ServerCommands().doesBidExist(buyerId: userId, imageId: imageId)
+
                     let doesUserFollow = try await ServerCommands().checkIfUserFollows(followerId: userId, followedId: posterId)
                     DispatchQueue.main.async {
                         self.username = username
@@ -217,10 +235,12 @@ struct ImageDisplayView: View {
         .alert(isPresented: $showAlert) {
             Alert(
                 title: Text("Bid Placed"),
-                message: Text(alertMessage),
+                message: Text(hasPlacedBid ? alertMessage : "You have successfully placed a bid."),
                 dismissButton: .default(Text("OK"))
             )
         }
+
+
     }
     
     
