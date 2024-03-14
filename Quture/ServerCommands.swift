@@ -39,7 +39,7 @@ class ServerCommands: ObservableObject {
     }
 
     func postImage(userId: Int, image: UIImage, caption: String, price: String) async throws -> Int {
-        guard let imageData = image.jpegData(compressionQuality: 1) else {
+        guard let imageData = image.jpegData(compressionQuality: 0.5) else {
             throw NSError(domain: "ImageError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Image compression failed."])
         }
         let base64ImageString = imageData.base64EncodedString()
@@ -63,7 +63,7 @@ class ServerCommands: ObservableObject {
     }
     
     func uploadProfilePicture(userId: Int, image: UIImage) async throws -> Void {
-        guard let imageData = image.jpegData(compressionQuality: 1) else {
+        guard let imageData = image.jpegData(compressionQuality: 0.5) else {
             throw NSError(domain: "ImageError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Image compression failed."])
         }
         
@@ -186,26 +186,46 @@ class ServerCommands: ObservableObject {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
     }
+    
+    func createBlankImage() -> UIImage? {
+        let size = CGSize(width: 200, height: 300)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let img = renderer.image { ctx in
+            UIColor.white.setFill()
+            ctx.fill(CGRect(origin: .zero, size: size))
+        }
+        return img
+    }
 
     func retrieveImage(imageId: Int) async throws -> (Int, UIImage, Double, String) {
         let parameters: [String: Any] = ["method_name": "retrieve_image", "params": ["image_id": imageId]]
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
-            if let result = jsonResponse["result"] as? [String: Any],
-               let imageData = result["image_data"] as? [String: Any],
-               let imageDataString = imageData["image_data"] as? String, let imageCaption = imageData["caption"] as? String, let userId = imageData["user_id"] as? Int, let imagePrice = imageData["price"] as? Double, let userId = imageData["user_id"] as? Int{
-                if let imageData = Data(base64Encoded: imageDataString), let image = UIImage(data: imageData) {
-                return (userId, image, imagePrice, imageCaption)
-                    
-                }
-                else{
-                    throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
-                }
+            if let result = jsonResponse["result"] as? [String: Any]{
+               if let imageData = result["image_data"] as? [String: Any],
+                  let imageDataString = imageData["image_data"] as? String, let imageCaption = imageData["caption"] as? String, let userId = imageData["user_id"] as? Int, let imagePrice = imageData["price"] as? Double, let userId = imageData["user_id"] as? Int{
+                   if let imageData = Data(base64Encoded: imageDataString), let image = UIImage(data: imageData) {
+                       return (userId, image, imagePrice, imageCaption)
+                       
+                   }
+                   else{
+                       return (-1, createBlankImage()!, -1, "Unable to Load")
+                       throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
+                   }
+               } else{
+                   return (-1, createBlankImage()!, -1, "Unable to Load")
+
+                   throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
+               }
             }
             else{
+                return (-1, createBlankImage()!, -1, "Unable to Load")
+
                 throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
             }
         } else {
+            return (-1, createBlankImage()!, -1, "Unable to Load")
+
             throw NSError(domain: "ImageConversionError", code: 200, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image data."])
         }
     }

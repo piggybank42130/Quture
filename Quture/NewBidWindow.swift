@@ -14,8 +14,8 @@ struct NewBidWindow: View {
 
     @State private var bidAmount: String = ""
     
-    @State private var sellerPrice: Double = 1000.00
-    @State private var customerPrice: Double = -1.0
+    @State private var sellerPrice: Double = -2.0
+    @State private var customerPrice: Double = -2.0
     @State private var isCustomerPriceActive: Bool = false
     @State private var showTesterAlert: Bool = false
     @State private var message: String = ""
@@ -53,7 +53,7 @@ struct NewBidWindow: View {
             HStack {
                 // "Buy Now" box
                 VStack {
-                    Text("\(sellerPrice, specifier: "%.2f")")
+                    Text(sellerPrice == -1 ? "Not for sale" : "\(sellerPrice, specifier: "%.2f")")
                         .bold()
                         .foregroundColor(isCustomerPriceActive ? .black : .white)
                     Text("Buy Now")
@@ -115,26 +115,46 @@ struct NewBidWindow: View {
                 .padding(.horizontal, 15)
             }
 
-            // Confirmation button
-            Button(action: {
-                print("pushed")
-                updatePrice()
-            }) {
-                Text("Confirm")
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                    .padding(.vertical, 10)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.black)
-                    .cornerRadius(10)
+            if sellerPrice > -0.9 || sellerPrice < -2.1 {
+                // Confirmation button
+                Button(action: {
+                    print("pushed")
+                    updatePrice()
+                }) {
+                    Text("Confirm")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.black)
+                        .cornerRadius(10)
+                }
+                .disabled(sellerPrice == -2.0)
+                .padding(.horizontal, 15)
             }
-            .padding(.horizontal, 15)
         }
         .padding(.bottom, 20)
 //        .frame(maxHeight: 300)
         .background(Color.white)
         .cornerRadius(20)
         .shadow(radius: 10)
+        .overlay(
+                        Group {
+                            if sellerPrice == -2.0 {
+                                ZStack {
+                                    // Semi-transparent layer
+                                    (colorScheme == .dark ? Color.black : Color.white)
+                                        .opacity(0.5)
+                                        .edgesIgnoringSafeArea(.all)
+                                    
+                                    // Loading indicator
+                                    ProgressView("")
+                                        .scaleEffect(1.5, anchor: .center)
+                                        .progressViewStyle(CircularProgressViewStyle(tint: colorScheme == .dark ? .white : .black))
+                                }
+                            }
+                        }
+                    )
         .transition(.scale)
         .alert("Invalid Bid", isPresented: $showAlert) {
                 Button("OK", role: .cancel) { }

@@ -11,8 +11,9 @@ struct LoginSettingsView: View {
     @State private var isNavigationActive = false
     @State private var showingImageDetailView = true
     @State private var profileImage: UIImage? = nil
+    @State private var username: String = ""
     @State private var followerCount: Int = 0
-    
+
     @State private var isLoading = true
     
     @Binding var isUserLoggedIn: Bool // Now it's a binding
@@ -25,6 +26,7 @@ struct LoginSettingsView: View {
         NavigationView {
             GeometryReader { geometry in
                 VStack {
+                    
                     
                     Circle()
                         .frame(width: geometry.size.width * 0.3, height: geometry.size.width * 0.3)
@@ -45,7 +47,7 @@ struct LoginSettingsView: View {
                         .frame(height: geometry.size.height * 0.2)
                     
                     
-                    Text("Your Profile")
+                    Text(username == "" ? "Your Profile" : "\(username)'s Profile")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .center)
                     
@@ -139,8 +141,11 @@ struct LoginSettingsView: View {
                                 let userId = LocalStorage().getUserId()
                                 // Directly assign the result without using parentheses
                                 let imageIds = try await ServerCommands().getUserImageIds(userId: userId).prefix(rectangleContents.count)
+                                let userName = try await ServerCommands().getUsername(userId: userId)
+                                username = userName
                                 self.rectangleContents = []
                                 for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
+                                    print(imageId)
                                     
                                     let (userId, image, price, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                                     let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)

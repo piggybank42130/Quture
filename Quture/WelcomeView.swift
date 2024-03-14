@@ -13,7 +13,7 @@ struct WelcomeView: View {
             VStack(spacing: 40) {
                 Spacer()
                 
-                Text("Welcome to the QUTURE, USER!")
+                Text("Welcome to the QUTURE!")
                     .font(.headline)
                     .foregroundColor(.primary) // Use .primary for automatic light/dark mode adjustment
                 

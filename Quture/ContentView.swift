@@ -55,17 +55,19 @@ struct ContentView: View {
     
      func handleLoginSuccess() {
          activeScreen = .home
+         self.showingPopupOverlay = true
      }
      
     func handleImageConfirmation(image: UIImage, caption: String, tags: Set<Tag>, price: String) {
         Task {
             do {
+                isLoading = true
                 let newImageId = try await ServerCommands().postImage(userId: LocalStorage().getUserId(), image: image, caption: caption, price: price)
+                try await ServerCommands().setTagsToImage(imageId: newImageId, tags: tags)
                 print("handleImageConfirmationc called. New image id: \(newImageId)")
                 DispatchQueue.main.async{
                     rectangleContents = [RectangleContent(userId: LocalStorage().getUserId(), imageId: newImageId, image: image, caption: caption, tags: Array(tags))]
                 }
-                try await ServerCommands().setTagsToImage(imageId: newImageId, tags: tags)
             }
             catch {
                 print(error)
@@ -195,8 +197,10 @@ struct ContentView: View {
                 
                 // Delay showing the popup slightly after the splash screen transition and ContentView is fully active.
                 // Consider delaying this further if it interferes with other animations or transitions.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.showingPopupOverlay = true // Ensure you're using the correct variable here
+                if (isUserLoggedIn) {
+                    DispatchQueue.main.asyncAfter(deadline: .now()) {
+                        self.showingPopupOverlay = true // Ensure you're using the correct variable here
+                    }
                 }
             }
         }
@@ -308,7 +312,32 @@ struct ContentView: View {
         )
     }
     
-    
+    func loadContent() {
+        Task {
+            do {
+                // Directly assign the result without using parentheses
+                let imageIds = try await ServerCommands().generateUserFeed(userId: LocalStorage().getUserId(), limit: 20)
+                self.rectangleContents = []
+                for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
+                    print(isLoading)
+                    if !isLoading{
+                        break
+                    }
+                    let (userId, image, price, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                    let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
+                    DispatchQueue.main.async {
+                        let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
+                        rectangleContents.append(newRectangleContent)
+                    }
+                }
+                
+                self.isLoading = false
+            } catch {
+                print(error)
+                self.isLoading = false
+            }
+        }
+    }
     
     // MARK: - Content Section
     var contentSection: some View {
@@ -332,27 +361,14 @@ struct ContentView: View {
                 }
             }
         }
+        .refreshable {
+            // Your loading logic here
+            isLoading = true
+            loadContent()
+        }
         .onAppear {
-            Task {
-                do {
-                    // Directly assign the result without using parentheses
-                    let imageIds = try await ServerCommands().generateUserFeed(userId: LocalStorage().getUserId(), limit: 20)
-                    self.rectangleContents = []
-                    for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
-                        let (userId, image, price, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
-                        let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
-                        DispatchQueue.main.async {
-                            let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
-                            rectangleContents.append(newRectangleContent)
-                        }
-                    }
-                    
-                    self.isLoading = false
-                
-                } catch {
-                    print(error)
-                    self.isLoading = false
-                }
+            if isLoading{
+                loadContent()
             }
         }
     }
