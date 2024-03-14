@@ -74,7 +74,6 @@ struct NewBidWindow: View {
                             let (_, _, imagePrice, _) = try await ServerCommands().retrieveImage(imageId: imageId)
                             sellerPrice = imagePrice
                         } catch {
-                            print(error)
                         }
                     }
                 }
@@ -120,7 +119,6 @@ struct NewBidWindow: View {
             if sellerPrice > -0.9 || sellerPrice < -2.1 {
                 // Confirmation button
                 Button(action: {
-                    print("pushed")
                     updatePrice()
                 }) {
                     Text("Confirm")
@@ -216,7 +214,6 @@ struct NewBidWindow: View {
         bidAmount = "" // Clear input field after updating
         showTesterAlert = true // Indicate successful bid preparation
         let notificationMessage = "New bid of $\(customerPrice) placed."
-        print(notificationMessage)
     }
 }
 
@@ -266,15 +263,12 @@ struct CustomAlertView: View {
                         placeBid()
                     }
                     if !message.isEmpty && !phoneNumber.isEmpty {
-                        print("Message: \(message), Phone: \(phoneNumber)")
                         let completeMessage = "\(message)\n\nMy phone number is \(phoneNumber)"
                         Task {
                             do {
                                 let newBidId = try await ServerCommands().addBid(sellerId: sellerId, buyerId: LocalStorage().getUserId(), imageId: imageId, messageText: completeMessage, successful: false, isSellerResponse: false)
-                                print("Bid placed successfully with ID: \(newBidId)")
                                 showSuccessAlert = true // Show the success alert after placing the bid
                             } catch {
-                                print("Error placing bid: \(error)")
                             }
                         }
                     }
@@ -323,10 +317,8 @@ struct CustomAlertView: View {
         Task {
             do {
                 let newBidId = try await ServerCommands().addBid(sellerId: sellerId, buyerId: LocalStorage().getUserId(), imageId: imageId, messageText: completeMessage, successful: false, isSellerResponse: false)
-                print("Bid placed successfully with ID: \(newBidId)")
                 showSuccessAlert = true
             } catch {
-                print("Error placing bid: \(error)")
             }
         }
     }

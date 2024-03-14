@@ -211,7 +211,6 @@ struct BidNotification: View, Identifiable {
                                 }
                             }
                             catch{
-                                print(error)
                             }
                         }
                     }
@@ -286,7 +285,6 @@ struct NotificationView: View {
                         let (bidIds, buyerIds, sellerIds, imageIds, messageTexts, seenBySellers, successfulBids, isSellerResponses) = try await (n == 0 ? ServerCommands().getBuyerBidInfo(buyerId: LocalStorage().getUserId()) : ServerCommands().getSellerBidInfo(sellerId: LocalStorage().getUserId()))
                         
                         for index in 0..<bidIds.count {
-                            print(n, index)
                             let bidId = bidIds[index]
                             let bidBuyerId = buyerIds[index]
                             let bidSellerId = sellerIds[index]
@@ -307,12 +305,10 @@ struct NotificationView: View {
                                     Task{
                                         do {
                                             try await ServerCommands().markBidSuccessful(bidId: bidId)
-                                            print("seller accepted, response sent to buyer")
                                             try await ServerCommands().addBid(sellerId: bidSellerId, buyerId: bidBuyerId, imageId: bidImageId, messageText: "Your purchase offer has been accepted!", successful: true, isSellerResponse: true)
                                             //                                          bidNotifications.append(newBuyerNotif)
                                         }
                                         catch {
-                                            print(error)
                                         }
                                     }
                                 }
@@ -326,12 +322,10 @@ struct NotificationView: View {
                                     Task{
                                         do {
                                             try await ServerCommands().markBidSuccessful(bidId: bidId)
-                                            print("seller accepted, response sent to buyer")
                                             try await ServerCommands().addBid(sellerId: bidSellerId, buyerId: bidBuyerId, imageId: bidImageId, messageText: "Your purchase offer has been rejected, sorry", successful: false, isSellerResponse: true)
                                             //                                          bidNotifications.append(newBuyerNotif)
                                         }
                                         catch {
-                                            print(error)
                                         }
                                     }
                                 }
@@ -344,14 +338,12 @@ struct NotificationView: View {
                                             try await ServerCommands().deleteBid(bidId: bidId)
                                         }
                                         catch {
-                                            print(error)
                                         }
                                     }
                                 
                             } , showImageDisplayView:
                                 ImageDisplayView(posterId: bidSellerId, imageId: bidImageId, image: bidImage, caption: bidImageCaption, tags: bidImageTags)
                             )
-                            print(newBid)
                             bidNotifications.append(newBid as! BidNotification)
                             if (!bidSeenBySeller) {
                                 try await ServerCommands().markBidAsSeen(bidId: bidId, sellerId: LocalStorage().getUserId())
@@ -360,7 +352,6 @@ struct NotificationView: View {
                     }
                 }
                 catch {
-                    print(error)
                 }
             }
         }

@@ -19,9 +19,7 @@ struct LocalStorage {
             // Write the string to a file
             do {
                 try numberString.write(to: fileURL, atomically: true, encoding: .utf8)
-                print("Number saved successfully")
             } catch {
-                print("Failed to save number: \(error)")
             }
         }
     }
@@ -36,7 +34,6 @@ struct LocalStorage {
                 let numberString = try String(contentsOf: fileURL, encoding: .utf8)
                 return Int(numberString) ?? -1
             } catch {
-                print("Failed to read number: \(error)")
                 return -1
             }
         }
