@@ -70,7 +70,6 @@ struct ImageDisplayView: View {
                                         
                                         // Perform the check after the task has completed
                                         if gesture.translation.height < 0 {
-                                            print(hasPlacedBid, " SUSSY BAKA")
                                             if hasPlacedBid {
                                                 // Main thread operation, use DispatchQueue if needed
                                                 DispatchQueue.main.async {
@@ -86,7 +85,6 @@ struct ImageDisplayView: View {
                                             }
                                         }
                                     } catch {
-                                        print(error)
                                     }
                                 }
 
@@ -133,7 +131,6 @@ struct ImageDisplayView: View {
                                     heartCount += (isHeartTapped ? 1 : -1)
                                 }
                                 catch {
-                                    print(error)
                                 }
                             }
                         }) {
@@ -151,7 +148,6 @@ struct ImageDisplayView: View {
                     VStack(spacing: 2) {
                         Button(action: {
                             // Bookmark button logic
-                            print("Bookmark tapped")
                             Task {
                                 do {
                                     try await ServerCommands().toggleSaveOnImage(userId: LocalStorage().getUserId(), imageId: self.imageId)
@@ -159,7 +155,6 @@ struct ImageDisplayView: View {
                                         isSaveTapped.toggle()
                                     }
                                 } catch {
-                                    print(error)
                                 }
                             }
                         }) {
@@ -247,7 +242,6 @@ struct ImageDisplayView: View {
                         self.isFollowing = UserDefaults.standard.bool(forKey: "isFollowing_\(posterId)")
                     }
                 } catch {
-                    print(error)
                 }
             }
         }
@@ -283,21 +277,17 @@ struct ImageDisplayView: View {
 
             Button(action: {
                 // Action for "Follow" button
-                print("Follow tapped")
                 Task{
                     do{
                         let userId = LocalStorage().getUserId()
                         try await ServerCommands().toggleFollow(followerId: userId, followedId: posterId)
-                        print("Before toggling, isFollowing: \(isFollowing)")
                         DispatchQueue.main.async {
                             self.isFollowing.toggle()
                             UserDefaults.standard.set(self.isFollowing, forKey: "isFollowing_\(posterId)")
-                            print("After toggling, isFollowing: \(isFollowing)")
                         }
                         
                     }
                     catch{
-                        print(error)
                     }
                 }
             }) {

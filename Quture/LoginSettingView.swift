@@ -60,7 +60,6 @@ struct LoginSettingsView: View {
                                     DispatchQueue.main.async {
                                         self.isUserLoggedIn = false
                                     }
-                                    print("Logged out")
                                 }),
                                 secondaryButton: .cancel()
                             )
@@ -73,13 +72,11 @@ struct LoginSettingsView: View {
                             Task {
                                 do {
                                     let userId = LocalStorage().getUserId()
-                                    print(userId)
                                     let fetchedProfileImage = try await ServerCommands().retrieveProfilePicture(userId: userId)
                                     DispatchQueue.main.async { // Update UI on the main thread
                                         self.profileImage = fetchedProfileImage // Assign the fetched image to the profileImage state variable
                                     }
                                     let fetchedFollowerCount = try await ServerCommands().getFollowersCount(userId: userId)
-                                    print("follower count\(fetchedFollowerCount)")
                                     DispatchQueue.main.async { // Ensure UI operations are on the main thread
                                         self.followerCount = fetchedFollowerCount
                                         
@@ -101,14 +98,13 @@ struct LoginSettingsView: View {
                                     }
                                 }
                                 catch {
-                                    print(error)
+                                    
                                 }
                             }
                         }
                     
                         .navigationBarItems(trailing: Button(action: {
                             // Handle gear icon action
-                            print("Gear icon tapped")
                         }) {
                             Image(systemName: "gearshape")
                                 .font(.system(size: 24))
@@ -144,9 +140,7 @@ struct LoginSettingsView: View {
                                 let userName = try await ServerCommands().getUsername(userId: userId)
                                 username = userName
                                 self.rectangleContents = []
-                                for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
-                                    print(imageId)
-                                    
+                                for (index, imageId) in imageIds.enumerated() where index < imageIds.count {                                    
                                     let (userId, image, price, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                                     let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
                                     DispatchQueue.main.async {
@@ -158,7 +152,7 @@ struct LoginSettingsView: View {
                                 self.isLoading = false
                                 
                             } catch {
-                                print(error)
+                                
                                 self.isLoading = false
                             }
                         }

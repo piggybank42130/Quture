@@ -64,13 +64,11 @@ struct ContentView: View {
                 isLoading = true
                 let newImageId = try await ServerCommands().postImage(userId: LocalStorage().getUserId(), image: image, caption: caption, price: price)
                 try await ServerCommands().setTagsToImage(imageId: newImageId, tags: tags)
-                print("handleImageConfirmationc called. New image id: \(newImageId)")
                 DispatchQueue.main.async{
                     rectangleContents = [RectangleContent(userId: LocalStorage().getUserId(), imageId: newImageId, image: image, caption: caption, tags: Array(tags))]
                 }
             }
             catch {
-                print(error)
             }
         }
         
@@ -136,7 +134,6 @@ struct ContentView: View {
                                 // Here, combine topTags and fashionTags into a single Set<Tag> as they're both sets of Tag objects.
                                 let combinedTags = topTags.union(fashionTags)
                                 // Call handleImageConfirmation with all the parameters including the combined tags
-                                print("poopy")
                                 self.handleImageConfirmation(image: image, caption: caption, tags: combinedTags, price: price)
                             }), isActive: $showingDetailScreen) {
                                 EmptyView()
@@ -324,7 +321,6 @@ struct ContentView: View {
                 let imageIds = try await ServerCommands().generateUserFeed(userId: LocalStorage().getUserId(), limit: 20)
                 self.rectangleContents = []
                 for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
-                    print(isLoading)
                     if !isLoading{
                         break
                     }
@@ -338,7 +334,6 @@ struct ContentView: View {
                 
                 self.isLoading = false
             } catch {
-                print(error)
                 self.isLoading = false
             }
         }
@@ -404,9 +399,7 @@ struct ContentView: View {
                                 do {
                                     let count = try await ServerCommands().countUnseenBidMessages(userId: LocalStorage().getUserId())
                                     unseenCount = count
-                                    print("Unseen total: \(unseenCount)")
                                 } catch {
-                                    print(error)
                                 }
                             }
                         }
@@ -415,9 +408,7 @@ struct ContentView: View {
                                 do {
                                     let count = try await ServerCommands().countUnseenBidMessages(userId: LocalStorage().getUserId())
                                     unseenCount = count
-                                    print("Unseen total: \(unseenCount)")
                                 } catch {
-                                    print(error)
                                 }
                             }
                         }
@@ -426,9 +417,7 @@ struct ContentView: View {
                                 do {
                                     let count = try await ServerCommands().countUnseenBidMessages(userId: LocalStorage().getUserId())
                                     unseenCount = count
-                                    print("Unseen total: \(unseenCount)")
                                 } catch {
-                                    print(error)
                                 }
                             }
                         }
@@ -437,9 +426,7 @@ struct ContentView: View {
                                 do {
                                     let count = try await ServerCommands().countUnseenBidMessages(userId: LocalStorage().getUserId())
                                     unseenCount = count
-                                    print("Unseen total: \(unseenCount)")
                                 } catch {
-                                    print(error)
                                 }
                             }
                         }
