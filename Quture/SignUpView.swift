@@ -23,6 +23,12 @@ struct SignUpView: View {
         return predicate.evaluate(with: email)
     }
 
+    func isValidPassword(_ password: String) -> Bool {
+           let passwordPattern = "(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}"
+           let predicate = NSPredicate(format: "SELF MATCHES %@", passwordPattern)
+           return predicate.evaluate(with: password)
+       }
+    
     func validateFormData() {
         if signUpUsername.isEmpty || signUpEmail.isEmpty || signUpPassword.isEmpty || confirmPassword.isEmpty {
             alertMessage = "Please fill in all fields."
@@ -41,6 +47,12 @@ struct SignUpView: View {
             showAlert = true
             return
         }
+        
+        if !isValidPassword(signUpPassword) {
+                    alertMessage = "Password must be at least 8 characters, include a special character, a number, and an uppercase letter."
+                    showAlert = true
+                    return
+                }
 
         // If all validations pass
         createAccount()
@@ -107,7 +119,7 @@ struct SignUpView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 TextField("Email", text: $signUpEmail)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                SecureField("Password", text: $signUpPassword)
+                SecureField("Password (8+ chars, 1 special, 1 uppercase)", text: $signUpPassword)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 SecureField("Confirm Password", text: $confirmPassword)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
