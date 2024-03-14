@@ -82,7 +82,7 @@ struct SearchView: View {
     }
     private func searchDebounced(text: String) {
             searchDebounceTimer?.invalidate()
-        searchDebounceTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+        searchDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
                 Task {
                     await searchForTags()
                 }

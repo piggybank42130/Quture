@@ -3,7 +3,15 @@ import Foundation
 class ServerCommunicator: ObservableObject {
     let serverURL = "http://137.184.116.12:5000"
     static var endpointIndex = 0 // To keep track of the current endpoint index
-
+    
+    private var session: URLSession {
+            let config = URLSessionConfiguration.default
+            config.timeoutIntervalForRequest = 15 // seconds
+            config.timeoutIntervalForResource = 15 // seconds
+            config.httpAdditionalHeaders = ["Accept-Encoding": "gzip, deflate"] // Select one of these efficient lossless compression algorithms
+            return URLSession(configuration: config)
+        }
+    
     // Function to request a method execution on the server with arbitrary parameters
     func sendMethod(parameters: [String: Any]) async throws -> Data {
         // Construct the endpoint URL by including the endpointIndex in the path
@@ -23,15 +31,17 @@ class ServerCommunicator: ObservableObject {
             throw error // Propagate serialization error
         }
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await session.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw URLError(.badServerResponse)
         }
 
         // Cycle through the endpoints for subsequent requests
-        ServerCommunicator.endpointIndex = (ServerCommunicator.endpointIndex + 1) % 128 // Assuming you have 32 endpoints, cycle back to 0 after 32
+        ServerCommunicator.endpointIndex = (ServerCommunicator.endpointIndex + 1) % 128
 
         return data
     }
+    
+    
 }
