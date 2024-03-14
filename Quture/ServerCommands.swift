@@ -111,7 +111,9 @@ class ServerCommands: ObservableObject {
             "method_name": "add_bid",
             "params": ["seller_id": sellerId, "buyer_id": buyerId, "image_id": imageId, "message_text": messageText, "is_seller_response": (isSellerResponse ? "True" : "False")]
         ]
-        
+        print(parameters)
+        print("sadfjbaskfubasiubfiasudbfaiusbfiu")
+
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
            let result = jsonResponse["result"] as? [String: Any],
@@ -132,6 +134,7 @@ class ServerCommands: ObservableObject {
            let username = result["username"] as? String {
             return (username)
         } else {
+            return ""
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
     }
@@ -355,16 +358,17 @@ class ServerCommands: ObservableObject {
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
            let result = jsonResponse["result"] as? [String: Any],
            let bidIds = result["bid_ids"] as? [Int] {
+            print(bidIds)
             return bidIds
         } else {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
     }
 
-    func getBuyerBidIds(sellerId: Int) async throws -> [Int] {
+    func getBuyerBidIds(buyerId: Int) async throws -> [Int] {
         let parameters: [String: Any] = [
             "method_name": "get_buyer_bid_ids",
-            "params": ["seller_id": sellerId]
+            "params": ["buyer_id": buyerId]
         ]
 
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
@@ -375,6 +379,26 @@ class ServerCommands: ObservableObject {
         } else {
             throw NSError(domain: "CustomError", code: 100, userInfo: [NSLocalizedDescriptionKey: "Unexpected JSON format."])
         }
+    }
+    
+    func getBuyerBidInfo(buyerId: Int) async throws -> ([Int], [Int], [Int], [Int], [String], [Bool], [Bool]) {
+        let bidIds = try await getBuyerBidIds(buyerId: buyerId)
+        var buyerIds = [] as [Int]
+        var sellerIds = [] as [Int]
+        var imageIds = [] as [Int]
+        var messageTexts = [] as [String]
+        var seenBySellers = [] as [Bool]
+        var successfulBids = [] as [Bool]
+        for bidId in bidIds{
+            let (newBuyerId, newSellerId, newImageId, newMessageText, newSeenBySeller, newIsSuccessful) = try await ServerCommands().getBidInfo(bidId: bidId)
+            buyerIds.append(newBuyerId)
+            sellerIds.append(newSellerId)
+            imageIds.append(newImageId)
+            messageTexts.append(newMessageText)
+            seenBySellers.append(newSeenBySeller)
+            successfulBids.append(newIsSuccessful)
+        }
+        return (bidIds, buyerIds, sellerIds, imageIds, messageTexts, seenBySellers, successfulBids)
     }
     
     func getSellerBidInfo(sellerId: Int) async throws -> ([Int], [Int], [Int], [Int], [String], [Bool], [Bool]) {
