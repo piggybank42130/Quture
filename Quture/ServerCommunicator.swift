@@ -39,7 +39,7 @@ class ServerCommunicator: ObservableObject {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 
         do {
-            print(modifiedParameters)
+//            print(modifiedParameters)
             request.httpBody = try JSONSerialization.data(withJSONObject: modifiedParameters, options: [])
         } catch {
             throw error // Propagate serialization error

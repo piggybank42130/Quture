@@ -214,8 +214,13 @@ struct ContentView: View {
     
     
     func loadImage() {
-        guard let _ = inputImage else { return }
-        showingDetailScreen = true
+//        guard let _ = inputImage else { return }
+//        showingDetailScreen = true
+        if inputImage != nil {
+            showingDetailScreen = true
+        } else {
+            showingDetailScreen = false
+        }
     }
     
     
