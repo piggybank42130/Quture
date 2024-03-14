@@ -56,8 +56,10 @@ struct NewBidWindow: View {
                     Text(sellerPrice == -1 ? "Not for sale" : "\(sellerPrice, specifier: "%.2f")")
                         .bold()
                         .foregroundColor(isCustomerPriceActive ? .black : .white)
-                    Text("Buy Now")
-                        .foregroundColor(isCustomerPriceActive ? .black : .white)
+                    if sellerPrice != -1 {
+                        Text("Buy Now")
+                            .foregroundColor(isCustomerPriceActive ? .black : .white)
+                    }
                 }
                 .padding()
                 .frame(maxWidth: .infinity, minHeight: 50, maxHeight: 50) // Explicit height set here
@@ -79,7 +81,7 @@ struct NewBidWindow: View {
 
                 // "Highest Bet" box
                 VStack {
-                    Text("Make a Bid")
+                    Text(sellerPrice == -1 ? "Not for sale" : "Make a Bid")
                         .foregroundColor(isCustomerPriceActive ? .white : .black)
                 }
                 .padding()
@@ -93,7 +95,7 @@ struct NewBidWindow: View {
             .padding(.horizontal, 15)
 
             // Interactive text box for entering a price (only shown for Highest Bet)
-            if isCustomerPriceActive {
+            if isCustomerPriceActive && sellerPrice != -1  {
                 ZStack(alignment: .leading) {
                     TextField("Enter your bid here", text: $bidAmount)
                         .padding(.leading, 20)

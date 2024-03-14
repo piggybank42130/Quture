@@ -201,9 +201,12 @@ class ServerCommands: ObservableObject {
         let parameters: [String: Any] = ["method_name": "retrieve_image", "params": ["image_id": imageId]]
         let data = try await serverCommunicator.sendMethod(parameters: parameters)
         if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
-            if let result = jsonResponse["result"] as? [String: Any]{
-               if let imageData = result["image_data"] as? [String: Any],
-                  let imageDataString = imageData["image_data"] as? String, let imageCaption = imageData["caption"] as? String, let userId = imageData["user_id"] as? Int, let imagePrice = imageData["price"] as? Double, let userId = imageData["user_id"] as? Int{
+            if let result = jsonResponse["result"] as? [String: Any], let imageData = result["image_data"] as? [String: Any]{
+                  if let imageDataString = imageData["image_data"] as? String, let imageCaption = imageData["caption"] as? String, let userId = imageData["user_id"] as? Int, let userId = imageData["user_id"] as? Int{
+                      var imagePrice = -1.0
+                      if let tempPrice = imageData["price"] as? Double {
+                          imagePrice = tempPrice
+                      }
                    if let imageData = Data(base64Encoded: imageDataString), let image = UIImage(data: imageData) {
                        return (userId, image, imagePrice, imageCaption)
                        
