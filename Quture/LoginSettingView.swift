@@ -20,7 +20,31 @@ struct LoginSettingsView: View {
     
     @Environment(\.colorScheme) var colorScheme // light and dark mode colors
     
-    
+    func loadContent() {
+        Task {
+            do {
+                
+                let userId = LocalStorage().getUserId()
+                // Directly assign the result without using parentheses
+                let imageIds = try await ServerCommands().getUserImageIds(userId: userId).prefix(rectangleContents.count)
+                let userName = try await ServerCommands().getUsername(userId: userId)
+                username = userName
+                self.rectangleContents = []
+                for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
+                    let (userId, image, price, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
+                    let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
+                    DispatchQueue.main.async {
+                        let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
+                        rectangleContents.append(newRectangleContent)
+                    }
+                }
+                
+                self.isLoading = false
+            } catch {
+                self.isLoading = false
+            }
+        }
+    }
     
     var body: some View {
         NavigationView {
@@ -68,41 +92,6 @@ struct LoginSettingsView: View {
                         .font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .center)
                     
-                        .onAppear {
-                            Task {
-                                do {
-                                    let userId = LocalStorage().getUserId()
-                                    let fetchedProfileImage = try await ServerCommands().retrieveProfilePicture(userId: userId)
-                                    DispatchQueue.main.async { // Update UI on the main thread
-                                        self.profileImage = fetchedProfileImage // Assign the fetched image to the profileImage state variable
-                                    }
-                                    let fetchedFollowerCount = try await ServerCommands().getFollowersCount(userId: userId)
-                                    DispatchQueue.main.async { // Ensure UI operations are on the main thread
-                                        self.followerCount = fetchedFollowerCount
-                                        
-                                    }
-                                    isLoadingImages = true
-                                    let (imageIds, images, captions) = try await ServerCommands().getImagesForUser(userId: userId)
-                                    DispatchQueue.main.async { // Ensure UI operations are on the main thread
-                                        
-                                        for (index, imageId) in imageIds.enumerated() where index < self.rectangleContents.count {
-                                            self.rectangleContents[index].imageId = imageId
-                                        }
-                                        for (index, image) in images.enumerated() where index < self.rectangleContents.count {
-                                            self.rectangleContents[index].image = image
-                                        }
-                                        for (index, caption) in captions.enumerated() where index < self.rectangleContents.count {
-                                            self.rectangleContents[index].caption = caption
-                                        }
-                                        isLoadingImages = false
-                                    }
-                                }
-                                catch {
-                                    
-                                }
-                            }
-                        }
-                    
                         .navigationBarItems(trailing: Button(action: {
                             // Handle gear icon action
                         }) {
@@ -131,34 +120,18 @@ struct LoginSettingsView: View {
                             
                         }
                     }
+                    .refreshable {
+                        // Your loading logic here
+                        self.isLoading = true
+                        self.loadContent()
+                    }
                     .onAppear {
-                        Task {
-                            do {
-                                let userId = LocalStorage().getUserId()
-                                // Directly assign the result without using parentheses
-                                let imageIds = try await ServerCommands().getUserImageIds(userId: userId).prefix(rectangleContents.count)
-                                let userName = try await ServerCommands().getUsername(userId: userId)
-                                username = userName
-                                self.rectangleContents = []
-                                for (index, imageId) in imageIds.enumerated() where index < imageIds.count {                                    
-                                    let (userId, image, price, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
-                                    let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
-                                    DispatchQueue.main.async {
-                                        let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
-                                        rectangleContents.append(newRectangleContent)
-                                    }
-                                }
-                                
-                                self.isLoading = false
-                                
-                            } catch {
-                                
-                                self.isLoading = false
-                            }
+                        if self.isLoading{
+                            self.loadContent()
                         }
                     }
                     Spacer()
-
+                    
                 }
             }
         }

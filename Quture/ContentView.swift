@@ -32,7 +32,6 @@ struct ContentView: View {
     @State private var selectedRectangleIndex: Int? = nil
     @State private var showingVisualStudioView = false
     @State private var fetchedImages: [UIImage] = []
-    @State private var isLoadingImages = true
     @State private var isActive = false // For the splash screen
     @State private var showingSearchView = false
     @State var isUserLoggedIn = !LocalStorage().needToLogin() // For the login flow
@@ -61,7 +60,7 @@ struct ContentView: View {
     func handleImageConfirmation(image: UIImage, caption: String, tags: Set<Tag>, price: String) {
         Task {
             do {
-                isLoading = true
+                self.isLoading = true
                 let newImageId = try await ServerCommands().postImage(userId: LocalStorage().getUserId(), image: image, caption: caption, price: price)
                 try await ServerCommands().setTagsToImage(imageId: newImageId, tags: tags)
                 DispatchQueue.main.async{
@@ -321,7 +320,7 @@ struct ContentView: View {
                 let imageIds = try await ServerCommands().generateUserFeed(userId: LocalStorage().getUserId(), limit: 20)
                 self.rectangleContents = []
                 for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
-                    if !isLoading{
+                    if !self.isLoading{
                         break
                     }
                     let (userId, image, price, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
@@ -332,9 +331,9 @@ struct ContentView: View {
                     }
                 }
                 
-                self.isLoading = false
+                self.self.isLoading = false
             } catch {
-                self.isLoading = false
+                self.self.isLoading = false
             }
         }
     }
@@ -343,7 +342,7 @@ struct ContentView: View {
     var contentSection: some View {
         Group {
             VStack{
-                if isLoading {
+                if self.isLoading {
                     ProgressView("Loading images...") // Make sure this is not inside another view unintentionally
                 } else {
                     DynamicImageGridView(contents: rectangleContents, isCaptionShown: $showingImageDetailView, onImageTap: { content in
@@ -363,12 +362,12 @@ struct ContentView: View {
         }
         .refreshable {
             // Your loading logic here
-            isLoading = true
-            loadContent()
+            self.isLoading = true
+            self.loadContent()
         }
         .onAppear {
-            if isLoading{
-                loadContent()
+            if self.isLoading{
+                self.loadContent()
             }
         }
     }
