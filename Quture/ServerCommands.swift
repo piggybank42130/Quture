@@ -503,8 +503,9 @@ class ServerCommands: ObservableObject {
     }
     
     func getFollowersCount(userId: Int) async throws -> Int {
+        print("dasFIDSIFBHSADIFBDSABFAIDSBFDSIBFID")
             let parameters: [String: Any] = [
-                "methodname": "get_followers_count",
+                "method_name": "get_followers_count",
                 "params": ["user_id": userId]
             ]
 
