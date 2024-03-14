@@ -249,10 +249,12 @@ struct ImageDisplayView: View {
                     }
                 }
             }) {
-                Text(isFollowing ? "Unfollow" : "Follow") // Change button text based on follow state
-                .font(.headline)
-                .bold()
-                .foregroundColor(Color.contrastColor(for: colorScheme))
+                if posterId != LocalStorage().getUserId(){
+                    Text(isFollowing ? "Unfollow" : "Follow") // Change button text based on follow state
+                        .font(.headline)
+                        .bold()
+                        .foregroundColor(Color.contrastColor(for: colorScheme))
+                }
             }
             .padding(.trailing, 20) // Add padding to move the text further from the right edge
         }
