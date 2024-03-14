@@ -24,10 +24,12 @@ struct SignUpView: View {
     }
 
     func isValidPassword(_ password: String) -> Bool {
-           let passwordPattern = "(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}"
-           let predicate = NSPredicate(format: "SELF MATCHES %@", passwordPattern)
-           return predicate.evaluate(with: password)
-       }
+        // Modified to remove the number requirement
+        let passwordPattern = "(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[a-z]).{8,}"
+        let predicate = NSPredicate(format: "SELF MATCHES %@", passwordPattern)
+        return predicate.evaluate(with: password)
+    }
+
     
     func validateFormData() {
         if signUpUsername.isEmpty || signUpEmail.isEmpty || signUpPassword.isEmpty || confirmPassword.isEmpty {
@@ -49,7 +51,7 @@ struct SignUpView: View {
         }
         
         if !isValidPassword(signUpPassword) {
-                    alertMessage = "Password must be at least 8 characters, include a special character, a number, and an uppercase letter."
+                    alertMessage = "Password must be at least 8 characters, include a special character, and an uppercase letter."
                     showAlert = true
                     return
                 }
