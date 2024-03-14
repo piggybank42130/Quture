@@ -9,6 +9,8 @@ struct NewBidWindow: View {
     @Binding var isVisible: Bool
     @State var sellerId: Int
     @State var imageId: Int
+    var onBidPlaced: (() -> Void)?
+
 
     @State private var bidAmount: String = ""
     
@@ -139,10 +141,19 @@ struct NewBidWindow: View {
             } message: {
                 Text(alertMessage)
             }
-        .sheet(isPresented: $showTesterAlert) {
-            // Now passing the missing 'price' argument
-            CustomAlertView(isVisible: $showTesterAlert, sellerId: $sellerId, imageId: $imageId, price: $priceToShowInAlert, message: $message, phoneNumber: $phoneNumber)
-        }
+            .sheet(isPresented: $showTesterAlert) {
+                CustomAlertView(
+                    isVisible: $showTesterAlert,
+                    newBidWindowVisible: $isVisible, // Pass the isVisible binding of NewBidWindow
+                    sellerId: $sellerId,
+                    imageId: $imageId,
+                    price: $priceToShowInAlert,
+                    message: $message,
+                    phoneNumber: $phoneNumber,
+                    onBidPlaced: onBidPlaced // Pass the closure to CustomAlertView
+                )
+            }
+
 
     }
 
@@ -189,48 +200,75 @@ struct NewBidWindow: View {
 
 struct CustomAlertView: View {
     @Binding var isVisible: Bool
+    @Binding var newBidWindowVisible: Bool
     @Binding var sellerId: Int
     @Binding var imageId: Int
     @Binding var price: Double
     @Binding var message: String
     @Binding var phoneNumber: String
-    @Environment(\.colorScheme) var colorScheme
+    var onBidPlaced: (() -> Void)?
+    @State private var showSuccessAlert = false
+    @State private var showAlert = false
+    @State private var alertMessage = ""
 
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         ZStack {
-            // Setting the background color based on the color scheme
             colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all)
             VStack {
                 Text("Send a Purchase Offer")
-                    .foregroundColor(Color.contrastColor(for: colorScheme)) // Ensure visibility against the white background
-                    .font(.largeTitle) // Optionally adjust the font
+                    .foregroundColor(Color.contrastColor(for: colorScheme))
+                    .font(.largeTitle)
                     .padding(12)
                 Text("Price: $\(price, specifier: "%.2f")")
-                    .foregroundColor(Color.contrastColor(for: colorScheme)) // Ensure visibility against the white background
-                    .font(.headline) // Optionally adjust the font
+                    .foregroundColor(Color.contrastColor(for: colorScheme))
+                    .font(.headline)
                 Text("Please enter your message to the seller:")
-                    .foregroundColor(Color.contrastColor(for: colorScheme)) // Adjust as needed for visibility
+                    .foregroundColor(Color.contrastColor(for: colorScheme))
                 TextEditor(text: $message)
-                    .frame(height: 120) // Adjust the height as needed, for example, three times a typical TextField height
-                    .border(Color(UIColor.separator), width: 0.5) // Add a border similar to RoundedBorderTextFieldStyle
-                    .padding(4) //
+                    .frame(height: 120)
+                    .border(Color(UIColor.separator), width: 0.5)
+                    .padding(4)
                 TextField("Phone Number", text: $phoneNumber)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.phonePad)
                 Button("Submit") {
-                    if !message.isEmpty && !phoneNumber.isEmpty{
+                    if message.isEmpty || phoneNumber.isEmpty {
+                        alertMessage = "Message and phone number cannot be empty."
+                        showAlert = true
+                    } else if !isValidPhoneNumber(phoneNumber) {
+                        alertMessage = "Please enter a valid phone number."
+                        showAlert = true
+                    } else {
+                        placeBid()
+                    }
+                    if !message.isEmpty && !phoneNumber.isEmpty {
                         print("Message: \(message), Phone: \(phoneNumber)")
-                        let message = "\(message)\n\nMy phone number is \(phoneNumber)"//Bid of $\(String(format: "%.2f", price)) placed with message: \(message) and contact: \(phoneNumber)"
-                        Task{
+                        let completeMessage = "\(message)\n\nMy phone number is \(phoneNumber)"
+                        Task {
                             do {
-                                let newBidId = try await ServerCommands().addBid(sellerId: sellerId, buyerId: LocalStorage().getUserId(), imageId: imageId, messageText: message, successful: false, isSellerResponse: false)
-                            }
-                            catch {
-                                print(error)
+                                let newBidId = try await ServerCommands().addBid(sellerId: sellerId, buyerId: LocalStorage().getUserId(), imageId: imageId, messageText: completeMessage, successful: false, isSellerResponse: false)
+                                print("Bid placed successfully with ID: \(newBidId)")
+                                showSuccessAlert = true // Show the success alert after placing the bid
+                            } catch {
+                                print("Error placing bid: \(error)")
                             }
                         }
-                        isVisible = false
                     }
+
+                }
+                .alert(isPresented: $showAlert) {
+                    Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+                }
+                .alert("Success", isPresented: $showSuccessAlert) {
+                    Button("Exit", role: .cancel) {
+                        isVisible = false
+                        newBidWindowVisible = false
+                        onBidPlaced?()
+                    }
+                } message: {
+                    Text("You have made a successful bet.")
                 }
             }
             .padding()
@@ -240,4 +278,25 @@ struct CustomAlertView: View {
             .shadow(radius: 8)
         }
     }
+
+    func isValidPhoneNumber(_ phoneNumber: String) -> Bool {
+        let phoneNumberRegex = "^[+]?[0-9]{1,3}[-\\s]?\\(?[0-9]{1,4}\\)?[-\\s]?[0-9]{1,4}[-\\s]?[0-9]{1,4}([-\\s]?[0-9]{1,4})?$"
+        return NSPredicate(format: "SELF MATCHES %@", phoneNumberRegex).evaluate(with: phoneNumber)
+    }
+
+    func placeBid() {
+        let completeMessage = "\(message)\n\nMy phone number is \(phoneNumber)"
+        Task {
+            do {
+                let newBidId = try await ServerCommands().addBid(sellerId: sellerId, buyerId: LocalStorage().getUserId(), imageId: imageId, messageText: completeMessage, successful: false, isSellerResponse: false)
+                print("Bid placed successfully with ID: \(newBidId)")
+                showSuccessAlert = true
+            } catch {
+                print("Error placing bid: \(error)")
+            }
+        }
+    }
 }
+
+
+
