@@ -13,6 +13,10 @@ struct ImageDisplayView: View {
     @State private var profileImage: UIImage? = nil
     @State private var isFollowing = false
     @State private var hasPlacedBid = false
+    
+    @State private var showAlert = false
+    @State private var alertMessage = "A bid has already been placed." //alert
+
 
     let sellerPrice: Double = 1000.00 // Dummy seller price
     
@@ -39,12 +43,18 @@ struct ImageDisplayView: View {
                         DragGesture(minimumDistance: 50, coordinateSpace: .local)
                             .onEnded { gesture in
                                 if gesture.translation.height < 0 {
-                                    // Swipe up detected
-                                    isNewBidWindowVisible = true
+                                    print(hasPlacedBid, " SUSSY BAKA")
+                                    if hasPlacedBid {
+                                        // A bid has been placed, show an alert
+                                        self.showAlert = true
+                                    } else {
+                                        // No bid has been placed, show the bid window
+                                        isNewBidWindowVisible = true
+                                    }
                                 }
                             }
                     )
-                
+
                 Spacer().frame(height: 2) // Adjust the height as needed to create space between the icons and caption
                 
                 HStack {
@@ -177,6 +187,9 @@ struct ImageDisplayView: View {
         .onAppear {
             Task {
                 do {
+                    hasPlacedBid = true//REMOV ME LATEr
+                    print("AMBADAKUM")
+
                     let userId = LocalStorage().getUserId()
 
                     let username = try await ServerCommands().getUsername(userId: posterId)
@@ -184,7 +197,7 @@ struct ImageDisplayView: View {
                     let hasLiked = try await ServerCommands().hasUserLikedImage(userId: userId, imageId: self.imageId)
                     let likeCount = try await ServerCommands().getLikesOnImage(imageId: self.imageId)
                     let hasSaved = try await ServerCommands().hasUserSavedImage(userId: userId, imageId: self.imageId)
-                    let hasPlacedBid = try await ServerCommands().doesBidExist(buyerId: userId, imageId: imageId)
+                    //hasPlacedBid = try await ServerCommands().doesBidExist(buyerId: userId, imageId: imageId)
                     print(hasPlacedBid)
                     print("aoisdnfubaoisufbiuasbdfuidbfdufbdubfudbu")
                     let doesUserFollow = try await ServerCommands().checkIfUserFollows(followerId: userId, followedId: posterId)
@@ -201,9 +214,13 @@ struct ImageDisplayView: View {
                 }
             }
         }
-//        .onDisappear(){
-//            self.onReturn?() // Safely call the optional closure
-//        }
+        .alert(isPresented: $showAlert) {
+            Alert(
+                title: Text("Bid Placed"),
+                message: Text(alertMessage),
+                dismissButton: .default(Text("OK"))
+            )
+        }
     }
     
     
