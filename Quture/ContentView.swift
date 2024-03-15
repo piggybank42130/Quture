@@ -317,7 +317,7 @@ struct ContentView: View {
         Task {
             do {
                 // Directly assign the result without using parentheses
-                let imageIds = try await ServerCommands().generateUserFeed(userId: LocalStorage().getUserId(), limit: 20)
+                let imageIds = try await ServerCommands().generateUserFeed(userId: LocalStorage().getUserId(), limit: 200)
                 self.rectangleContents = []
                 for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
                     if !self.isLoading{
