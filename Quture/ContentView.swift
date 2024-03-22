@@ -8,8 +8,6 @@ enum ActiveScreen {
 }
 
 
-
-
 struct ContentView: View {
     //overall tabs and layout
     @State private var selectedTopTab = 0
@@ -43,8 +41,12 @@ struct ContentView: View {
     @State private var showingPopup = true
     @State private var showingPopupOverlay = false // Add this state variable
 
-
-    @Environment(\.colorScheme) var colorScheme // light and dark mode colors    
+    @State private var allImageIds: [Int] = []
+    @State private var currentBatchIndex = 0
+    @State private var isLoadingContent = false
+    private let batchSize = 7
+    
+    @Environment(\.colorScheme) var colorScheme // light and dark mode colors
     
     
     let topTabs = ["Explore", "Curate", "Nearby"]
@@ -312,30 +314,56 @@ struct ContentView: View {
                 .hidden()
         )
     }
-    
-    func loadContent() {
+    func loadImageBatch(){
+        let startIndex = currentBatchIndex * batchSize
+        if startIndex >= allImageIds.count {
+            return
+        }
+        let endIndex = min(startIndex + batchSize, allImageIds.count)
+        let batchIds = Array(allImageIds[startIndex..<endIndex])
+
         Task {
-            do {
-                // Directly assign the result without using parentheses
-                let imageIds = try await ServerCommands().generateUserFeed(userId: LocalStorage().getUserId(), limit: 200)
-                self.rectangleContents = []
-                for (index, imageId) in imageIds.enumerated() where index < imageIds.count {
-                    if !self.isLoading{
-                        break
-                    }
+            var newContents: [RectangleContent] = []
+            for imageId in batchIds {
+                do {
                     let (userId, image, price, caption) = try await ServerCommands().retrieveImage(imageId: imageId)
                     let tags = try await ServerCommands().getTagsFromImage(imageId: imageId)
-                    DispatchQueue.main.async {
-                        let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
-                        rectangleContents.append(newRectangleContent)
-                    }
+                    let newRectangleContent = RectangleContent(userId: userId, imageId: imageId, image: image, caption: caption, tags: tags)
+                    newContents.append(newRectangleContent)
+                } catch {
+                    print("Error loading imageId \(imageId): \(error)")
                 }
-                
-                self.self.isLoading = false
-            } catch {
-                self.self.isLoading = false
+            }
+
+            DispatchQueue.main.async {
+                self.rectangleContents.append(contentsOf: newContents)
+                self.currentBatchIndex += 1
+                self.isLoading = false
             }
         }
+    }
+    func loadContent() {
+        guard !isLoadingContent else { return }
+        isLoadingContent = true
+        if allImageIds.isEmpty {
+            Task {
+                do {
+                    let fetchedIds = try await ServerCommands().generateUserFeed(userId: LocalStorage().getUserId(), limit: 200)
+                    DispatchQueue.main.async {
+                        self.allImageIds = fetchedIds
+                        self.loadImageBatch()
+                    }
+                } catch {
+                    // Handle errors
+                }
+            }
+        } else {
+            print("allImageIds not empty.")
+            loadImageBatch()
+        }
+        DispatchQueue.main.async {
+                self.isLoadingContent = false
+            }
     }
     
     // MARK: - Content Section
@@ -348,7 +376,8 @@ struct ContentView: View {
                     DynamicImageGridView(contents: rectangleContents, isCaptionShown: $showingImageDetailView, onImageTap: { content in
                         self.selectedContent = content
                         self.isNavigationActive = true // Trigger navigation
-                        
+                    }, loadMoreImages: {
+                        loadContent()
                     })
                     .background(
                         NavigationLink(
@@ -361,7 +390,10 @@ struct ContentView: View {
             }
         }
         .refreshable {
-            // Your loading logic here
+            allImageIds.removeAll()
+            currentBatchIndex = 0
+            rectangleContents.removeAll()
+            
             self.isLoading = true
             self.loadContent()
         }
@@ -371,7 +403,6 @@ struct ContentView: View {
             }
         }
     }
-    
     
     // MARK: - Bottom Bar Section
     var bottomBarSection: some View {

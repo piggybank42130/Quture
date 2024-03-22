@@ -20,7 +20,7 @@ struct DynamicImageGridView: View {
     private let contentIndex: Int? = nil // Padding at the top of the grid
 
     var onImageTap: (RectangleContent) -> Void
-
+    var loadMoreImages: (() -> Void)? // Optional closure to trigger loading more images
     
     
     private func calculateGridItems() -> [DynamicImageGridItem] {
@@ -51,9 +51,10 @@ struct DynamicImageGridView: View {
             ScrollView {
                 let width = columnWidth(in: geometry.size.width)
                 let items = arrangeItems(contents: contents, in: width, totalWidth: geometry.size.width)
-
+                
                 ZStack(alignment: .topLeading) {
-                    ForEach(items) { item in
+                    ForEach(items.indices, id: \.self) { index in
+                        let item = items[index]
                         VStack(alignment: .leading, spacing: 5) { // Use a consistent spacing and adjust dynamically within views
                             Image(uiImage: item.content.image ?? UIImage())
                                 .resizable()
@@ -63,7 +64,9 @@ struct DynamicImageGridView: View {
                                 .onTapGesture {
                                     onImageTap(item.content) // Trigger the action on tap
                                 }
-                            
+                                .onAppear{
+                                    loadMoreImages?()
+                                }
                             if isCaptionShown {
                                 Text(item.content.caption)
                                     .font(.caption)
@@ -79,6 +82,8 @@ struct DynamicImageGridView: View {
                     }
                 }
                 .frame(width: geometry.size.width, height: calculateTotalHeight(items: items, in: width) + topPadding)
+                // Add a trigger view at the end
+                
             }
         }
     }
